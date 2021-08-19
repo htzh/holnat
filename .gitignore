@@ -1,0 +1,9 @@
+_build/
+publish/
+assets/
+*.exe
+*.swp
+test
+tst
+temp
+tmp

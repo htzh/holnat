@@ -1,0 +1,9 @@
+(executable
+ (name pp)
+ (modules pp)
+ (libraries str sedlex sedlex.ppx)
+ (preprocess
+  (pps sedlex.ppx))
+ (flags :standard -w +39)
+ (promote (until-clean))
+)
