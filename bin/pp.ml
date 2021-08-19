@@ -1,3 +1,6 @@
+(* There are things that can't be done at syntax level, like distinguishing 
+ * module and constructor names. Also "(* *)" embedded in comments won't be
+ * process correctly. *)
 let start_comment = [%sedlex.regexp? "(*"]
 let end_comment = [%sedlex.regexp? "*)"]
 let dquote = [%sedlex.regexp? '"']
@@ -24,8 +27,18 @@ let rec regular oc buf =
         | start_comment -> copy oc buf; comment oc buf
         | dquote -> copy oc buf; sliteral oc buf
         | squote -> copy oc buf; cliteral oc buf
-        | backtick -> let _ = lexeme buf in output_string oc "(parse_term \""; quotation oc buf
+        | backtick -> output_string oc "(parse_term \""; quotation oc buf
         | num -> copy oc buf; regular oc buf
+        | "Pervasives." -> output_string oc "Stdlib."; regular oc buf
+        | " THENC " -> output_string oc " ----> "; regular oc buf
+        | " THENL " -> output_string oc " +---> "; regular oc buf
+        | " THEN " -> output_string oc " +--> "; regular oc buf
+        | " THEN_TCL " -> output_string oc " +++-> "; regular oc buf
+        | " ORELSEC " -> output_string oc " ||--> "; regular oc buf
+        | " ORELSE " -> output_string oc " |---> "; regular oc buf
+        | " ORELSE_TCL " -> output_string oc " |||-> "; regular oc buf
+        | " o " -> output_string oc " -| "; regular oc buf
+        | " F_F " -> output_string oc " $-$ "; regular oc buf
         | ident -> lexeme buf |> convert_ident |> output_string oc; regular oc buf
         | any -> copy oc buf; regular oc buf
         | eof -> ()
@@ -33,7 +46,7 @@ let rec regular oc buf =
 and quotation oc buf =
         match%sedlex buf with
         | Compl backtick -> lexeme buf |> String.escaped |> output_string oc; quotation oc buf
-        | backtick -> let _ = lexeme buf in output_string oc "\")"; regular oc buf
+        | backtick -> output_string oc "\")"; regular oc buf
         | _ -> assert false
 and sliteral oc buf =
         match%sedlex buf with
