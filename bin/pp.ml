@@ -20,7 +20,18 @@ let copy oc buf = output_string oc (lexeme buf)
 
 let hol_uppercase_id = Str.regexp "[A-Z][A-Z0-9_']*$"
 
-let convert_ident s = if Str.string_match hol_uppercase_id s 0 then "v" ^ s else s
+let convert_ident s = 
+        match s with 
+        | "Pervasives" -> "Stdlib"
+        | "THEN" -> "+-->"
+        | "THENC" -> "---->"
+        | "THENL" -> "+--->"
+        | "THEN_TCL" -> "+++->"
+        | "ORELSE" -> "|--->"
+        | "ORELSEC" -> "||-->"
+        | "ORELSE_TCL" -> "|||->"
+        | "F_F" -> "$-$"
+        | _ -> if Str.string_match hol_uppercase_id s 0 then "v" ^ s else s 
 
 let rec regular oc buf =
         match%sedlex buf with
@@ -29,16 +40,7 @@ let rec regular oc buf =
         | squote -> copy oc buf; cliteral oc buf
         | backtick -> output_string oc "(parse_term \""; quotation oc buf
         | num -> copy oc buf; regular oc buf
-        | "Pervasives." -> output_string oc "Stdlib."; regular oc buf
-        | " THENC " -> output_string oc " ----> "; regular oc buf
-        | " THENL " -> output_string oc " +---> "; regular oc buf
-        | " THEN " -> output_string oc " +--> "; regular oc buf
-        | " THEN_TCL " -> output_string oc " +++-> "; regular oc buf
-        | " ORELSEC " -> output_string oc " ||--> "; regular oc buf
-        | " ORELSE " -> output_string oc " |---> "; regular oc buf
-        | " ORELSE_TCL " -> output_string oc " |||-> "; regular oc buf
         | " o " -> output_string oc " -| "; regular oc buf
-        | " F_F " -> output_string oc " $-$ "; regular oc buf
         | ident -> lexeme buf |> convert_ident |> output_string oc; regular oc buf
         | any -> copy oc buf; regular oc buf
         | eof -> ()
