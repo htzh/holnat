@@ -1,7 +1,7 @@
 ## HOL Light Native
 
 We have adapted [John Harrison](http://www.cl.cam.ac.uk/~jrh13/)'s [HOL Light](https://github.com/jrh13/hol-light) to
-be compiled into native executables. Currently files up to ```trivia.ml``` (see [```hol.ml```](https://github.com/jrh13/hol-light/blob/master/hol.ml) for the order
+be compiled into native executables. Currently files up to ```firstorder.ml``` (see [```hol.ml```](https://github.com/jrh13/hol-light/blob/master/hol.ml#L129) for the order
 of files) have been successfully converted.
 
 We don't change OCaml lexing conventions so we do not need preprocessors to compile. However this means we can not have capitalized value names, nor can we have letters in operators.
