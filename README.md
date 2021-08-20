@@ -1,13 +1,13 @@
 ## HOL Light Native
 
 We have adapted [John Harrison](http://www.cl.cam.ac.uk/~jrh13/)'s [HOL Light](https://github.com/jrh13/hol-light) to
-be compiled into native executables. Currently files up to ```theorems.ml``` (see [```hol.ml```](https://github.com/jrh13/hol-light/blob/master/hol.ml) for the order
+be compiled into native executables. Currently files up to ```trivia.ml``` (see [```hol.ml```](https://github.com/jrh13/hol-light/blob/master/hol.ml) for the order
 of files) have been successfully converted.
 
 We don't change OCaml lexing conventions so we do not need preprocessors to compile. However this means we can not have capitalized value names, nor can we have letters in operators.
 We prefix all-cap value names with the letter ```v```. The composition operator is now ```-|``` instead of ```o```. See ```bin/pp.ml``` for details.
 
-We also do not use quotation. Quoted literals have all been converted to strings and instantiated with ```parse_term```.
+We also do not use quotation. Quoted literals have all been converted to strings and instantiated with ```parse_term``` or ```parse_type``` (unless ending with ```:```).
 
 Due to the decoupling from ```Camlp5``` and special lexing rules, we now can run with any reasonable version of OCaml.
 
