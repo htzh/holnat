@@ -137,7 +137,7 @@ let (vVALID:tactic->tactic) =
 (* Various simple combinators for tactics, identity tactic etc.              *)
 (* ------------------------------------------------------------------------- *)
 
-let (+-->),(+--->) =
+let (---->),(+---->) =
   let propagate_empty _i = function [] -> [] | _ -> assert false
   and propagate_thm th i = function [] ->  vINSTANTIATE_ALL i th | _ -> assert false in
   let compose_justs n just1 just2 insts2 i ths =
@@ -187,10 +187,10 @@ let vTRY tac =
   tac |---> vALL_TAC;;
 
 let rec vREPEAT tac g =
-  ((tac +--> vREPEAT tac) |---> vALL_TAC) g;;
+  ((tac ----> vREPEAT tac) |---> vALL_TAC) g;;
 
 let vEVERY tacl =
-  itlist (fun t1 t2 -> t1 +--> t2) tacl vALL_TAC;;
+  itlist (fun t1 t2 -> t1 ----> t2) tacl vALL_TAC;;
 
 let (vFIRST: tactic list -> tactic) =
   fun tacl g -> end_itlist (fun t1 t2 -> t1 |---> t2) tacl g;;
@@ -208,7 +208,7 @@ let (vCHANGED_TAC: tactic -> tactic) =
     then failwith "CHANGED_TAC" else gstate;;
 
 let rec vREPLICATE_TAC n tac =
-  if n <= 0 then vALL_TAC else tac +--> (vREPLICATE_TAC (n - 1) tac);;
+  if n <= 0 then vALL_TAC else tac ----> (vREPLICATE_TAC (n - 1) tac);;
 
 (* ------------------------------------------------------------------------- *)
 (* Combinators for theorem continuations / "theorem tacticals".              *)
@@ -280,7 +280,7 @@ let (vFIRST_ASSUM: thm_tactic -> tactic) =
   fun ttac (asl,_w as g) -> tryfind (fun (_,th) -> ttac th g) asl;;
 
 let (vRULE_ASSUM_TAC :(thm->thm)->tactic) =
-  fun rule (asl,w) -> (vPOP_ASSUM_LIST(vK vALL_TAC) +-->
+  fun rule (asl,w) -> (vPOP_ASSUM_LIST(vK vALL_TAC) ---->
                        vMAP_EVERY (fun (s,th) -> vLABEL_TAC s (rule th))
                                  (rev asl)) (asl,w);;
 
@@ -383,22 +383,22 @@ let (vMK_COMB_TAC: tactic) =
     with Failure _ -> failwith "MK_COMB_TAC";;
 
 let (vAP_TERM_TAC: tactic) =
-  let tac = vMK_COMB_TAC +---> [vREFL_TAC; vALL_TAC] in
+  let tac = vMK_COMB_TAC +----> [vREFL_TAC; vALL_TAC] in
   fun gl -> try tac gl with Failure _ -> failwith "AP_TERM_TAC";;
 
 let (vAP_THM_TAC: tactic) =
-  let tac = vMK_COMB_TAC +---> [vALL_TAC; vREFL_TAC] in
+  let tac = vMK_COMB_TAC +----> [vALL_TAC; vREFL_TAC] in
   fun gl -> try tac gl with Failure _ -> failwith "AP_THM_TAC";;
 
 let (vBINOP_TAC: tactic) =
-  let tac = vMK_COMB_TAC +---> [vAP_TERM_TAC; vALL_TAC] in
+  let tac = vMK_COMB_TAC +----> [vAP_TERM_TAC; vALL_TAC] in
   fun gl -> try tac gl with Failure _ -> failwith "AP_THM_TAC";;
 
 let (vSUBST1_TAC: thm_tactic) =
   fun th -> vCONV_TAC(vSUBS_CONV [th]);;
 
 let vSUBST_ALL_TAC rth =
-  vSUBST1_TAC rth +--> vRULE_ASSUM_TAC (vSUBS [rth]);;
+  vSUBST1_TAC rth ----> vRULE_ASSUM_TAC (vSUBS [rth]);;
 
 let vBETA_TAC = vCONV_TAC(vREDEPTH_CONV vBETA_CONV);;
 
@@ -562,7 +562,7 @@ let (vMATCH_ACCEPT_TAC:thm_tactic) =
     try let ith = vPART_MATCH vI th w in
         null_meta,[],propagate_thm ith
     with Failure _ -> failwith "ACCEPT_TAC" in
-  fun th -> vREPEAT vGEN_TAC +--> rawtac th;;
+  fun th -> vREPEAT vGEN_TAC ----> rawtac th;;
 
 let (vMATCH_MP_TAC :thm_tactic) =
   fun th ->
@@ -596,7 +596,7 @@ let (vTRANS_TAC:thm->term->tactic) =
       let ilist =
         itlist2 type_match (map type_of [x;y;z])(map type_of [l;tm;r]) [] in
       let th' = vINST_TYPE ilist th in
-      (vMATCH_MP_TAC th' +--> vEXISTS_TAC tm) gl;;
+      (vMATCH_MP_TAC th' ----> vEXISTS_TAC tm) gl;;
 
 (* ------------------------------------------------------------------------- *)
 (* Theorem continuations.                                                    *)
@@ -605,7 +605,7 @@ let (vTRANS_TAC:thm->term->tactic) =
 let (vCONJUNCTS_THEN2:thm_tactic->thm_tactic->thm_tactic) =
   fun ttac1 ttac2 cth ->
       let c1,c2 = dest_conj(concl cth) in
-      fun gl -> let ti,gls,jfn = (ttac1(vASSUME c1) +--> ttac2(vASSUME c2)) gl in
+      fun gl -> let ti,gls,jfn = (ttac1(vASSUME c1) ----> ttac2(vASSUME c2)) gl in
                 let jfn' i ths =
                   let th1,th2 = vCONJ_PAIR(vINSTANTIATE_ALL i cth) in
                   vPROVE_HYP th1 (vPROVE_HYP th2 (jfn i ths)) in
@@ -616,19 +616,19 @@ let (vCONJUNCTS_THEN: thm_tactical) =
 
 let (vDISJ_CASES_THEN2:thm_tactic->thm_tactic->thm_tactic) =
   fun ttac1 ttac2 cth ->
-    vDISJ_CASES_TAC cth +---> [vPOP_ASSUM ttac1; vPOP_ASSUM ttac2];;
+    vDISJ_CASES_TAC cth +----> [vPOP_ASSUM ttac1; vPOP_ASSUM ttac2];;
 
 let (vDISJ_CASES_THEN: thm_tactical) =
   vW vDISJ_CASES_THEN2;;
 
 let (vDISCH_THEN: thm_tactic -> tactic) =
-  fun ttac -> vDISCH_TAC +--> vPOP_ASSUM ttac;;
+  fun ttac -> vDISCH_TAC ----> vPOP_ASSUM ttac;;
 
 let (vX_CHOOSE_THEN: term -> thm_tactical) =
-  fun x ttac th -> vX_CHOOSE_TAC x th +--> vPOP_ASSUM ttac;;
+  fun x ttac th -> vX_CHOOSE_TAC x th ----> vPOP_ASSUM ttac;;
 
 let (vCHOOSE_THEN: thm_tactical) =
-  fun ttac th -> vCHOOSE_TAC th +--> vPOP_ASSUM ttac;;
+  fun ttac th -> vCHOOSE_TAC th ----> vPOP_ASSUM ttac;;
 
 (* ------------------------------------------------------------------------- *)
 (* Various derived tactics and theorem continuations.                        *)
@@ -695,7 +695,7 @@ let (vSUBGOAL_THEN: term -> thm_tactic -> tactic) =
 let vSUBGOAL_TAC s tm prfs =
   match prfs with
    p::ps -> (warn (ps <> []) "SUBGOAL_TAC: additional subproofs ignored";
-             vSUBGOAL_THEN tm (vLABEL_TAC s) +---> [p; vALL_TAC])
+             vSUBGOAL_THEN tm (vLABEL_TAC s) +----> [p; vALL_TAC])
   | [] -> failwith "SUBGOAL_TAC: no subproof given";;
 
 let (vFREEZE_THEN :thm_tactical) =
@@ -749,7 +749,7 @@ let vANTS_TAC =
   and tm2 = (parse_term "p ==> q") in
   let th1,th2 = vCONJ_PAIR(vASSUME tm1) in
   let th = itlist vDISCH [tm1;tm2] (vMP th2 (vMP(vASSUME tm2) th1)) in
-  vMATCH_MP_TAC th +--> vCONJ_TAC;;
+  vMATCH_MP_TAC th ----> vCONJ_TAC;;
 
 (* ------------------------------------------------------------------------- *)
 (* A printer for goals etc.                                                  *)

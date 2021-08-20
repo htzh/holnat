@@ -101,7 +101,7 @@ let (vALL_CONV:conv) = vREFL;;
 (* Combinators for sequencing, trying, repeating etc. conversions.           *)
 (* ------------------------------------------------------------------------- *)
 
-let ((*THENC*)(---->):conv -> conv -> conv) =
+let ((*THENC*)(+--->):conv -> conv -> conv) =
   fun conv1 conv2 t ->
     let th1 = conv1 t in
     let th2 = conv2 (rand(concl th1)) in
@@ -114,11 +114,11 @@ let ((*ORELSEC*)(||-->):conv -> conv -> conv) =
 let (vFIRST_CONV:conv list -> conv) = end_itlist (fun c1 c2 -> c1 ||--> c2);;
 
 let (vEVERY_CONV:conv list -> conv) =
-  fun l -> itlist (fun c1 c2 -> c1 ----> c2) l vALL_CONV;;
+  fun l -> itlist (fun c1 c2 -> c1 +---> c2) l vALL_CONV;;
 
 let vREPEATC =
   let rec vREPEATC conv t =
-    ((conv ----> (vREPEATC conv)) ||--> vALL_CONV) t in
+    ((conv +---> (vREPEATC conv)) ||--> vALL_CONV) t in
   (vREPEATC:conv->conv);;
 
 let (vCHANGED_CONV:conv->conv) =
@@ -313,7 +313,7 @@ let vSUBS_CONV ths tm =
       let pat = subst (zip gvs lefts) tm in
       let abs = list_mk_abs(gvs,pat) in
       let th = rev_itlist
-        (fun y x -> vCONV_RULE (vRAND_CONV vBETA_CONV ----> vLAND_CONV vBETA_CONV)
+        (fun y x -> vCONV_RULE (vRAND_CONV vBETA_CONV +---> vLAND_CONV vBETA_CONV)
                               (vMK_COMB(x,y))) ths (vREFL abs) in
       if rand(concl th) = tm then vREFL tm else th
   with Failure _ -> failwith "SUBS_CONV";;

@@ -68,7 +68,7 @@ let vMP_CONV (cnv:conv) th =
 let rec vBETAS_CONV tm =
   match tm with
     Comb(Abs(_,_),_) -> vBETA_CONV tm
-  | Comb(Comb(_,_),_) -> (vRATOR_CONV vBETAS_CONV ----> vBETA_CONV) tm
+  | Comb(Comb(_,_),_) -> (vRATOR_CONV vBETAS_CONV +---> vBETA_CONV) tm
   | _ -> failwith "BETAS_CONV";;
 
 (* ------------------------------------------------------------------------- *)
@@ -108,7 +108,7 @@ let (instantiate :instantiation->term->term) =
 let (vINSTANTIATE : instantiation->thm->thm) =
   let rec vBETAS_CONV n tm =
     if n = 1 then vTRY_CONV vBETA_CONV tm else
-    (vRATOR_CONV (vBETAS_CONV (n-1)) ---->
+    (vRATOR_CONV (vBETAS_CONV (n-1)) +--->
      vTRY_CONV vBETA_CONV) tm in
   let rec vHO_BETAS bcs pat tm =
     if is_var pat || is_const pat then fail() else
@@ -534,7 +534,7 @@ let vHIGHER_REWRITE_CONV =
   let vBETA_VAR =
     let rec vBETA_CONVS n =
       if n = 1 then vTRY_CONV vBETA_CONV else
-      vRATOR_CONV (vBETA_CONVS (n - 1)) ----> vTRY_CONV vBETA_CONV in
+      vRATOR_CONV (vBETA_CONVS (n - 1)) +---> vTRY_CONV vBETA_CONV in
     let rec free_beta v tm =
       if is_abs tm then
         let bv,bod = dest_abs tm in

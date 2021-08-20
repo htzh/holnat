@@ -25,23 +25,23 @@ open Simp
 
 let vEQ_REFL = prove
  ((parse_term "!x:A. x = x"),
-  vGEN_TAC +--> vREFL_TAC);;
+  vGEN_TAC ----> vREFL_TAC);;
 
 let vREFL_CLAUSE = prove
  ((parse_term "!x:A. (x = x) <=> T"),
-  vGEN_TAC +--> vMATCH_ACCEPT_TAC(vEQT_INTRO(vSPEC_ALL vEQ_REFL)));;
+  vGEN_TAC ----> vMATCH_ACCEPT_TAC(vEQT_INTRO(vSPEC_ALL vEQ_REFL)));;
 
 let vEQ_SYM = prove
  ((parse_term "!(x:A) y. (x = y) ==> (y = x)"),
-  vREPEAT vGEN_TAC +--> vDISCH_THEN(vACCEPT_TAC -| vSYM));;
+  vREPEAT vGEN_TAC ----> vDISCH_THEN(vACCEPT_TAC -| vSYM));;
 
 let vEQ_SYM_EQ = prove
  ((parse_term "!(x:A) y. (x = y) <=> (y = x)"),
-  vREPEAT vGEN_TAC +--> vEQ_TAC +--> vMATCH_ACCEPT_TAC vEQ_SYM);;
+  vREPEAT vGEN_TAC ----> vEQ_TAC ----> vMATCH_ACCEPT_TAC vEQ_SYM);;
 
 let vEQ_TRANS = prove
  ((parse_term "!(x:A) y z. (x = y) /\\ (y = z) ==> (x = z)"),
-  vREPEAT vSTRIP_TAC +--> vPURE_ASM_REWRITE_TAC[] +--> vREFL_TAC);;
+  vREPEAT vSTRIP_TAC ----> vPURE_ASM_REWRITE_TAC[] ----> vREFL_TAC);;
 
 (* ------------------------------------------------------------------------- *)
 (* The following is a common special case of ordered rewriting.              *)
@@ -55,11 +55,11 @@ let vAC acsuite = vEQT_ELIM -| vPURE_REWRITE_CONV[acsuite; vREFL_CLAUSE];;
 
 let vBETA_THM = prove
  ((parse_term "!(f:A->B) y. (\\x. (f:A->B) x) y = f y"),
-  vREPEAT vGEN_TAC +--> vBETA_TAC +--> vREFL_TAC);;
+  vREPEAT vGEN_TAC ----> vBETA_TAC ----> vREFL_TAC);;
 
 let vABS_SIMP = prove
  ((parse_term "!(t1:A) (t2:B). (\\x. t1) t2 = t1"),
-  vREPEAT vGEN_TAC +--> vREWRITE_TAC[vBETA_THM; vREFL_CLAUSE]);;
+  vREPEAT vGEN_TAC ----> vREWRITE_TAC[vBETA_THM; vREFL_CLAUSE]);;
 
 (* ------------------------------------------------------------------------- *)
 (* A few "big name" intuitionistic tautologies.                              *)
@@ -177,7 +177,7 @@ extend_basic_congs
 
 let vEXISTS_UNIQUE_THM = prove
  ((parse_term "!P. (?!x:A. P x) <=> (?x. P x) /\\ (!x x'. P x /\\ P x' ==> (x = x'))"),
-  vGEN_TAC +--> vREWRITE_TAC[vEXISTS_UNIQUE_DEF]);;
+  vGEN_TAC ----> vREWRITE_TAC[vEXISTS_UNIQUE_DEF]);;
 
 (* ------------------------------------------------------------------------- *)
 (* Trivial instances of existence.                                           *)
@@ -185,13 +185,13 @@ let vEXISTS_UNIQUE_THM = prove
 
 let vEXISTS_REFL = prove
  ((parse_term "!a:A. ?x. x = a"),
-  vGEN_TAC +--> vEXISTS_TAC (parse_term "a:A") +--> vREFL_TAC);;
+  vGEN_TAC ----> vEXISTS_TAC (parse_term "a:A") ----> vREFL_TAC);;
 
 let vEXISTS_UNIQUE_REFL = prove
  ((parse_term "!a:A. ?!x. x = a"),
-  vGEN_TAC +--> vREWRITE_TAC[vEXISTS_UNIQUE_THM] +-->
-  vREPEAT(vEQ_TAC |---> vSTRIP_TAC) +--->
-   [vEXISTS_TAC (parse_term "a:A"); vASM_REWRITE_TAC[]] +-->
+  vGEN_TAC ----> vREWRITE_TAC[vEXISTS_UNIQUE_THM] ---->
+  vREPEAT(vEQ_TAC |---> vSTRIP_TAC) +---->
+   [vEXISTS_TAC (parse_term "a:A"); vASM_REWRITE_TAC[]] ---->
   vREFL_TAC);;
 
 (* ------------------------------------------------------------------------- *)
@@ -200,27 +200,27 @@ let vEXISTS_UNIQUE_REFL = prove
 
 let vUNWIND_THM1 = prove
  ((parse_term "!P (a:A). (?x. a = x /\\ P x) <=> P a"),
-  vREPEAT vGEN_TAC +--> vEQ_TAC +--->
+  vREPEAT vGEN_TAC ----> vEQ_TAC +---->
    [vDISCH_THEN(vCHOOSE_THEN (vCONJUNCTS_THEN2 vSUBST1_TAC vACCEPT_TAC));
-    vDISCH_TAC +--> vEXISTS_TAC (parse_term "a:A") +-->
-    vCONJ_TAC +--> vTRY(vFIRST_ASSUM vMATCH_ACCEPT_TAC) +-->
+    vDISCH_TAC ----> vEXISTS_TAC (parse_term "a:A") ---->
+    vCONJ_TAC ----> vTRY(vFIRST_ASSUM vMATCH_ACCEPT_TAC) ---->
     vREFL_TAC]);;
 
 let vUNWIND_THM2 = prove
  ((parse_term "!P (a:A). (?x. x = a /\\ P x) <=> P a"),
-  vREPEAT vGEN_TAC +--> vCONV_TAC(vLAND_CONV(vONCE_DEPTH_CONV vSYM_CONV)) +-->
+  vREPEAT vGEN_TAC ----> vCONV_TAC(vLAND_CONV(vONCE_DEPTH_CONV vSYM_CONV)) ---->
   vMATCH_ACCEPT_TAC vUNWIND_THM1);;
 
 let vFORALL_UNWIND_THM2 = prove
  ((parse_term "!P (a:A). (!x. x = a ==> P x) <=> P a"),
-  vREPEAT vGEN_TAC +--> vEQ_TAC +--->
-   [vDISCH_THEN(vMP_TAC -| vSPEC (parse_term "a:A")) +--> vREWRITE_TAC[];
-    vDISCH_TAC +--> vGEN_TAC +--> vDISCH_THEN vSUBST1_TAC +-->
+  vREPEAT vGEN_TAC ----> vEQ_TAC +---->
+   [vDISCH_THEN(vMP_TAC -| vSPEC (parse_term "a:A")) ----> vREWRITE_TAC[];
+    vDISCH_TAC ----> vGEN_TAC ----> vDISCH_THEN vSUBST1_TAC ---->
     vASM_REWRITE_TAC[]]);;
 
 let vFORALL_UNWIND_THM1 = prove
  ((parse_term "!P a. (!x. a = x ==> P x) <=> P a"),
-  vREPEAT vGEN_TAC +--> vCONV_TAC(vLAND_CONV(vONCE_DEPTH_CONV vSYM_CONV)) +-->
+  vREPEAT vGEN_TAC ----> vCONV_TAC(vLAND_CONV(vONCE_DEPTH_CONV vSYM_CONV)) ---->
   vMATCH_ACCEPT_TAC vFORALL_UNWIND_THM2);;
 
 (* ------------------------------------------------------------------------- *)
@@ -357,13 +357,13 @@ let vMONO_NOT = vITAUT (parse_term "(B ==> A) ==> (~A ==> ~B)");;
 
 let vMONO_FORALL = prove
  ((parse_term "(!x:A. P x ==> Q x) ==> ((!x. P x) ==> (!x. Q x))"),
-  vREPEAT vSTRIP_TAC +--> vFIRST_ASSUM vMATCH_MP_TAC +-->
+  vREPEAT vSTRIP_TAC ----> vFIRST_ASSUM vMATCH_MP_TAC ---->
   vASM_REWRITE_TAC[]);;
 
 let vMONO_EXISTS = prove
  ((parse_term "(!x:A. P x ==> Q x) ==> ((?x. P x) ==> (?x. Q x))"),
-  vDISCH_TAC +--> vDISCH_THEN(vX_CHOOSE_TAC (parse_term "x:A")) +-->
-  vEXISTS_TAC (parse_term "x:A") +--> vFIRST_ASSUM vMATCH_MP_TAC +-->
+  vDISCH_TAC ----> vDISCH_THEN(vX_CHOOSE_TAC (parse_term "x:A")) ---->
+  vEXISTS_TAC (parse_term "x:A") ----> vFIRST_ASSUM vMATCH_MP_TAC ---->
   vASM_REWRITE_TAC[]);;
 
 (* ------------------------------------------------------------------------- *)
@@ -372,10 +372,10 @@ let vMONO_EXISTS = prove
 
 let vWLOG_RELATION = prove
  ((parse_term "!R P. (!x y. P x y ==> P y x) /\\\n         (!x y. R x y \\/ R y x) /\\\n         (!x y. R x y ==> P x y)\n         ==> !x y. P x y"),
-  vREPEAT vGEN_TAC +--> vDISCH_THEN
-   (vCONJUNCTS_THEN2 vASSUME_TAC (vCONJUNCTS_THEN2 vMP_TAC vASSUME_TAC)) +-->
-  vREPEAT(vMATCH_MP_TAC vMONO_FORALL +--> vGEN_TAC) +-->
-  vSTRIP_TAC +--> vASM_SIMP_TAC[]);;
+  vREPEAT vGEN_TAC ----> vDISCH_THEN
+   (vCONJUNCTS_THEN2 vASSUME_TAC (vCONJUNCTS_THEN2 vMP_TAC vASSUME_TAC)) ---->
+  vREPEAT(vMATCH_MP_TAC vMONO_FORALL ----> vGEN_TAC) ---->
+  vSTRIP_TAC ----> vASM_SIMP_TAC[]);;
 
 (* ------------------------------------------------------------------------- *)
 (* Alternative versions of unique existence.                                 *)
@@ -383,24 +383,24 @@ let vWLOG_RELATION = prove
 
 let vEXISTS_UNIQUE_ALT = prove
  ((parse_term "!P:A->bool. (?!x. P x) <=> (?x. !y. P y <=> (x = y))"),
-  vGEN_TAC +--> vREWRITE_TAC[vEXISTS_UNIQUE_THM] +--> vEQ_TAC +--->
-   [vDISCH_THEN(vCONJUNCTS_THEN2 (vX_CHOOSE_TAC (parse_term "x:A")) vASSUME_TAC) +-->
-    vEXISTS_TAC (parse_term "x:A") +--> vGEN_TAC +--> vEQ_TAC +--->
-     [vDISCH_TAC +--> vFIRST_ASSUM vMATCH_MP_TAC +--> vASM_REWRITE_TAC[];
-      vDISCH_THEN(vSUBST1_TAC -| vSYM) +--> vFIRST_ASSUM vMATCH_ACCEPT_TAC];
-    vDISCH_THEN(vX_CHOOSE_TAC (parse_term "x:A")) +-->
-    vASM_REWRITE_TAC[vGSYM vEXISTS_REFL] +--> vREPEAT vGEN_TAC +-->
-    vDISCH_THEN(vCONJUNCTS_THEN (vSUBST1_TAC -| vSYM)) +--> vREFL_TAC]);;
+  vGEN_TAC ----> vREWRITE_TAC[vEXISTS_UNIQUE_THM] ----> vEQ_TAC +---->
+   [vDISCH_THEN(vCONJUNCTS_THEN2 (vX_CHOOSE_TAC (parse_term "x:A")) vASSUME_TAC) ---->
+    vEXISTS_TAC (parse_term "x:A") ----> vGEN_TAC ----> vEQ_TAC +---->
+     [vDISCH_TAC ----> vFIRST_ASSUM vMATCH_MP_TAC ----> vASM_REWRITE_TAC[];
+      vDISCH_THEN(vSUBST1_TAC -| vSYM) ----> vFIRST_ASSUM vMATCH_ACCEPT_TAC];
+    vDISCH_THEN(vX_CHOOSE_TAC (parse_term "x:A")) ---->
+    vASM_REWRITE_TAC[vGSYM vEXISTS_REFL] ----> vREPEAT vGEN_TAC ---->
+    vDISCH_THEN(vCONJUNCTS_THEN (vSUBST1_TAC -| vSYM)) ----> vREFL_TAC]);;
 
 let vEXISTS_UNIQUE = prove
  ((parse_term "!P:A->bool. (?!x. P x) <=> (?x. P x /\\ !y. P y ==> (y = x))"),
-  vGEN_TAC +--> vREWRITE_TAC[vEXISTS_UNIQUE_ALT] +-->
-  vAP_TERM_TAC +--> vABS_TAC +-->
+  vGEN_TAC ----> vREWRITE_TAC[vEXISTS_UNIQUE_ALT] ---->
+  vAP_TERM_TAC ----> vABS_TAC ---->
   vGEN_REWRITE_TAC (vLAND_CONV -| vBINDER_CONV)
-   [vITAUT (parse_term "(a <=> b) <=> (a ==> b) /\\ (b ==> a)")] +-->
-  vGEN_REWRITE_TAC (vLAND_CONV -| vONCE_DEPTH_CONV) [vEQ_SYM_EQ] +-->
-  vREWRITE_TAC[vFORALL_AND_THM] +--> vSIMP_TAC[] +-->
-  vREWRITE_TAC[vLEFT_FORALL_IMP_THM; vEXISTS_REFL] +-->
+   [vITAUT (parse_term "(a <=> b) <=> (a ==> b) /\\ (b ==> a)")] ---->
+  vGEN_REWRITE_TAC (vLAND_CONV -| vONCE_DEPTH_CONV) [vEQ_SYM_EQ] ---->
+  vREWRITE_TAC[vFORALL_AND_THM] ----> vSIMP_TAC[] ---->
+  vREWRITE_TAC[vLEFT_FORALL_IMP_THM; vEXISTS_REFL] ---->
   vREWRITE_TAC[vCONJ_ACI]);;
 
 (* ------------------------------------------------------------------------- *)
@@ -430,10 +430,10 @@ let vDESTRUCT_TAC,vFIX_TAC,vINTRO_TAC,vHYP_TAC =
   and vOBTAIN_THEN v ttac th =
     let ty = (snd -| dest_var -| fst -| dest_exists -| concl) th in
     vX_CHOOSE_THEN (mk_var(v,ty)) ttac th
-  and vCONJ_LIST_TAC = end_itlist (fun t1 t2 -> vCONJ_TAC +---> [t1; t2])
+  and vCONJ_LIST_TAC = end_itlist (fun t1 t2 -> vCONJ_TAC +----> [t1; t2])
   and vNUM_DISJ_TAC n =
     if n <= 0 then failwith "NUM_DISJ_TAC" else
-    vREPLICATE_TAC (n-1) vDISJ2_TAC +--> vREPEAT vDISJ1_TAC
+    vREPLICATE_TAC (n-1) vDISJ2_TAC ----> vREPEAT vDISJ1_TAC
   and vNAME_PULL_FORALL_CONV =
     let vSWAP_FORALL_CONV = vREWR_CONV vSWAP_FORALL_THM
     and vAND_FORALL_CONV = vGEN_REWRITE_CONV vI [vAND_FORALL_THM]
@@ -442,11 +442,11 @@ let vDESTRUCT_TAC,vFIX_TAC,vINTRO_TAC,vHYP_TAC =
       let rec vPULL_FORALL tm =
           if is_forall tm then
             if name_of(fst(dest_forall tm)) = s then vREFL tm else
-              (vBINDER_CONV vPULL_FORALL ----> vSWAP_FORALL_CONV) tm
+              (vBINDER_CONV vPULL_FORALL +---> vSWAP_FORALL_CONV) tm
           else if is_imp tm then
-            (vRAND_CONV vPULL_FORALL ----> vRIGHT_IMP_FORALL_CONV) tm
+            (vRAND_CONV vPULL_FORALL +---> vRIGHT_IMP_FORALL_CONV) tm
           else if is_conj tm then
-            (vBINOP_CONV vPULL_FORALL ----> vAND_FORALL_CONV) tm
+            (vBINOP_CONV vPULL_FORALL +---> vAND_FORALL_CONV) tm
           else
             fail () in
       vPULL_FORALL in
@@ -456,9 +456,9 @@ let vDESTRUCT_TAC,vFIX_TAC,vINTRO_TAC,vHYP_TAC =
   let pa_label = pa_ident isalnum
   and pa_var = pa_ident isalpha in
   let fix_tac =
-    let fix_var v = vCONV_TAC (vNAME_PULL_FORALL_CONV v) +--> vPURE_GEN_TAC
+    let fix_var v = vCONV_TAC (vNAME_PULL_FORALL_CONV v) ----> vPURE_GEN_TAC
     and fix_rename =
-      function u,[v] -> vCONV_TAC (vNAME_PULL_FORALL_CONV v) +--> vNAME_GEN_TAC u
+      function u,[v] -> vCONV_TAC (vNAME_PULL_FORALL_CONV v) ----> vNAME_GEN_TAC u
              | u,_   -> vNAME_GEN_TAC u in
     let vars =
       let pa_rename =
@@ -466,7 +466,7 @@ let vDESTRUCT_TAC,vFIX_TAC,vINTRO_TAC,vHYP_TAC =
         (a(Resword "[") ++ pa_var >> snd) ++ oname ++ a(Resword "]") >> fst in
       many ((pa_rename >> fix_rename) ||| (pa_var >> fix_var)) >> vEVERY
     and star = possibly (a (Ident "*") >> vK ()) in
-    vars ++ star >> function tac,[] -> tac | tac,_ -> tac +--> vREPEAT vGEN_TAC
+    vars ++ star >> function tac,[] -> tac | tac,_ -> tac ----> vREPEAT vGEN_TAC
   and destruct_tac =
     let vOBTAINL_THEN : string list -> thm_tactical =
       vEVERY_TCL -| map vOBTAIN_THEN in
@@ -509,7 +509,7 @@ let vDESTRUCT_TAC,vFIX_TAC,vINTRO_TAC,vHYP_TAC =
       ((a(Resword "{") ++ conjs >> snd) ++ a(Resword "}") >> fst) toks
     and pa_disj toks =
       let disj = number >> vNUM_DISJ_TAC in
-      ((a(Ident "#") ++ disj >> snd) ++ pa_intro >> uncurry (+-->)) toks in
+      ((a(Ident "#") ++ disj >> snd) ++ pa_intro >> uncurry (---->)) toks in
     pa_intro in
   let hyp_tac rule =
     let pa_action = function

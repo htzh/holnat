@@ -23,9 +23,9 @@ let hol_uppercase_id = Str.regexp "[A-Z][A-Z0-9_']*$"
 let convert_ident s = 
         match s with 
         | "Pervasives" -> "Stdlib"
-        | "THEN" -> "+-->"
-        | "THENC" -> "---->"
-        | "THENL" -> "+--->"
+        | "THEN" -> "---->"
+        | "THENC" -> "+--->"
+        | "THENL" -> "++-->"
         | "THEN_TCL" -> "+++->"
         | "ORELSE" -> "|--->"
         | "ORELSEC" -> "||-->"

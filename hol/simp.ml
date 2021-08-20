@@ -562,10 +562,10 @@ let vABBREV_TAC tm =
     let avoids = itlist (union -| frees -| concl -| snd) asl (frees w) in
     if mem v avoids then failwith "ABBREV_TAC: variable already used" else
     vCHOOSE_THEN
-     (fun th -> vRULE_ASSUM_TAC(vPURE_ONCE_REWRITE_RULE[th]) +-->
-                vPURE_ONCE_REWRITE_TAC[th] +-->
+     (fun th -> vRULE_ASSUM_TAC(vPURE_ONCE_REWRITE_RULE[th]) ---->
+                vPURE_ONCE_REWRITE_TAC[th] ---->
                 vASSUME_TAC th)
      th3 gl;;
 
 let vEXPAND_TAC s = vFIRST_ASSUM(vSUBST1_TAC -| vSYM -|
-  check((=) s -| fst -| dest_var -| rhs -| concl)) +--> vBETA_TAC;;
+  check((=) s -| fst -| dest_var -| rhs -| concl)) ----> vBETA_TAC;;
