@@ -190,7 +190,7 @@ let vEXISTS_REFL = prove
 let vEXISTS_UNIQUE_REFL = prove
  ((parse_term "!a:A. ?!x. x = a"),
   vGEN_TAC ----> vREWRITE_TAC[vEXISTS_UNIQUE_THM] ---->
-  vREPEAT(vEQ_TAC |---> vSTRIP_TAC) +---->
+  vREPEAT(vEQ_TAC |---> vSTRIP_TAC) ++-->
    [vEXISTS_TAC (parse_term "a:A"); vASM_REWRITE_TAC[]] ---->
   vREFL_TAC);;
 
@@ -200,7 +200,7 @@ let vEXISTS_UNIQUE_REFL = prove
 
 let vUNWIND_THM1 = prove
  ((parse_term "!P (a:A). (?x. a = x /\\ P x) <=> P a"),
-  vREPEAT vGEN_TAC ----> vEQ_TAC +---->
+  vREPEAT vGEN_TAC ----> vEQ_TAC ++-->
    [vDISCH_THEN(vCHOOSE_THEN (vCONJUNCTS_THEN2 vSUBST1_TAC vACCEPT_TAC));
     vDISCH_TAC ----> vEXISTS_TAC (parse_term "a:A") ---->
     vCONJ_TAC ----> vTRY(vFIRST_ASSUM vMATCH_ACCEPT_TAC) ---->
@@ -213,7 +213,7 @@ let vUNWIND_THM2 = prove
 
 let vFORALL_UNWIND_THM2 = prove
  ((parse_term "!P (a:A). (!x. x = a ==> P x) <=> P a"),
-  vREPEAT vGEN_TAC ----> vEQ_TAC +---->
+  vREPEAT vGEN_TAC ----> vEQ_TAC ++-->
    [vDISCH_THEN(vMP_TAC -| vSPEC (parse_term "a:A")) ----> vREWRITE_TAC[];
     vDISCH_TAC ----> vGEN_TAC ----> vDISCH_THEN vSUBST1_TAC ---->
     vASM_REWRITE_TAC[]]);;
@@ -383,9 +383,9 @@ let vWLOG_RELATION = prove
 
 let vEXISTS_UNIQUE_ALT = prove
  ((parse_term "!P:A->bool. (?!x. P x) <=> (?x. !y. P y <=> (x = y))"),
-  vGEN_TAC ----> vREWRITE_TAC[vEXISTS_UNIQUE_THM] ----> vEQ_TAC +---->
+  vGEN_TAC ----> vREWRITE_TAC[vEXISTS_UNIQUE_THM] ----> vEQ_TAC ++-->
    [vDISCH_THEN(vCONJUNCTS_THEN2 (vX_CHOOSE_TAC (parse_term "x:A")) vASSUME_TAC) ---->
-    vEXISTS_TAC (parse_term "x:A") ----> vGEN_TAC ----> vEQ_TAC +---->
+    vEXISTS_TAC (parse_term "x:A") ----> vGEN_TAC ----> vEQ_TAC ++-->
      [vDISCH_TAC ----> vFIRST_ASSUM vMATCH_MP_TAC ----> vASM_REWRITE_TAC[];
       vDISCH_THEN(vSUBST1_TAC -| vSYM) ----> vFIRST_ASSUM vMATCH_ACCEPT_TAC];
     vDISCH_THEN(vX_CHOOSE_TAC (parse_term "x:A")) ---->
@@ -430,7 +430,7 @@ let vDESTRUCT_TAC,vFIX_TAC,vINTRO_TAC,vHYP_TAC =
   and vOBTAIN_THEN v ttac th =
     let ty = (snd -| dest_var -| fst -| dest_exists -| concl) th in
     vX_CHOOSE_THEN (mk_var(v,ty)) ttac th
-  and vCONJ_LIST_TAC = end_itlist (fun t1 t2 -> vCONJ_TAC +----> [t1; t2])
+  and vCONJ_LIST_TAC = end_itlist (fun t1 t2 -> vCONJ_TAC ++--> [t1; t2])
   and vNUM_DISJ_TAC n =
     if n <= 0 then failwith "NUM_DISJ_TAC" else
     vREPLICATE_TAC (n-1) vDISJ2_TAC ----> vREPEAT vDISJ1_TAC

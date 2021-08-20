@@ -6,6 +6,7 @@ let end_comment = [%sedlex.regexp? "*)"]
 let dquote = [%sedlex.regexp? '"']
 let squote = [%sedlex.regexp? '\'']
 let backtick = [%sedlex.regexp? '`']
+let till_backtick = [%sedlex.regexp? Star (Compl backtick), backtick] 
 let letter = [%sedlex.regexp? 'A'..'Z' | 'a'..'z']
 let digit = [%sedlex.regexp? '0'..'9']
 let hex = [%sedlex.regexp? digit | 'A'..'F' | 'a'..'f']
@@ -38,7 +39,7 @@ let rec regular oc buf =
         | start_comment -> copy oc buf; comment oc buf
         | dquote -> copy oc buf; sliteral oc buf
         | squote -> copy oc buf; cliteral oc buf
-        | backtick -> output_string oc "(parse_term \""; quotation oc buf
+        | backtick -> output_string oc "("; quotation oc buf
         | num -> copy oc buf; regular oc buf
         | " o " -> output_string oc " -| "; regular oc buf
         | ident -> lexeme buf |> convert_ident |> output_string oc; regular oc buf
@@ -47,8 +48,8 @@ let rec regular oc buf =
         | _ -> assert false
 and quotation oc buf =
         match%sedlex buf with
-        | Compl backtick -> lexeme buf |> String.escaped |> output_string oc; quotation oc buf
-        | backtick -> output_string oc "\")"; regular oc buf
+        | till_backtick -> let s = lexeme buf in let n = String.length s in 
+        String.sub s 0 (n-1) |> Quote.quotexpander |> output_string oc; output_string oc ")"; regular oc buf
         | _ -> assert false
 and sliteral oc buf =
         match%sedlex buf with

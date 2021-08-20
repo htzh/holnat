@@ -137,7 +137,7 @@ let (vVALID:tactic->tactic) =
 (* Various simple combinators for tactics, identity tactic etc.              *)
 (* ------------------------------------------------------------------------- *)
 
-let (---->),(+---->) =
+let (---->),(++-->) =
   let propagate_empty _i = function [] -> [] | _ -> assert false
   and propagate_thm th i = function [] ->  vINSTANTIATE_ALL i th | _ -> assert false in
   let compose_justs n just1 just2 insts2 i ths =
@@ -383,15 +383,15 @@ let (vMK_COMB_TAC: tactic) =
     with Failure _ -> failwith "MK_COMB_TAC";;
 
 let (vAP_TERM_TAC: tactic) =
-  let tac = vMK_COMB_TAC +----> [vREFL_TAC; vALL_TAC] in
+  let tac = vMK_COMB_TAC ++--> [vREFL_TAC; vALL_TAC] in
   fun gl -> try tac gl with Failure _ -> failwith "AP_TERM_TAC";;
 
 let (vAP_THM_TAC: tactic) =
-  let tac = vMK_COMB_TAC +----> [vALL_TAC; vREFL_TAC] in
+  let tac = vMK_COMB_TAC ++--> [vALL_TAC; vREFL_TAC] in
   fun gl -> try tac gl with Failure _ -> failwith "AP_THM_TAC";;
 
 let (vBINOP_TAC: tactic) =
-  let tac = vMK_COMB_TAC +----> [vAP_TERM_TAC; vALL_TAC] in
+  let tac = vMK_COMB_TAC ++--> [vAP_TERM_TAC; vALL_TAC] in
   fun gl -> try tac gl with Failure _ -> failwith "AP_THM_TAC";;
 
 let (vSUBST1_TAC: thm_tactic) =
@@ -616,7 +616,7 @@ let (vCONJUNCTS_THEN: thm_tactical) =
 
 let (vDISJ_CASES_THEN2:thm_tactic->thm_tactic->thm_tactic) =
   fun ttac1 ttac2 cth ->
-    vDISJ_CASES_TAC cth +----> [vPOP_ASSUM ttac1; vPOP_ASSUM ttac2];;
+    vDISJ_CASES_TAC cth ++--> [vPOP_ASSUM ttac1; vPOP_ASSUM ttac2];;
 
 let (vDISJ_CASES_THEN: thm_tactical) =
   vW vDISJ_CASES_THEN2;;
@@ -695,7 +695,7 @@ let (vSUBGOAL_THEN: term -> thm_tactic -> tactic) =
 let vSUBGOAL_TAC s tm prfs =
   match prfs with
    p::ps -> (warn (ps <> []) "SUBGOAL_TAC: additional subproofs ignored";
-             vSUBGOAL_THEN tm (vLABEL_TAC s) +----> [p; vALL_TAC])
+             vSUBGOAL_THEN tm (vLABEL_TAC s) ++--> [p; vALL_TAC])
   | [] -> failwith "SUBGOAL_TAC: no subproof given";;
 
 let (vFREEZE_THEN :thm_tactical) =

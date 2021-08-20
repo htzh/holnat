@@ -1,6 +1,6 @@
 (executable
  (name pp)
- (modules pp)
+ (modules quote pp)
  (libraries str sedlex sedlex.ppx)
  (preprocess
   (pps sedlex.ppx))
