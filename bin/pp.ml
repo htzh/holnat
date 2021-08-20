@@ -60,12 +60,9 @@ and sliteral oc buf =
         | _ -> assert false
 and cliteral oc buf =
         match%sedlex buf with
-        | escape -> copy oc buf; closing_squote oc buf
-        | Compl '\'' -> copy oc buf; closing_squote oc buf
-        | _ -> assert false
-and closing_squote oc buf =
-        match%sedlex buf with
-        | squote -> copy oc buf; regular oc buf
+        | escape, squote
+        | Compl squote, squote 
+        | ident (* type variable *)-> copy oc buf; regular oc buf 
         | _ -> assert false
 and comment oc buf =
         match%sedlex buf with
