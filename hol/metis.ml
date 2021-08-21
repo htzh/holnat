@@ -31,6 +31,7 @@ open Theorems
 open Class
 open Canon
 open Meson
+open Firstorder
 
 let metisverb = ref false;;
 
@@ -10086,7 +10087,7 @@ let rec hol_of_thm axioms fth =
   let hth = match Proof.thmToInference fth with
     Proof.Axiom clause ->
       let clausel = Literal.Set.toList clause in
-      let maxs = List.concat_map (fun ax ->
+      let maxs = Utils.List.concat_map (fun ax ->
         (*if !metisverb then Format.printf "ax: %s\n%!" (string_of_thm ax);*)
         let disjs = concl ax |> striplist dest_disj in
         (*if !metisverb then Format.printf "before matching\n%!";*)
@@ -10134,7 +10135,7 @@ let rec hol_of_thm axioms fth =
       if !metisverb then List.iter (Format.printf "tm2: %s\n%!" -| string_of_term) tm2;
       let hatom = Metis_mapping.hol_of_atom env atom in
       if !metisverb then Format.printf "hatom: %s\n%!" (string_of_term hatom);
-      let cands = List.concat_map (fun x ->
+      let cands = Utils.List.concat_map (fun x ->
         match term_eq_mod_type hatom x [] with
           None -> []
         | Some m -> List.filter_map (fun y -> term_eq_mod_type hatom y m) tm2) tm1 in
