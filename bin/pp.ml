@@ -42,6 +42,7 @@ let rec regular oc buf =
         | backtick -> output_string oc "("; quotation oc buf
         | num -> copy oc buf; regular oc buf
         | " o " -> output_string oc " -| "; regular oc buf
+        | " o\n" -> output_string oc " -|\n"; regular oc buf
         | ident -> lexeme buf |> convert_ident |> output_string oc; regular oc buf
         | any -> copy oc buf; regular oc buf
         | eof -> ()
