@@ -862,7 +862,7 @@ let (vTAC_PROOF : goal * tactic -> thm) =
     let gstate = mk_goalstate g in
     let _,sgs,just = by tac gstate in
     if sgs = [] then just null_inst []
-    else failwith "TAC_PROOF: Unsolved goals";;
+    else (pp_print_goal Format.err_formatter g; List.iter (pp_print_goal Format.err_formatter) sgs; failwith "TAC_PROOF: Unsolved goals");;
 
 let prove(t,tac) =
   let th = vTAC_PROOF(([],t),tac) in
