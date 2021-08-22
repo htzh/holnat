@@ -8,7 +8,7 @@ open Lib
 open Fusion
 open Basics
 open Printer
-open Bool
+open Boolean
 open Meson
 
 (* ------------------------------------------------------------------------- *)

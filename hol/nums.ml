@@ -12,7 +12,7 @@ open Fusion
 open Basics
 open Parser
 open Equal
-open Bool
+open Boolean
 open Tactics
 open Simp
 open Theorems

@@ -14,7 +14,7 @@ open Basics
 open Printer
 open Parser
 open Equal
-open Bool
+open Boolean
 open Tactics
 open Itab
 open Simp

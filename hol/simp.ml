@@ -13,7 +13,7 @@ open Basics
 open Nets
 open Parser
 open Equal
-open Bool
+open Boolean
 open Drule
 open Tactics
 open Itab

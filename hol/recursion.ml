@@ -11,7 +11,7 @@ open Lib
 open Fusion
 open Basics
 open Equal
-open Bool
+open Boolean
 open Drule
 open Simp
 open Theorems

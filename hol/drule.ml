@@ -15,7 +15,7 @@ open Nets
 open Printer
 open Parser
 open Equal
-open Bool
+open Boolean
 
 (* ------------------------------------------------------------------------- *)
 (* Type of instantiations, with terms, types and higher-order data.          *)

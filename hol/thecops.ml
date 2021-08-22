@@ -11,7 +11,7 @@ open Basics
 open Printer
 open Parser
 open Equal
-open Bool
+open Boolean
 open Drule
 open Tactics
 open Simp
