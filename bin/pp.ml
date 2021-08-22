@@ -19,7 +19,7 @@ let lexeme = Coding.lexeme
 
 let copy oc buf = output_string oc (lexeme buf)
 
-let hol_uppercase_id = Str.regexp "[A-Z][A-Z0-9_']*$"
+let hol_uppercase_id = Str.regexp "[A-Z][A-Z0-9']*\\($\\|_[a-zA-Z0-9'_]*$\\)"
 
 let convert_ident s = 
         match s with 
