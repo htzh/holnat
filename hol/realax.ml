@@ -28,7 +28,8 @@ open Nums
 open Recursion
 open Arith
 open Calc_num
-include Grobner (* Ensures normalizer runs first; otherwise NUM_NORMALIZE_CONV fails to define due a lemma failure -- probably due to certain things got redefined in this file *)
+
+let [@warning "-33"] () = let open Grobner in ()(* Ensures normalizer and grobner run before the operators are overloaded otherwise NUM_NORMALIZE_CONV and others may fail *)
 ;;
 
 (* ------------------------------------------------------------------------- *)
