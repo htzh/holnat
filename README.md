@@ -1,8 +1,7 @@
 ## HOL Light Native
 
 We have adapted [John Harrison](http://www.cl.cam.ac.uk/~jrh13/)'s [HOL Light](https://github.com/jrh13/hol-light) to
-be compiled into native executables. Currently files up to ```define.ml``` (see [```hol.ml```](https://github.com/jrh13/hol-light/blob/6a2d07bf531330c6e8afdf65431ea992a744f085/hol.ml#L159) for the order
-of files) have been successfully converted.
+be compiled into native executables.  See [```hol.ml```](https://github.com/jrh13/hol-light/blob/6a2d07bf531330c6e8afdf65431ea992a744f085/hol.ml#L159) for the files that have been successfully converted.
 
 We don't change OCaml lexing conventions so we do not need preprocessors to compile. However this means we can not have capitalized value names, nor can we have letters in operators.
 We prefix all-cap value names with the letter ```v```. The composition operator is now ```-|``` instead of ```o```. See ```bin/pp.ml``` for details.
@@ -21,6 +20,8 @@ We use ```dune``` for compiling. After ```dune build```, one can do ```dune utop
 utop # Hol.Theorems.vEQ_REFL;;
 - : Hol.Fusion.thm = |- !x. x = x
 ```
+
+To use the ```help``` command one needs to copy the ```[Help](https://github.com/jrh13/hol-light/tree/master/Help)``` subfolder from [HOL Light](https://github.com/jrh13/hol-light).
 
 It should be possible to (TODO) add quotation to ```utop``` so that we can enter quoted terms directly. However we don't envision using ```utop``` for interaction in the future. Instead
 the natively compiled library can be linked into a server and a browser UI can be used for interaction. This way we can benefit from the performance gain of native compilation.

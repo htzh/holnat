@@ -3,6 +3,7 @@ publish/
 assets/
 *.exe
 *.swp
+HELP
 test
 tst
 temp
