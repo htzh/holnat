@@ -231,9 +231,11 @@ let vRING_AND_IDEAL_CONV =
   (* ----------------------------------------------------------------------- *)
 
   let rec grobner_basis basis pairs =
+    if !verbose then (
     Format.print_string(string_of_int(length basis)^" basis elements and "^
                         string_of_int(length pairs)^" critical pairs");
-    Format.print_newline();
+    Format.print_newline()
+    );
     match pairs with
       [] -> basis
     | (l,(p1,p2))::opairs ->
@@ -493,8 +495,8 @@ let vRING_AND_IDEAL_CONV =
         | (x,y)::t -> if x==a then y else assoceq a t in
       let run_proof =
         if is_iff(snd(strip_forall(concl vRABINOWITSCH_THM))) then
-         (Format.print_string("Generating HOL version of proof");
-          Format.print_newline();
+         (if !verbose then (Format.print_string("Generating HOL version of proof");
+          Format.print_newline());
           let execache = ref [] in
           let memoize prf x = (execache := (prf,x)::(!execache)); x in
           let rec run_proof vars prf =
@@ -563,8 +565,9 @@ let vRING_AND_IDEAL_CONV =
             vCONV_RULE(vRAND_CONV(vBINOP_CONV vRING_NORMALIZE_CONV)) nth in
           let th2 = funpow deg (vIDOM_RULE -| vCONJ th1) vNOT_EQ_01 in
           vars,l,cert,th2 in
+      if !verbose then (
       Format.print_string("Translating certificate to HOL inferences");
-      Format.print_newline();
+      Format.print_newline());
       let cert_pos = map
         (fun (i,p) -> i,filter (fun (c,_m) -> c >/ num_0) p) cert
       and cert_neg = map

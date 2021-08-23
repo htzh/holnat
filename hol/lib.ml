@@ -433,7 +433,7 @@ let warn cond s =
 (* Flags to switch on verbose mode.                                          *)
 (* ------------------------------------------------------------------------- *)
 
-let verbose = ref true;;
+let verbose = ref false;;
 let report_timing = ref true;;
 
 (* ------------------------------------------------------------------------- *)
