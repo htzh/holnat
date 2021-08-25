@@ -4,6 +4,7 @@ assets/
 *.exe
 *.swp
 HELP
+db
 test
 tst
 temp

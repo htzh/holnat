@@ -7,3 +7,9 @@
  (flags :standard -w +39)
  (promote (until-clean))
 )
+(executable
+ (name bindings)
+ (modules bindings)
+ (libraries compiler-libs.common)
+ (promote (until-clean))
+)
