@@ -44,7 +44,7 @@ We also do not use quotation. Quoted literals have all been converted to strings
 
 Due to the decoupling from ```Camlp5``` and special lexing rules, we now can run with any reasonable version of OCaml.
 
-Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` module.
+Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` module. Note this naming convention may cause problem in utop if ```Hol.Fusion``` is opened, as it has an internal module with the same ```Hol``` name. We may change the names in the future.
 
 We also comply with stricter OCaml linting rules. For example, unused variables and non-exhaustive matching are all errors that we fixed.
 
@@ -99,6 +99,6 @@ utop # Hol.Basics.variables (snd (Hol.Fusion.dest_thm t2));;
 utop # let typ = parse_type "A";;
 val typ : Hol.Fusion.hol_type = Hol.Fusion.Tyvar "A"
 
-utop # Hol.Fusion.vINST_TYPE [typ, Hol.Fusion.mk_vartype "?78408"] (List.assoc "ALL" l1) = Hol.Fusion.vINST_TYPE [typ, Hol.Fusion.mk_vartype "?20807"] (List.assoc "ALL" l2);;
+utop # Hol.Fusion.(vINST_TYPE [typ, mk_vartype "?78408"] t1 = vINST_TYPE [typ, mk_vartype "?20807"] t2);;
 - : bool = true
 ```
