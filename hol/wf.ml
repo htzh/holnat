@@ -40,7 +40,7 @@ let vWF = new_definition
 (* Strengthen it to equality.                                                *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_EQ = prove
+let vWF_EQ = try Cache.lookup_thm "WF_EQ" with _ ->  prove
  ((parse_term "WF(<<) <=> !P:A->bool. (?x. P(x)) <=> (?x. P(x) /\\ !y. y << x ==> ~P(y))"),
   vREWRITE_TAC[vWF] ----> vMESON_TAC[]);;
 
@@ -48,7 +48,7 @@ let vWF_EQ = prove
 (* Equivalence of wellfounded induction.                                     *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_IND = prove
+let vWF_IND = try Cache.lookup_thm "WF_IND" with _ ->  prove
  ((parse_term "WF(<<) <=> !P:A->bool. (!x. (!y. y << x ==> P(y)) ==> P(x)) ==> !x. P(x)"),
   vREWRITE_TAC[vWF] ----> vEQ_TAC ----> vDISCH_TAC ----> vGEN_TAC ---->
   vPOP_ASSUM(vMP_TAC -| vSPEC (parse_term "\\x:A. ~P(x)")) ----> vREWRITE_TAC[] ----> vMESON_TAC[]);;
@@ -57,7 +57,7 @@ let vWF_IND = prove
 (* Equivalence of the "infinite descending chains" version.                  *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_DCHAIN = prove
+let vWF_DCHAIN = try Cache.lookup_thm "WF_DCHAIN" with _ ->  prove
  ((parse_term "WF(<<) <=> ~(?s:num->A. !n. s(SUC n) << s(n))"),
   vREWRITE_TAC[vWF; vTAUT (parse_term "(a <=> ~b) <=> (~a <=> b)"); vNOT_FORALL_THM] ---->
   vEQ_TAC ----> vDISCH_THEN vCHOOSE_TAC ++-->
@@ -75,7 +75,7 @@ let vWF_DCHAIN = prove
     vEXISTS_TAC (parse_term "\\y:A. ?n:num. y = s(n)") ----> vREWRITE_TAC[] ---->
     vASM_MESON_TAC[]]);;
 
-let vWF_DHAIN_TRANSITIVE = prove
+let vWF_DHAIN_TRANSITIVE = try Cache.lookup_thm "WF_DHAIN_TRANSITIVE" with _ ->  prove
  ((parse_term "!(<<):A->A->bool.\n        (!x y z. x << y /\\ y << z ==> x << z)\n        ==> (WF(<<) <=> ~(?s:num->A. !i j. i < j ==> s j << s i))"),
   vGEN_TAC ----> vDISCH_TAC ----> vREWRITE_TAC[vWF_DCHAIN] ---->
   vAP_TERM_TAC ----> vEQ_TAC ----> vMATCH_MP_TAC vMONO_EXISTS ---->
@@ -86,13 +86,13 @@ let vWF_DHAIN_TRANSITIVE = prove
 (* Equivalent to just *uniqueness* part of recursion.                        *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_UREC = prove
+let vWF_UREC = try Cache.lookup_thm "WF_UREC" with _ ->  prove
  ((parse_term "WF(<<) ==>\n       !H. (!f g x. (!z. z << x ==> (f z = g z)) ==> (H f x = H g x))\n            ==> !(f:A->B) g. (!x. f x = H f x) /\\ (!x. g x = H g x)\n                              ==> (f = g)"),
   vREWRITE_TAC[vWF_IND] ----> vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vFUN_EQ_THM] ---->
   vFIRST_ASSUM vMATCH_MP_TAC ----> vGEN_TAC ---->
   vDISCH_THEN(vANTE_RES_THEN vMP_TAC) ----> vASM_REWRITE_TAC[]);;
 
-let vWF_UREC_WF = prove
+let vWF_UREC_WF = try Cache.lookup_thm "WF_UREC_WF" with _ ->  prove
  ((parse_term "(!H. (!f g x. (!z. z << x ==> (f z = g z)) ==> (H f x = H g x))\n        ==> !(f:A->bool) g. (!x. f x = H f x) /\\ (!x. g x = H g x)\n                          ==> (f = g))\n   ==> WF(<<)"),
   vREWRITE_TAC[vWF_IND] ----> vDISCH_TAC ----> vGEN_TAC ----> vDISCH_TAC ---->
   vFIRST_X_ASSUM(vMP_TAC -| vSPEC (parse_term "\\f x. P(x:A) \\/ !z:A. z << x ==> f(z)")) ---->
@@ -105,7 +105,7 @@ let vWF_UREC_WF = prove
 (* Stronger form of recursion with "inductive invariant" (Krstic/Matthews).  *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_REC_INVARIANT = prove
+let vWF_REC_INVARIANT = try Cache.lookup_thm "WF_REC_INVARIANT" with _ ->  prove
  ((parse_term "WF(<<)\n   ==> !H S. (!f g x. (!z. z << x ==> (f z = g z) /\\ S z (f z))\n                      ==> (H f x = H g x) /\\ S x (H f x))\n             ==> ?f:A->B. !x. (f x = H f x)"),
   let lemma = prove_inductive_relations_exist
     (parse_term "!f:A->B x. (!z. z << x ==> R z (f z)) ==> R x (H f x)") in
@@ -120,13 +120,13 @@ let vWF_REC_INVARIANT = prove
 (* Equivalent to just *existence* part of recursion.                         *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_REC = prove
+let vWF_REC = try Cache.lookup_thm "WF_REC" with _ ->  prove
  ((parse_term "WF(<<)\n   ==> !H. (!f g x. (!z. z << x ==> (f z = g z)) ==> (H f x = H g x))\n           ==> ?f:A->B. !x. f x = H f x"),
   vREPEAT vSTRIP_TAC ---->
   vFIRST_X_ASSUM(vMATCH_MP_TAC -| vMATCH_MP vWF_REC_INVARIANT) ---->
   vEXISTS_TAC (parse_term "\\x:A y:B. T") ----> vASM_REWRITE_TAC[]);;
 
-let vWF_REC_WF = prove
+let vWF_REC_WF = try Cache.lookup_thm "WF_REC_WF" with _ ->  prove
  ((parse_term "(!H. (!f g x. (!z. z << x ==> (f z = g z)) ==> (H f x = H g x))\n                 ==> ?f:A->num. !x. f x = H f x)\n   ==> WF(<<)"),
   vDISCH_TAC ----> vREWRITE_TAC[vWF_DCHAIN] ---->
   vDISCH_THEN(vX_CHOOSE_TAC (parse_term "x:num->A")) ---->
@@ -153,7 +153,7 @@ let vWF_REC_WF = prove
 (* Combine the two versions of the recursion theorem.                        *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_EREC = prove
+let vWF_EREC = try Cache.lookup_thm "WF_EREC" with _ ->  prove
  ((parse_term "WF(<<) ==>\n       !H. (!f g x. (!z. z << x ==> (f z = g z)) ==> (H f x = H g x))\n            ==> ?!f:A->B. !x. f x = H f x"),
   vMESON_TAC[vWF_REC; vWF_UREC]);;
 
@@ -161,7 +161,7 @@ let vWF_EREC = prove
 (* Defining a recursive function via an existence condition.                 *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_REC_EXISTS = prove
+let vWF_REC_EXISTS = try Cache.lookup_thm "WF_REC_EXISTS" with _ ->  prove
  ((parse_term "WF((<<):A->A->bool)\n   ==> !P. (!f g x y. (!z. z << x ==> f z = g z) ==> (P f x y <=> P g x y)) /\\\n           (!f x. (!z. z << x ==> P f z (f z)) ==> ?y. P f x y)\n           ==> ?f:A->B. !x. P f x (f x)"),
   vREPEAT vSTRIP_TAC ---->
   vSUBGOAL_THEN (parse_term "?f:A->B. !x. f x = @y. P f x y") vMP_TAC ++-->
@@ -181,26 +181,26 @@ let vWF_REC_EXISTS = prove
 
 parse_as_infix("<<<",(12,"right"));;
 
-let vWF_SUBSET = prove
+let vWF_SUBSET = try Cache.lookup_thm "WF_SUBSET" with _ ->  prove
  ((parse_term "!(<<) (<<<). (!(x:A) y. x << y ==> x <<< y) /\\ WF(<<<) ==> WF(<<)"),
   vREPEAT vGEN_TAC ----> 
   vDISCH_THEN(vCONJUNCTS_THEN2 vASSUME_TAC vMP_TAC) ----> vREWRITE_TAC[vWF] ---->
   vDISCH_TAC ----> vGEN_TAC ----> vDISCH_THEN(vANTE_RES_THEN vMP_TAC) ---->
   vUNDISCH_TAC (parse_term "!(x:A) (y:A). x << y ==> x <<< y") ----> vMESON_TAC[]);;
 
-let vWF_RESTRICT = prove
+let vWF_RESTRICT = try Cache.lookup_thm "WF_RESTRICT" with _ ->  prove
  ((parse_term "!(<<) P:A->bool. WF(<<) ==> WF(\\x y. P x /\\ P y /\\ x << y)"),
   vREPEAT vGEN_TAC ----> vMATCH_MP_TAC(vREWRITE_RULE[vIMP_CONJ] vWF_SUBSET) ---->
   vSIMP_TAC[]);;
 
-let vWF_MEASURE_GEN = prove
+let vWF_MEASURE_GEN = try Cache.lookup_thm "WF_MEASURE_GEN" with _ ->  prove
  ((parse_term "!(<<) (m:A->B). WF(<<) ==> WF(\\x x'. m x << m x')"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vWF_IND] ----> vREPEAT vSTRIP_TAC ---->
   vFIRST_ASSUM(vMP_TAC -| vSPEC (parse_term "\\y:B. !x:A. (m(x) = y) ==> P x")) ---->
   vUNDISCH_TAC (parse_term "!x. (!y. (m:A->B) y << m x ==> P y) ==> P x") ---->
   vREWRITE_TAC[] ----> vMESON_TAC[]);;
 
-let vWF_LEX_DEPENDENT = prove
+let vWF_LEX_DEPENDENT = try Cache.lookup_thm "WF_LEX_DEPENDENT" with _ ->  prove
  ((parse_term "!R:A->A->bool S:A->B->B->bool. WF(R) /\\ (!a. WF(S a))\n         ==> WF(\\(r1,s1) (r2,s2). R r1 r2 \\/ (r1 = r2) /\\ S r1 s1 s2)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vWF] ----> vSTRIP_TAC ---->
   vX_GEN_TAC (parse_term "P:A#B->bool") ----> vREWRITE_TAC[vLEFT_IMP_EXISTS_THM] ---->
@@ -218,11 +218,11 @@ let vWF_LEX_DEPENDENT = prove
   vDISCH_TAC ----> vEXISTS_TAC (parse_term "(a:A,b:B)") ----> vASM_REWRITE_TAC[] ---->
   vREWRITE_TAC[vFORALL_PAIR_THM] ----> vASM_MESON_TAC[]);;
 
-let vWF_LEX = prove
+let vWF_LEX = try Cache.lookup_thm "WF_LEX" with _ ->  prove
  ((parse_term "!R:A->A->bool S:B->B->bool. WF(R) /\\ WF(S)\n         ==> WF(\\(r1,s1) (r2,s2). R r1 r2 \\/ (r1 = r2) /\\ S s1 s2)"),
   vSIMP_TAC[vWF_LEX_DEPENDENT; vETA_AX]);;
 
-let vWF_POINTWISE = prove
+let vWF_POINTWISE = try Cache.lookup_thm "WF_POINTWISE" with _ ->  prove
  ((parse_term "WF((<<) :A->A->bool) /\\ WF((<<<) :B->B->bool)\n   ==> WF(\\(x1,y1) (x2,y2). x1 << x2 /\\ y1 <<< y2)"),
   vSTRIP_TAC ----> vMATCH_MP_TAC vWF_SUBSET ----> vEXISTS_TAC
    (parse_term "\\(x1,y1) (x2,y2). x1 << x2 \\/ (x1:A = x2) /\\ (y1:B) <<< (y2:B)") ---->
@@ -234,11 +234,11 @@ let vWF_POINTWISE = prove
 (* Wellfoundedness properties of natural numbers.                            *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_num = prove
+let vWF_num = try Cache.lookup_thm "WF_num" with _ ->  prove
  ((parse_term "WF(<)"),
   vREWRITE_TAC[vWF_IND; num_WF]);;
 
-let vWF_REC_num = prove
+let vWF_REC_num = try Cache.lookup_thm "WF_REC_num" with _ ->  prove
  ((parse_term "!H. (!f g n. (!m. m < n ==> (f m = g m)) ==> (H f n = H g n))\n        ==> ?f:num->A. !n. f n = H f n"),
   vMATCH_ACCEPT_TAC(vMATCH_MP vWF_REC vWF_num));;
 
@@ -249,13 +249,13 @@ let vWF_REC_num = prove
 let vMEASURE = new_definition
   (parse_term "MEASURE m = \\x y. m(x) < m(y)");;
 
-let vWF_MEASURE = prove
+let vWF_MEASURE = try Cache.lookup_thm "WF_MEASURE" with _ ->  prove
  ((parse_term "!m:A->num. WF(MEASURE m)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vMEASURE] ---->
   vMATCH_MP_TAC vWF_MEASURE_GEN ---->
   vMATCH_ACCEPT_TAC vWF_num);;
 
-let vMEASURE_LE = prove
+let vMEASURE_LE = try Cache.lookup_thm "MEASURE_LE" with _ ->  prove
  ((parse_term "(!y. MEASURE m y a ==> MEASURE m y b) <=> m(a) <= m(b)"),
     vREWRITE_TAC[vMEASURE] ----> vMESON_TAC[vNOT_LE; vLTE_TRANS; vLT_REFL]);;
 
@@ -263,14 +263,14 @@ let vMEASURE_LE = prove
 (* Trivially, a WF relation is irreflexive and antisymmetric.                *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_ANTISYM = prove
+let vWF_ANTISYM = try Cache.lookup_thm "WF_ANTISYM" with _ ->  prove
  ((parse_term "!(<<) x y:A. WF(<<) ==> ~(x << y /\\ y << x)"),
   vREPEAT vSTRIP_TAC ---->
   vFIRST_X_ASSUM(vMP_TAC -| vGEN_REWRITE_RULE vI [vWF]) ---->
   vDISCH_THEN(vMP_TAC -| vSPEC (parse_term "\\z:A. z = x \\/ z = y")) ---->
   vASM_MESON_TAC[]);;
 
-let vWF_REFL = prove
+let vWF_REFL = try Cache.lookup_thm "WF_REFL" with _ ->  prove
  ((parse_term "!x:A. WF(<<) ==> ~(x << x)"),
   vMESON_TAC[vWF_ANTISYM]);;
 
@@ -278,7 +278,7 @@ let vWF_REFL = prove
 (* Even more trivially, the everywhere-false relation is wellfounded.        *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_FALSE = prove
+let vWF_FALSE = try Cache.lookup_thm "WF_FALSE" with _ ->  prove
  ((parse_term "WF(\\x y:A. F)"),
   vREWRITE_TAC[vWF]);;
 
@@ -287,7 +287,7 @@ let vWF_FALSE = prove
 (* that is a "safety property" in the Lamport/Alpern/Schneider sense.        *)
 (* ------------------------------------------------------------------------- *)
 
-let vMINIMAL_BAD_SEQUENCE = prove
+let vMINIMAL_BAD_SEQUENCE = try Cache.lookup_thm "MINIMAL_BAD_SEQUENCE" with _ ->  prove
  ((parse_term "!(<<) (bad:(num->A)->bool).\n        WF(<<) /\\\n        (!x. ~bad x ==> ?n. !y. (!k. k < n ==> y k = x k) ==> ~bad y) /\\\n        (?x. bad x)\n         ==> ?y. bad y /\\\n                 !z n. bad z /\\ (!k. k < n ==> z k = y k) ==> ~(z n << y n)"),
   vREPEAT vGEN_TAC ----> vDISCH_TAC ----> vSUBGOAL_THEN
    (parse_term "?x:num->A. !n. (?y. bad y /\\ (!k. k < n ==> y k = x k) /\\ y n = x n) /\\\n                   !z. bad z /\\ (!k. k < n ==> z k = x k) ==> ~(z n << x n)")
@@ -306,7 +306,7 @@ let vMINIMAL_BAD_SEQUENCE = prove
 (* Tail recursion.                                                           *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_REC_TAIL = prove
+let vWF_REC_TAIL = try Cache.lookup_thm "WF_REC_TAIL" with _ ->  prove
  ((parse_term "!P g h. ?f:A->B. !x. f x = if P(x) then f(g x) else h x"),
   let lemma1 = prove
    ((parse_term "~(P 0) ==> ((?n. P(SUC n)) <=> (?n. P(n)))"),
@@ -338,7 +338,7 @@ let vWF_REC_TAIL = prove
 (* A more general mix of tail and wellfounded recursion.                     *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_REC_TAIL_GENERAL = prove
+let vWF_REC_TAIL_GENERAL = try Cache.lookup_thm "WF_REC_TAIL_GENERAL" with _ ->  prove
  ((parse_term "!P G H. WF(<<) /\\\n           (!f g x. (!z. z << x ==> (f z = g z))\n                    ==> (P f x <=> P g x) /\\ G f x = G g x /\\ H f x = H g x) /\\\n           (!f g x. (!z. z << x ==> (f z = g z)) ==> (H f x = H g x)) /\\\n           (!f x y. P f x /\\ y << G f x ==> y << x)\n           ==> ?f:A->B. !x. f x = if P f x then f(G f x) else H f x"),
   vREPEAT vSTRIP_TAC ---->
   vCHOOSE_THEN vMP_TAC

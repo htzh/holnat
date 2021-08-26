@@ -80,47 +80,47 @@ let term_of_rat =
 (* Some elementary "bootstrapping" lemmas we need below.                     *)
 (* ------------------------------------------------------------------------- *)
 
-let vREAL_ADD_AC = prove
+let vREAL_ADD_AC = try Cache.lookup_thm "REAL_ADD_AC" with _ ->  prove
  ((parse_term "(m + n = n + m) /\\\n   ((m + n) + p = m + (n + p)) /\\\n   (m + (n + p) = n + (m + p))"),
   vMESON_TAC[vREAL_ADD_ASSOC; vREAL_ADD_SYM]);;
 
-let vREAL_ADD_RINV = prove
+let vREAL_ADD_RINV = try Cache.lookup_thm "REAL_ADD_RINV" with _ ->  prove
  ((parse_term "!x. x + --x = &0"),
   vMESON_TAC[vREAL_ADD_SYM; vREAL_ADD_LINV]);;
 
-let vREAL_EQ_ADD_LCANCEL = prove
+let vREAL_EQ_ADD_LCANCEL = try Cache.lookup_thm "REAL_EQ_ADD_LCANCEL" with _ ->  prove
  ((parse_term "!x y z. (x + y = x + z) <=> (y = z)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ----> vASM_REWRITE_TAC[] ---->
   vPOP_ASSUM(vMP_TAC -| vAP_TERM (parse_term "(+) (--x)")) ---->
   vREWRITE_TAC[vREAL_ADD_ASSOC; vREAL_ADD_LINV; vREAL_ADD_LID]);;
 
-let vREAL_EQ_ADD_RCANCEL = prove
+let vREAL_EQ_ADD_RCANCEL = try Cache.lookup_thm "REAL_EQ_ADD_RCANCEL" with _ ->  prove
  ((parse_term "!x y z. (x + z = y + z) <=> (x = y)"),
   vMESON_TAC[vREAL_ADD_SYM; vREAL_EQ_ADD_LCANCEL]);;
 
-let vREAL_MUL_RZERO = prove
+let vREAL_MUL_RZERO = try Cache.lookup_thm "REAL_MUL_RZERO" with _ ->  prove
  ((parse_term "!x. x * &0 = &0"),
   vMESON_TAC[vREAL_EQ_ADD_RCANCEL; vREAL_ADD_LDISTRIB; vREAL_ADD_LID]);;
 
-let vREAL_MUL_LZERO = prove
+let vREAL_MUL_LZERO = try Cache.lookup_thm "REAL_MUL_LZERO" with _ ->  prove
  ((parse_term "!x. &0 * x = &0"),
   vMESON_TAC[vREAL_MUL_SYM; vREAL_MUL_RZERO]);;
 
-let vREAL_NEG_NEG = prove
+let vREAL_NEG_NEG = try Cache.lookup_thm "REAL_NEG_NEG" with _ ->  prove
  ((parse_term "!x. --(--x) = x"),
   vMESON_TAC
    [vREAL_EQ_ADD_RCANCEL; vREAL_ADD_LINV; vREAL_ADD_SYM; vREAL_ADD_LINV]);;
 
-let vREAL_MUL_RNEG = prove
+let vREAL_MUL_RNEG = try Cache.lookup_thm "REAL_MUL_RNEG" with _ ->  prove
  ((parse_term "!x y. x * (--y) = -- (x * y)"),
   vMESON_TAC[vREAL_EQ_ADD_RCANCEL; vREAL_ADD_LDISTRIB; vREAL_ADD_LINV;
             vREAL_MUL_RZERO]);;
 
-let vREAL_MUL_LNEG = prove
+let vREAL_MUL_LNEG = try Cache.lookup_thm "REAL_MUL_LNEG" with _ ->  prove
  ((parse_term "!x y. (--x) * y = -- (x * y)"),
   vMESON_TAC[vREAL_MUL_SYM; vREAL_MUL_RNEG]);;
 
-let vREAL_NEG_ADD = prove
+let vREAL_NEG_ADD = try Cache.lookup_thm "REAL_NEG_ADD" with _ ->  prove
  ((parse_term "!x y. --(x + y) = --x + --y"),
   vREPEAT vGEN_TAC ---->
   vMATCH_MP_TAC(vGEN_ALL(fst(vEQ_IMP_RULE(vSPEC_ALL vREAL_EQ_ADD_RCANCEL)))) ---->
@@ -128,15 +128,15 @@ let vREAL_NEG_ADD = prove
   vONCE_REWRITE_TAC[vAC vREAL_ADD_AC (parse_term "(a + b) + (c + d) = (a + c) + (b + d)")] ---->
   vREWRITE_TAC[vREAL_ADD_LINV; vREAL_ADD_LID]);;
 
-let vREAL_ADD_RID = prove
+let vREAL_ADD_RID = try Cache.lookup_thm "REAL_ADD_RID" with _ ->  prove
  ((parse_term "!x. x + &0 = x"),
   vMESON_TAC[vREAL_ADD_SYM; vREAL_ADD_LID]);;
 
-let vREAL_NEG_0 = prove
+let vREAL_NEG_0 = try Cache.lookup_thm "REAL_NEG_0" with _ ->  prove
  ((parse_term "--(&0) = &0"),
   vMESON_TAC[vREAL_ADD_LINV; vREAL_ADD_RID]);;
 
-let vREAL_LE_LNEG = prove
+let vREAL_LE_LNEG = try Cache.lookup_thm "REAL_LE_LNEG" with _ ->  prove
  ((parse_term "!x y. --x <= y <=> &0 <= x + y"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ---->
   vDISCH_THEN(vMP_TAC -| vMATCH_MP vREAL_LE_LADD_IMP) ++-->
@@ -146,14 +146,14 @@ let vREAL_LE_LNEG = prove
     vREWRITE_TAC[vREAL_ADD_LINV; vREAL_ADD_ASSOC; vREAL_ADD_LID;
         vONCE_REWRITE_RULE[vREAL_ADD_SYM] vREAL_ADD_LID]]);;
 
-let vREAL_LE_NEG2 = prove
+let vREAL_LE_NEG2 = try Cache.lookup_thm "REAL_LE_NEG2" with _ ->  prove
  ((parse_term "!x y. --x <= --y <=> y <= x"),
   vREPEAT vGEN_TAC ---->
   vGEN_REWRITE_TAC (vRAND_CONV -| vLAND_CONV) [vGSYM vREAL_NEG_NEG] ---->
   vREWRITE_TAC[vREAL_LE_LNEG] ---->
   vAP_TERM_TAC ----> vMATCH_ACCEPT_TAC vREAL_ADD_SYM);;
 
-let vREAL_LE_RNEG = prove
+let vREAL_LE_RNEG = try Cache.lookup_thm "REAL_LE_RNEG" with _ ->  prove
  ((parse_term "!x y. x <= --y <=> x + y <= &0"),
   vREPEAT vGEN_TAC ---->
   vGEN_REWRITE_TAC (vLAND_CONV -| vLAND_CONV) [vGSYM vREAL_NEG_NEG] ---->
@@ -164,23 +164,23 @@ let vREAL_LE_RNEG = prove
   vREWRITE_TAC[vREAL_NEG_ADD; vREAL_NEG_NEG] ---->
   vMATCH_ACCEPT_TAC vREAL_ADD_SYM);;
 
-let vREAL_OF_NUM_POW = prove
+let vREAL_OF_NUM_POW = try Cache.lookup_thm "REAL_OF_NUM_POW" with _ ->  prove
  ((parse_term "!x n. (&x) pow n = &(x EXP n)"),
   vGEN_TAC ----> vINDUCT_TAC ---->
   vASM_REWRITE_TAC[real_pow; vEXP; vREAL_OF_NUM_MUL]);;
 
-let vREAL_POW_NEG = prove
+let vREAL_POW_NEG = try Cache.lookup_thm "REAL_POW_NEG" with _ ->  prove
  ((parse_term "!x n. (--x) pow n = if EVEN n then x pow n else --(x pow n)"),
   vGEN_TAC ----> vINDUCT_TAC ---->
   vASM_REWRITE_TAC[real_pow; vEVEN] ---->
   vASM_CASES_TAC (parse_term "EVEN n") ---->
   vASM_REWRITE_TAC[vREAL_MUL_RNEG; vREAL_MUL_LNEG; vREAL_NEG_NEG]);;
 
-let vREAL_ABS_NUM = prove
+let vREAL_ABS_NUM = try Cache.lookup_thm "REAL_ABS_NUM" with _ ->  prove
  ((parse_term "!n. abs(&n) = &n"),
   vREWRITE_TAC[real_abs; vREAL_OF_NUM_LE; vLE_0]);;
 
-let vREAL_ABS_NEG = prove
+let vREAL_ABS_NEG = try Cache.lookup_thm "REAL_ABS_NEG" with _ ->  prove
  ((parse_term "!x. abs(--x) = abs x"),
   vREWRITE_TAC[real_abs; vREAL_LE_RNEG; vREAL_NEG_NEG; vREAL_ADD_LID] ---->
   vMESON_TAC[vREAL_LE_TOTAL; vREAL_LE_ANTISYM; vREAL_NEG_0]);;

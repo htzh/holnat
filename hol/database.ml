@@ -22,10 +22,9 @@ open Iterate
 open Cart
 open Define
 
-open Help
+let theorems = Help.theorems
 
 ;;
-
 theorems :=
 [
 "ABSORPTION",vABSORPTION;

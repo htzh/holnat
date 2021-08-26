@@ -65,47 +65,47 @@ let vPRE = new_recursive_definition num_RECURSION
 let vADD = new_recursive_definition num_RECURSION
  (parse_term "(!n. 0 + n = n) /\\\n  (!m n. (SUC m) + n = SUC(m + n))");;
 
-let vADD_0 = prove
+let vADD_0 = try Cache.lookup_thm "ADD_0" with _ ->  prove
  ((parse_term "!m. m + 0 = m"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vADD]);;
 
-let vADD_SUC = prove
+let vADD_SUC = try Cache.lookup_thm "ADD_SUC" with _ ->  prove
  ((parse_term "!m n. m + (SUC n) = SUC(m + n)"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vADD]);;
 
-let vADD_CLAUSES = prove
+let vADD_CLAUSES = try Cache.lookup_thm "ADD_CLAUSES" with _ ->  prove
  ((parse_term "(!n. 0 + n = n) /\\\n   (!m. m + 0 = m) /\\\n   (!m n. (SUC m) + n = SUC(m + n)) /\\\n   (!m n. m + (SUC n) = SUC(m + n))"),
   vREWRITE_TAC[vADD; vADD_0; vADD_SUC]);;
 
-let vADD_SYM = prove
+let vADD_SYM = try Cache.lookup_thm "ADD_SYM" with _ ->  prove
  ((parse_term "!m n. m + n = n + m"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vADD_CLAUSES]);;
 
-let vADD_ASSOC = prove
+let vADD_ASSOC = try Cache.lookup_thm "ADD_ASSOC" with _ ->  prove
  ((parse_term "!m n p. m + (n + p) = (m + n) + p"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vADD_CLAUSES]);;
 
-let vADD_AC = prove
+let vADD_AC = try Cache.lookup_thm "ADD_AC" with _ ->  prove
  ((parse_term "(m + n = n + m) /\\\n   ((m + n) + p = m + (n + p)) /\\\n   (m + (n + p) = n + (m + p))"),
   vMESON_TAC[vADD_ASSOC; vADD_SYM]);;
 
-let vADD_EQ_0 = prove
+let vADD_EQ_0 = try Cache.lookup_thm "ADD_EQ_0" with _ ->  prove
  ((parse_term "!m n. (m + n = 0) <=> (m = 0) /\\ (n = 0)"),
   vREPEAT vINDUCT_TAC ----> vREWRITE_TAC[vADD_CLAUSES; vNOT_SUC]);;
 
-let vEQ_ADD_LCANCEL = prove
+let vEQ_ADD_LCANCEL = try Cache.lookup_thm "EQ_ADD_LCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + n = m + p) <=> (n = p)"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vADD_CLAUSES; vSUC_INJ]);;
 
-let vEQ_ADD_RCANCEL = prove
+let vEQ_ADD_RCANCEL = try Cache.lookup_thm "EQ_ADD_RCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + p = n + p) <=> (m = n)"),
   vONCE_REWRITE_TAC[vADD_SYM] ----> vMATCH_ACCEPT_TAC vEQ_ADD_LCANCEL);;
 
-let vEQ_ADD_LCANCEL_0 = prove
+let vEQ_ADD_LCANCEL_0 = try Cache.lookup_thm "EQ_ADD_LCANCEL_0" with _ ->  prove
  ((parse_term "!m n. (m + n = m) <=> (n = 0)"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vADD_CLAUSES; vSUC_INJ]);;
 
-let vEQ_ADD_RCANCEL_0 = prove
+let vEQ_ADD_RCANCEL_0 = try Cache.lookup_thm "EQ_ADD_RCANCEL_0" with _ ->  prove
  ((parse_term "!m n. (m + n = n) <=> (m = 0)"),
   vONCE_REWRITE_TAC[vADD_SYM] ----> vMATCH_ACCEPT_TAC vEQ_ADD_LCANCEL_0);;
 
@@ -113,19 +113,19 @@ let vEQ_ADD_RCANCEL_0 = prove
 (* Now define "bitwise" binary representation of numerals.                   *)
 (* ------------------------------------------------------------------------- *)
 
-let vBIT0 = prove
+let vBIT0 = try Cache.lookup_thm "BIT0" with _ ->  prove
  ((parse_term "!n. BIT0 n = n + n"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vBIT0_DEF; vADD_CLAUSES]);;
 
-let vBIT1 = prove
+let vBIT1 = try Cache.lookup_thm "BIT1" with _ ->  prove
  ((parse_term "!n. BIT1 n = SUC(n + n)"),
   vREWRITE_TAC[vBIT1_DEF; vBIT0]);;
 
-let vBIT0_THM = prove
+let vBIT0_THM = try Cache.lookup_thm "BIT0_THM" with _ ->  prove
  ((parse_term "!n. NUMERAL (BIT0 n) = NUMERAL n + NUMERAL n"),
   vREWRITE_TAC[vNUMERAL; vBIT0]);;
 
-let vBIT1_THM = prove
+let vBIT1_THM = try Cache.lookup_thm "BIT1_THM" with _ ->  prove
  ((parse_term "!n. NUMERAL (BIT1 n) = SUC(NUMERAL n + NUMERAL n)"),
   vREWRITE_TAC[vNUMERAL; vBIT1]);;
 
@@ -133,11 +133,11 @@ let vBIT1_THM = prove
 (* Following is handy before num_CONV arrives.                               *)
 (* ------------------------------------------------------------------------- *)
 
-let vONE = prove
+let vONE = try Cache.lookup_thm "ONE" with _ ->  prove
  ((parse_term "1 = SUC 0"),
   vREWRITE_TAC[vBIT1; vREWRITE_RULE[vNUMERAL] vADD_CLAUSES; vNUMERAL]);;
 
-let vTWO = prove
+let vTWO = try Cache.lookup_thm "TWO" with _ ->  prove
  ((parse_term "2 = SUC 1"),
   vREWRITE_TAC[vBIT0; vBIT1; vREWRITE_RULE[vNUMERAL] vADD_CLAUSES; vNUMERAL]);;
 
@@ -145,7 +145,7 @@ let vTWO = prove
 (* One immediate consequence.                                                *)
 (* ------------------------------------------------------------------------- *)
 
-let vADD1 = prove
+let vADD1 = try Cache.lookup_thm "ADD1" with _ ->  prove
  ((parse_term "!m. SUC m = m + 1"),
   vREWRITE_TAC[vBIT1_THM; vADD_CLAUSES]);;
 
@@ -156,58 +156,58 @@ let vADD1 = prove
 let vMULT = new_recursive_definition num_RECURSION
  (parse_term "(!n. 0 * n = 0) /\\\n  (!m n. (SUC m) * n = (m * n) + n)");;
 
-let vMULT_0 = prove
+let vMULT_0 = try Cache.lookup_thm "MULT_0" with _ ->  prove
  ((parse_term "!m. m * 0 = 0"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vMULT; vADD_CLAUSES]);;
 
-let vMULT_SUC = prove
+let vMULT_SUC = try Cache.lookup_thm "MULT_SUC" with _ ->  prove
  ((parse_term "!m n. m * (SUC n) = m + (m * n)"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vMULT; vADD_CLAUSES; vADD_ASSOC]);;
 
-let vMULT_CLAUSES = prove
+let vMULT_CLAUSES = try Cache.lookup_thm "MULT_CLAUSES" with _ ->  prove
  ((parse_term "(!n. 0 * n = 0) /\\\n   (!m. m * 0 = 0) /\\\n   (!n. 1 * n = n) /\\\n   (!m. m * 1 = m) /\\\n   (!m n. (SUC m) * n = (m * n) + n) /\\\n   (!m n. m * (SUC n) = m + (m * n))"),
   vREWRITE_TAC[vBIT1_THM; vMULT; vMULT_0; vMULT_SUC; vADD_CLAUSES]);;
 
-let vMULT_SYM = prove
+let vMULT_SYM = try Cache.lookup_thm "MULT_SYM" with _ ->  prove
  ((parse_term "!m n. m * n = n * m"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vMULT_CLAUSES; vEQT_INTRO(vSPEC_ALL vADD_SYM)]);;
 
-let vLEFT_ADD_DISTRIB = prove
+let vLEFT_ADD_DISTRIB = try Cache.lookup_thm "LEFT_ADD_DISTRIB" with _ ->  prove
  ((parse_term "!m n p. m * (n + p) = (m * n) + (m * p)"),
   vGEN_TAC ----> vINDUCT_TAC ----> vASM_REWRITE_TAC[vADD; vMULT_CLAUSES; vADD_ASSOC]);;
 
-let vRIGHT_ADD_DISTRIB = prove
+let vRIGHT_ADD_DISTRIB = try Cache.lookup_thm "RIGHT_ADD_DISTRIB" with _ ->  prove
  ((parse_term "!m n p. (m + n) * p = (m * p) + (n * p)"),
   vONCE_REWRITE_TAC[vMULT_SYM] ----> vMATCH_ACCEPT_TAC vLEFT_ADD_DISTRIB);;
 
-let vMULT_ASSOC = prove
+let vMULT_ASSOC = try Cache.lookup_thm "MULT_ASSOC" with _ ->  prove
  ((parse_term "!m n p. m * (n * p) = (m * n) * p"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vMULT_CLAUSES; vRIGHT_ADD_DISTRIB]);;
 
-let vMULT_AC = prove
+let vMULT_AC = try Cache.lookup_thm "MULT_AC" with _ ->  prove
  ((parse_term "(m * n = n * m) /\\\n   ((m * n) * p = m * (n * p)) /\\\n   (m * (n * p) = n * (m * p))"),
   vMESON_TAC[vMULT_ASSOC; vMULT_SYM]);;
 
-let vMULT_EQ_0 = prove
+let vMULT_EQ_0 = try Cache.lookup_thm "MULT_EQ_0" with _ ->  prove
  ((parse_term "!m n. (m * n = 0) <=> (m = 0) \\/ (n = 0)"),
   vREPEAT vINDUCT_TAC ----> vREWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES; vNOT_SUC]);;
 
-let vEQ_MULT_LCANCEL = prove
+let vEQ_MULT_LCANCEL = try Cache.lookup_thm "EQ_MULT_LCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m * n = m * p) <=> (m = 0) \\/ (n = p)"),
   vINDUCT_TAC ----> vREWRITE_TAC[vMULT_CLAUSES; vNOT_SUC] ---->
   vREPEAT vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES; vGSYM vNOT_SUC; vNOT_SUC] ---->
   vASM_REWRITE_TAC[vSUC_INJ; vGSYM vADD_ASSOC; vEQ_ADD_LCANCEL]);;
 
-let vEQ_MULT_RCANCEL = prove
+let vEQ_MULT_RCANCEL = try Cache.lookup_thm "EQ_MULT_RCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m * p = n * p) <=> (m = n) \\/ (p = 0)"),
   vONCE_REWRITE_TAC[vMULT_SYM; vDISJ_SYM] ----> vMATCH_ACCEPT_TAC vEQ_MULT_LCANCEL);;
 
-let vMULT_2 = prove
+let vMULT_2 = try Cache.lookup_thm "MULT_2" with _ ->  prove
  ((parse_term "!n. 2 * n = n + n"),
   vGEN_TAC ----> vREWRITE_TAC[vBIT0_THM; vMULT_CLAUSES; vRIGHT_ADD_DISTRIB]);;
 
-let vMULT_EQ_1 = prove
+let vMULT_EQ_1 = try Cache.lookup_thm "MULT_EQ_1" with _ ->  prove
  ((parse_term "!m n. (m * n = 1) <=> (m = 1) /\\ (n = 1)"),
   vINDUCT_TAC ----> vINDUCT_TAC ----> vREWRITE_TAC
     [vMULT_CLAUSES; vADD_CLAUSES; vBIT0_THM; vBIT1_THM; vGSYM vNOT_SUC] ---->
@@ -221,42 +221,42 @@ let vMULT_EQ_1 = prove
 let vEXP = new_recursive_definition num_RECURSION
  (parse_term "(!m. m EXP 0 = 1) /\\\n  (!m n. m EXP (SUC n) = m * (m EXP n))");;
 
-let vEXP_EQ_0 = prove
+let vEXP_EQ_0 = try Cache.lookup_thm "EXP_EQ_0" with _ ->  prove
  ((parse_term "!m n. (m EXP n = 0) <=> (m = 0) /\\ ~(n = 0)"),
   vREPEAT vINDUCT_TAC ----> vASM_REWRITE_TAC
     [vBIT1_THM; vNOT_SUC; vNOT_SUC; vEXP; vMULT_CLAUSES; vADD_CLAUSES; vADD_EQ_0]);;
 
-let vEXP_EQ_1 = prove
+let vEXP_EQ_1 = try Cache.lookup_thm "EXP_EQ_1" with _ ->  prove
  ((parse_term "!x n. x EXP n = 1 <=> x = 1 \\/ n = 0"),
   vGEN_TAC ----> vINDUCT_TAC ----> vASM_REWRITE_TAC[vEXP; vMULT_EQ_1; vNOT_SUC] ---->
   vCONV_TAC vTAUT);;
 
-let vEXP_ZERO = prove
+let vEXP_ZERO = try Cache.lookup_thm "EXP_ZERO" with _ ->  prove
  ((parse_term "!n. 0 EXP n = if n = 0 then 1 else 0"),
   vGEN_TAC ----> vCOND_CASES_TAC ----> vASM_REWRITE_TAC[vEXP_EQ_0; vEXP_EQ_1]);;
 
-let vEXP_ADD = prove
+let vEXP_ADD = try Cache.lookup_thm "EXP_ADD" with _ ->  prove
  ((parse_term "!m n p. m EXP (n + p) = (m EXP n) * (m EXP p)"),
   vGEN_TAC ----> vGEN_TAC ----> vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vEXP; vADD_CLAUSES; vMULT_CLAUSES; vMULT_AC]);;
 
-let vEXP_ONE = prove
+let vEXP_ONE = try Cache.lookup_thm "EXP_ONE" with _ ->  prove
  ((parse_term "!n. 1 EXP n = 1"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vEXP; vMULT_CLAUSES]);;
 
-let vEXP_1 = prove
+let vEXP_1 = try Cache.lookup_thm "EXP_1" with _ ->  prove
  ((parse_term "!n. n EXP 1 = n"),
   vREWRITE_TAC[vONE; vEXP; vMULT_CLAUSES; vADD_CLAUSES]);;
 
-let vEXP_2 = prove
+let vEXP_2 = try Cache.lookup_thm "EXP_2" with _ ->  prove
  ((parse_term "!n. n EXP 2 = n * n"),
   vREWRITE_TAC[vBIT0_THM; vBIT1_THM; vEXP; vEXP_ADD; vMULT_CLAUSES; vADD_CLAUSES]);;
 
-let vMULT_EXP = prove
+let vMULT_EXP = try Cache.lookup_thm "MULT_EXP" with _ ->  prove
  ((parse_term "!p m n. (m * n) EXP p = m EXP p * n EXP p"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vEXP; vMULT_CLAUSES; vMULT_AC]);;
 
-let vEXP_MULT = prove
+let vEXP_MULT = try Cache.lookup_thm "EXP_MULT" with _ ->  prove
  ((parse_term "!m n p. m EXP (n * p) = (m EXP n) EXP p"),
   vGEN_TAC ----> vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vEXP_ADD; vEXP; vMULT_CLAUSES] ++-->
@@ -264,7 +264,7 @@ let vEXP_MULT = prove
     vINDUCT_TAC ----> vASM_REWRITE_TAC[vEXP; vMULT_CLAUSES];
     vREWRITE_TAC[vMULT_EXP] ----> vMATCH_ACCEPT_TAC vMULT_SYM]);;
 
-let vEXP_EXP = prove
+let vEXP_EXP = try Cache.lookup_thm "EXP_EXP" with _ ->  prove
  ((parse_term "!x m n. (x EXP m) EXP n = x EXP (m * n)"),
   vREWRITE_TAC[vEXP_MULT]);;
 
@@ -298,20 +298,20 @@ let vMIN = new_definition
 (* Step cases.                                                               *)
 (* ------------------------------------------------------------------------- *)
 
-let vLE_SUC_LT = prove
+let vLE_SUC_LT = try Cache.lookup_thm "LE_SUC_LT" with _ ->  prove
  ((parse_term "!m n. (SUC m <= n) <=> (m < n)"),
   vGEN_TAC ----> vINDUCT_TAC ----> vASM_REWRITE_TAC[vLE; vLT; vNOT_SUC; vSUC_INJ]);;
 
-let vLT_SUC_LE = prove
+let vLT_SUC_LE = try Cache.lookup_thm "LT_SUC_LE" with _ ->  prove
  ((parse_term "!m n. (m < SUC n) <=> (m <= n)"),
   vGEN_TAC ----> vINDUCT_TAC ----> vONCE_REWRITE_TAC[vLT; vLE] ---->
   vASM_REWRITE_TAC[] ----> vREWRITE_TAC[vLT]);;
 
-let vLE_SUC = prove
+let vLE_SUC = try Cache.lookup_thm "LE_SUC" with _ ->  prove
  ((parse_term "!m n. (SUC m <= SUC n) <=> (m <= n)"),
   vREWRITE_TAC[vLE_SUC_LT; vLT_SUC_LE]);;
 
-let vLT_SUC = prove
+let vLT_SUC = try Cache.lookup_thm "LT_SUC" with _ ->  prove
  ((parse_term "!m n. (SUC m < SUC n) <=> (m < n)"),
   vREWRITE_TAC[vLT_SUC_LE; vLE_SUC_LT]);;
 
@@ -319,11 +319,11 @@ let vLT_SUC = prove
 (* Base cases.                                                               *)
 (* ------------------------------------------------------------------------- *)
 
-let vLE_0 = prove
+let vLE_0 = try Cache.lookup_thm "LE_0" with _ ->  prove
  ((parse_term "!n. 0 <= n"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vLE]);;
 
-let vLT_0 = prove
+let vLT_0 = try Cache.lookup_thm "LT_0" with _ ->  prove
  ((parse_term "!n. 0 < SUC n"),
   vREWRITE_TAC[vLT_SUC_LE; vLE_0]);;
 
@@ -331,15 +331,15 @@ let vLT_0 = prove
 (* Reflexivity.                                                              *)
 (* ------------------------------------------------------------------------- *)
 
-let vLE_REFL = prove
+let vLE_REFL = try Cache.lookup_thm "LE_REFL" with _ ->  prove
  ((parse_term "!n. n <= n"),
   vINDUCT_TAC ----> vREWRITE_TAC[vLE]);;
 
-let vLT_REFL = prove
+let vLT_REFL = try Cache.lookup_thm "LT_REFL" with _ ->  prove
  ((parse_term "!n. ~(n < n)"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vLT_SUC] ----> vREWRITE_TAC[vLT]);;
 
-let vLT_IMP_NE = prove
+let vLT_IMP_NE = try Cache.lookup_thm "LT_IMP_NE" with _ ->  prove
  ((parse_term "!m n:num. m < n ==> ~(m = n)"),
   vMESON_TAC[vLT_REFL]);;
 
@@ -347,21 +347,21 @@ let vLT_IMP_NE = prove
 (* Antisymmetry.                                                             *)
 (* ------------------------------------------------------------------------- *)
 
-let vLE_ANTISYM = prove
+let vLE_ANTISYM = try Cache.lookup_thm "LE_ANTISYM" with _ ->  prove
  ((parse_term "!m n. (m <= n /\\ n <= m) <=> (m = n)"),
   vREPEAT vINDUCT_TAC ----> vASM_REWRITE_TAC[vLE_SUC; vSUC_INJ] ---->
   vREWRITE_TAC[vLE; vNOT_SUC; vGSYM vNOT_SUC]);;
 
-let vLT_ANTISYM = prove
+let vLT_ANTISYM = try Cache.lookup_thm "LT_ANTISYM" with _ ->  prove
  ((parse_term "!m n. ~(m < n /\\ n < m)"),
   vREPEAT vINDUCT_TAC ----> vASM_REWRITE_TAC[vLT_SUC] ----> vREWRITE_TAC[vLT]);;
 
-let vLET_ANTISYM = prove
+let vLET_ANTISYM = try Cache.lookup_thm "LET_ANTISYM" with _ ->  prove
  ((parse_term "!m n. ~(m <= n /\\ n < m)"),
   vREPEAT vINDUCT_TAC ----> vASM_REWRITE_TAC[vLE_SUC; vLT_SUC] ---->
   vREWRITE_TAC[vLE; vLT; vNOT_SUC]);;
 
-let vLTE_ANTISYM = prove
+let vLTE_ANTISYM = try Cache.lookup_thm "LTE_ANTISYM" with _ ->  prove
  ((parse_term "!m n. ~(m < n /\\ n <= m)"),
   vONCE_REWRITE_TAC[vCONJ_SYM] ----> vREWRITE_TAC[vLET_ANTISYM]);;
 
@@ -369,22 +369,22 @@ let vLTE_ANTISYM = prove
 (* Transitivity.                                                             *)
 (* ------------------------------------------------------------------------- *)
 
-let vLE_TRANS = prove
+let vLE_TRANS = try Cache.lookup_thm "LE_TRANS" with _ ->  prove
  ((parse_term "!m n p. m <= n /\\ n <= p ==> m <= p"),
   vREPEAT vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vLE_SUC; vLE_0] ----> vREWRITE_TAC[vLE; vNOT_SUC]);;
 
-let vLT_TRANS = prove
+let vLT_TRANS = try Cache.lookup_thm "LT_TRANS" with _ ->  prove
  ((parse_term "!m n p. m < n /\\ n < p ==> m < p"),
   vREPEAT vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vLT_SUC; vLT_0] ----> vREWRITE_TAC[vLT; vNOT_SUC]);;
 
-let vLET_TRANS = prove
+let vLET_TRANS = try Cache.lookup_thm "LET_TRANS" with _ ->  prove
  ((parse_term "!m n p. m <= n /\\ n < p ==> m < p"),
   vREPEAT vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vLE_SUC; vLT_SUC; vLT_0] ----> vREWRITE_TAC[vLT; vLE; vNOT_SUC]);;
 
-let vLTE_TRANS = prove
+let vLTE_TRANS = try Cache.lookup_thm "LTE_TRANS" with _ ->  prove
  ((parse_term "!m n p. m < n /\\ n <= p ==> m < p"),
   vREPEAT vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vLE_SUC; vLT_SUC; vLT_0] ----> vREWRITE_TAC[vLT; vLE; vNOT_SUC]);;
@@ -393,22 +393,22 @@ let vLTE_TRANS = prove
 (* Totality.                                                                 *)
 (* ------------------------------------------------------------------------- *)
 
-let vLE_CASES = prove
+let vLE_CASES = try Cache.lookup_thm "LE_CASES" with _ ->  prove
  ((parse_term "!m n. m <= n \\/ n <= m"),
   vREPEAT vINDUCT_TAC ----> vASM_REWRITE_TAC[vLE_0; vLE_SUC]);;
 
-let vLT_CASES = prove
+let vLT_CASES = try Cache.lookup_thm "LT_CASES" with _ ->  prove
  ((parse_term "!m n. (m < n) \\/ (n < m) \\/ (m = n)"),
   vREPEAT vINDUCT_TAC ----> vASM_REWRITE_TAC[vLT_SUC; vSUC_INJ] ---->
   vREWRITE_TAC[vLT; vNOT_SUC; vGSYM vNOT_SUC] ---->
   vW(vW (curry vSPEC_TAC) -| hd -| frees -| snd) ---->
   vINDUCT_TAC ----> vREWRITE_TAC[vLT_0]);;
 
-let vLET_CASES = prove
+let vLET_CASES = try Cache.lookup_thm "LET_CASES" with _ ->  prove
  ((parse_term "!m n. m <= n \\/ n < m"),
   vREPEAT vINDUCT_TAC ----> vASM_REWRITE_TAC[vLE_SUC_LT; vLT_SUC_LE; vLE_0]);;
 
-let vLTE_CASES = prove
+let vLTE_CASES = try Cache.lookup_thm "LTE_CASES" with _ ->  prove
  ((parse_term "!m n. m < n \\/ n <= m"),
   vONCE_REWRITE_TAC[vDISJ_SYM] ----> vMATCH_ACCEPT_TAC vLET_CASES);;
 
@@ -416,13 +416,13 @@ let vLTE_CASES = prove
 (* Relationship between orderings.                                           *)
 (* ------------------------------------------------------------------------- *)
 
-let vLE_LT = prove
+let vLE_LT = try Cache.lookup_thm "LE_LT" with _ ->  prove
  ((parse_term "!m n. (m <= n) <=> (m < n) \\/ (m = n)"),
   vREPEAT vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vLE_SUC; vLT_SUC; vSUC_INJ; vLE_0; vLT_0] ---->
   vREWRITE_TAC[vLE; vLT]);;
 
-let vLT_LE = prove
+let vLT_LE = try Cache.lookup_thm "LT_LE" with _ ->  prove
  ((parse_term "!m n. (m < n) <=> (m <= n) /\\ ~(m = n)"),
   vREWRITE_TAC[vLE_LT] ----> vREPEAT vGEN_TAC ----> vEQ_TAC ++-->
    [vDISCH_TAC ----> vASM_REWRITE_TAC[] ----> vDISCH_THEN vSUBST_ALL_TAC ---->
@@ -430,25 +430,25 @@ let vLT_LE = prove
     vDISCH_THEN(vCONJUNCTS_THEN2 vSTRIP_ASSUME_TAC vMP_TAC) ---->
     vASM_REWRITE_TAC[]]);;
 
-let vNOT_LE = prove
+let vNOT_LE = try Cache.lookup_thm "NOT_LE" with _ ->  prove
  ((parse_term "!m n. ~(m <= n) <=> (n < m)"),
   vREPEAT vINDUCT_TAC ----> vASM_REWRITE_TAC[vLE_SUC; vLT_SUC] ---->
   vREWRITE_TAC[vLE; vLT; vNOT_SUC; vGSYM vNOT_SUC; vLE_0] ---->
   vW(vW (curry vSPEC_TAC) -| hd -| frees -| snd) ---->
   vINDUCT_TAC ----> vREWRITE_TAC[vLT_0]);;
 
-let vNOT_LT = prove
+let vNOT_LT = try Cache.lookup_thm "NOT_LT" with _ ->  prove
  ((parse_term "!m n. ~(m < n) <=> n <= m"),
   vREPEAT vINDUCT_TAC ----> vASM_REWRITE_TAC[vLE_SUC; vLT_SUC] ---->
   vREWRITE_TAC[vLE; vLT; vNOT_SUC; vGSYM vNOT_SUC; vLE_0] ---->
   vW(vW (curry vSPEC_TAC) -| hd -| frees -| snd) ---->
   vINDUCT_TAC ----> vREWRITE_TAC[vLT_0]);;
 
-let vLT_IMP_LE = prove
+let vLT_IMP_LE = try Cache.lookup_thm "LT_IMP_LE" with _ ->  prove
  ((parse_term "!m n. m < n ==> m <= n"),
   vREWRITE_TAC[vLT_LE] ----> vREPEAT vSTRIP_TAC ----> vASM_REWRITE_TAC[]);;
 
-let vEQ_IMP_LE = prove
+let vEQ_IMP_LE = try Cache.lookup_thm "EQ_IMP_LE" with _ ->  prove
  ((parse_term "!m n. (m = n) ==> m <= n"),
   vREPEAT vSTRIP_TAC ----> vASM_REWRITE_TAC[vLE_REFL]);;
 
@@ -456,12 +456,12 @@ let vEQ_IMP_LE = prove
 (* Often useful to shuffle between different versions of "0 < n".            *)
 (* ------------------------------------------------------------------------- *)
 
-let vLT_NZ = prove
+let vLT_NZ = try Cache.lookup_thm "LT_NZ" with _ ->  prove
  ((parse_term "!n. 0 < n <=> ~(n = 0)"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vNOT_SUC; vLT; vEQ_SYM_EQ] ---->
   vCONV_TAC vTAUT);;
 
-let vLE_1 = prove
+let vLE_1 = try Cache.lookup_thm "LE_1" with _ ->  prove
  ((parse_term "(!n. ~(n = 0) ==> 0 < n) /\\\n   (!n. ~(n = 0) ==> 1 <= n) /\\\n   (!n. 0 < n ==> ~(n = 0)) /\\\n   (!n. 0 < n ==> 1 <= n) /\\\n   (!n. 1 <= n ==> 0 < n) /\\\n   (!n. 1 <= n ==> ~(n = 0))"),
   vREWRITE_TAC[vLT_NZ; vGSYM vNOT_LT; vONE; vLT]);;
 
@@ -469,7 +469,7 @@ let vLE_1 = prove
 (* Relate the orderings to arithmetic operations.                            *)
 (* ------------------------------------------------------------------------- *)
 
-let vLE_EXISTS = prove
+let vLE_EXISTS = try Cache.lookup_thm "LE_EXISTS" with _ ->  prove
  ((parse_term "!m n. (m <= n) <=> (?d. n = m + d)"),
   vGEN_TAC ----> vINDUCT_TAC ----> vASM_REWRITE_TAC[vLE] ++-->
    [vREWRITE_TAC[vCONV_RULE(vLAND_CONV vSYM_CONV) (vSPEC_ALL vADD_EQ_0)] ---->
@@ -484,7 +484,7 @@ let vLE_EXISTS = prove
       vDISCH_THEN vSUBST1_TAC ----> vREWRITE_TAC[] ----> vDISJ2_TAC ---->
       vREWRITE_TAC[vEQ_ADD_LCANCEL; vGSYM vEXISTS_REFL]]]);;
 
-let vLT_EXISTS = prove
+let vLT_EXISTS = try Cache.lookup_thm "LT_EXISTS" with _ ->  prove
  ((parse_term "!m n. (m < n) <=> (?d. n = m + SUC d)"),
   vGEN_TAC ----> vINDUCT_TAC ----> vREWRITE_TAC[vLT; vADD_CLAUSES; vGSYM vNOT_SUC] ---->
   vASM_REWRITE_TAC[vSUC_INJ] ----> vEQ_TAC ++-->
@@ -501,59 +501,59 @@ let vLT_EXISTS = prove
 (* Interaction with addition.                                                *)
 (* ------------------------------------------------------------------------- *)
 
-let vLE_ADD = prove
+let vLE_ADD = try Cache.lookup_thm "LE_ADD" with _ ->  prove
  ((parse_term "!m n. m <= m + n"),
   vGEN_TAC ----> vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vLE; vADD_CLAUSES; vLE_REFL]);;
 
-let vLE_ADDR = prove
+let vLE_ADDR = try Cache.lookup_thm "LE_ADDR" with _ ->  prove
  ((parse_term "!m n. n <= m + n"),
   vONCE_REWRITE_TAC[vADD_SYM] ----> vMATCH_ACCEPT_TAC vLE_ADD);;
 
-let vLT_ADD = prove
+let vLT_ADD = try Cache.lookup_thm "LT_ADD" with _ ->  prove
  ((parse_term "!m n. (m < m + n) <=> (0 < n)"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vADD_CLAUSES; vLT_SUC]);;
 
-let vLT_ADDR = prove
+let vLT_ADDR = try Cache.lookup_thm "LT_ADDR" with _ ->  prove
  ((parse_term "!m n. (n < m + n) <=> (0 < m)"),
   vONCE_REWRITE_TAC[vADD_SYM] ----> vMATCH_ACCEPT_TAC vLT_ADD);;
 
-let vLE_ADD_LCANCEL = prove
+let vLE_ADD_LCANCEL = try Cache.lookup_thm "LE_ADD_LCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + n) <= (m + p) <=> n <= p"),
   vREWRITE_TAC[vLE_EXISTS; vGSYM vADD_ASSOC; vEQ_ADD_LCANCEL]);;
 
-let vLE_ADD_RCANCEL = prove
+let vLE_ADD_RCANCEL = try Cache.lookup_thm "LE_ADD_RCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + p) <= (n + p) <=> (m <= n)"),
   vONCE_REWRITE_TAC[vADD_SYM] ----> vMATCH_ACCEPT_TAC vLE_ADD_LCANCEL);;
 
-let vLT_ADD_LCANCEL = prove
+let vLT_ADD_LCANCEL = try Cache.lookup_thm "LT_ADD_LCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + n) < (m + p) <=> n < p"),
   vREWRITE_TAC[vLT_EXISTS; vGSYM vADD_ASSOC; vEQ_ADD_LCANCEL; vSUC_INJ]);;
 
-let vLT_ADD_RCANCEL = prove
+let vLT_ADD_RCANCEL = try Cache.lookup_thm "LT_ADD_RCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + p) < (n + p) <=> (m < n)"),
   vONCE_REWRITE_TAC[vADD_SYM] ----> vMATCH_ACCEPT_TAC vLT_ADD_LCANCEL);;
 
-let vLE_ADD2 = prove
+let vLE_ADD2 = try Cache.lookup_thm "LE_ADD2" with _ ->  prove
  ((parse_term "!m n p q. m <= p /\\ n <= q ==> m + n <= p + q"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vLE_EXISTS] ---->
   vDISCH_THEN(vCONJUNCTS_THEN2
     (vX_CHOOSE_TAC (parse_term "a:num")) (vX_CHOOSE_TAC (parse_term "b:num"))) ---->
   vEXISTS_TAC (parse_term "a + b") ----> vASM_REWRITE_TAC[vADD_AC]);;
 
-let vLET_ADD2 = prove
+let vLET_ADD2 = try Cache.lookup_thm "LET_ADD2" with _ ->  prove
  ((parse_term "!m n p q. m <= p /\\ n < q ==> m + n < p + q"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vLE_EXISTS; vLT_EXISTS] ---->
   vDISCH_THEN(vCONJUNCTS_THEN2
     (vX_CHOOSE_TAC (parse_term "a:num")) (vX_CHOOSE_TAC (parse_term "b:num"))) ---->
   vEXISTS_TAC (parse_term "a + b") ----> vASM_REWRITE_TAC[vSUC_INJ; vADD_CLAUSES; vADD_AC]);;
 
-let vLTE_ADD2 = prove
+let vLTE_ADD2 = try Cache.lookup_thm "LTE_ADD2" with _ ->  prove
  ((parse_term "!m n p q. m < p /\\ n <= q ==> m + n < p + q"),
   vONCE_REWRITE_TAC[vADD_SYM; vCONJ_SYM] ---->
   vMATCH_ACCEPT_TAC vLET_ADD2);;
 
-let vLT_ADD2 = prove
+let vLT_ADD2 = try Cache.lookup_thm "LT_ADD2" with _ ->  prove
  ((parse_term "!m n p q. m < p /\\ n < q ==> m + n < p + q"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vLTE_ADD2 ---->
   vASM_REWRITE_TAC[] ----> vMATCH_MP_TAC vLT_IMP_LE ---->
@@ -563,11 +563,11 @@ let vLT_ADD2 = prove
 (* And multiplication.                                                       *)
 (* ------------------------------------------------------------------------- *)
 
-let vLT_MULT = prove
+let vLT_MULT = try Cache.lookup_thm "LT_MULT" with _ ->  prove
  ((parse_term "!m n. (0 < m * n) <=> (0 < m) /\\ (0 < n)"),
   vREPEAT vINDUCT_TAC ----> vREWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES; vLT_0]);;
 
-let vLE_MULT2 = prove
+let vLE_MULT2 = try Cache.lookup_thm "LE_MULT2" with _ ->  prove
  ((parse_term "!m n p q. m <= n /\\ p <= q ==> m * p <= n * q"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vLE_EXISTS] ---->
   vDISCH_THEN(vCONJUNCTS_THEN2
@@ -576,13 +576,13 @@ let vLE_MULT2 = prove
   vASM_REWRITE_TAC[vLEFT_ADD_DISTRIB] ---->
   vREWRITE_TAC[vLEFT_ADD_DISTRIB; vRIGHT_ADD_DISTRIB; vADD_ASSOC]);;
 
-let vLT_LMULT = prove
+let vLT_LMULT = try Cache.lookup_thm "LT_LMULT" with _ ->  prove
  ((parse_term "!m n p. ~(m = 0) /\\ n < p ==> m * n < m * p"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vLT_LE] ----> vSTRIP_TAC ----> vCONJ_TAC ++-->
    [vMATCH_MP_TAC vLE_MULT2 ----> vASM_REWRITE_TAC[vLE_REFL];
     vASM_REWRITE_TAC[vEQ_MULT_LCANCEL]]);;
 
-let vLE_MULT_LCANCEL = prove
+let vLE_MULT_LCANCEL = try Cache.lookup_thm "LE_MULT_LCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m * n) <= (m * p) <=> (m = 0) \\/ n <= p"),
   vREPEAT vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES; vLE_REFL; vLE_0; vNOT_SUC] ---->
@@ -590,12 +590,12 @@ let vLE_MULT_LCANCEL = prove
   vREWRITE_TAC[vLE; vLE_ADD_LCANCEL; vGSYM vADD_ASSOC] ---->
   vASM_REWRITE_TAC[vGSYM(el 4(vCONJUNCTS vMULT_CLAUSES)); vNOT_SUC]);;
 
-let vLE_MULT_RCANCEL = prove
+let vLE_MULT_RCANCEL = try Cache.lookup_thm "LE_MULT_RCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m * p) <= (n * p) <=> (m <= n) \\/ (p = 0)"),
   vONCE_REWRITE_TAC[vMULT_SYM; vDISJ_SYM] ---->
   vMATCH_ACCEPT_TAC vLE_MULT_LCANCEL);;
 
-let vLT_MULT_LCANCEL = prove
+let vLT_MULT_LCANCEL = try Cache.lookup_thm "LT_MULT_LCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m * n) < (m * p) <=> ~(m = 0) /\\ n < p"),
   vREPEAT vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES; vLT_REFL; vLT_0; vNOT_SUC] ---->
@@ -603,23 +603,23 @@ let vLT_MULT_LCANCEL = prove
   vREWRITE_TAC[vLT; vLT_ADD_LCANCEL; vGSYM vADD_ASSOC] ---->
   vASM_REWRITE_TAC[vGSYM(el 4(vCONJUNCTS vMULT_CLAUSES)); vNOT_SUC]);;
 
-let vLT_MULT_RCANCEL = prove
+let vLT_MULT_RCANCEL = try Cache.lookup_thm "LT_MULT_RCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m * p) < (n * p) <=> (m < n) /\\ ~(p = 0)"),
   vONCE_REWRITE_TAC[vMULT_SYM; vCONJ_SYM] ---->
   vMATCH_ACCEPT_TAC vLT_MULT_LCANCEL);;
 
-let vLT_MULT2 = prove
+let vLT_MULT2 = try Cache.lookup_thm "LT_MULT2" with _ ->  prove
  ((parse_term "!m n p q. m < n /\\ p < q ==> m * p < n * q"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vLET_TRANS ---->
   vEXISTS_TAC (parse_term "n * p") ---->
   vASM_SIMP_TAC[vLE_MULT_RCANCEL; vLT_IMP_LE; vLT_MULT_LCANCEL] ---->
   vUNDISCH_TAC (parse_term "m < n") ----> vCONV_TAC vCONTRAPOS_CONV ----> vSIMP_TAC[vLT]);;
 
-let vLE_SQUARE_REFL = prove
+let vLE_SQUARE_REFL = try Cache.lookup_thm "LE_SQUARE_REFL" with _ ->  prove
  ((parse_term "!n. n <= n * n"),
   vINDUCT_TAC ----> vREWRITE_TAC[vMULT_CLAUSES; vLE_0; vLE_ADDR]);;
 
-let vLT_POW2_REFL = prove
+let vLT_POW2_REFL = try Cache.lookup_thm "LT_POW2_REFL" with _ ->  prove
  ((parse_term "!n. n < 2 EXP n"),
   vINDUCT_TAC ----> vREWRITE_TAC[vEXP] ----> vREWRITE_TAC[vMULT_2; vADD1] ---->
   vREWRITE_TAC[vONE; vLT] ----> vMATCH_MP_TAC vLTE_ADD2 ---->
@@ -630,15 +630,15 @@ let vLT_POW2_REFL = prove
 (* Useful "without loss of generality" lemmas.                               *)
 (* ------------------------------------------------------------------------- *)
 
-let vWLOG_LE = prove
+let vWLOG_LE = try Cache.lookup_thm "WLOG_LE" with _ ->  prove
  ((parse_term "(!m n. P m n <=> P n m) /\\ (!m n. m <= n ==> P m n) ==> !m n. P m n"),
   vMESON_TAC[vLE_CASES]);;
 
-let vWLOG_LT = prove
+let vWLOG_LT = try Cache.lookup_thm "WLOG_LT" with _ ->  prove
  ((parse_term "(!m. P m m) /\\ (!m n. P m n <=> P n m) /\\ (!m n. m < n ==> P m n)\n   ==> !m y. P m y"),
   vMESON_TAC[vLT_CASES]);;
 
-let vWLOG_LE_3 = prove
+let vWLOG_LE_3 = try Cache.lookup_thm "WLOG_LE_3" with _ ->  prove
  ((parse_term "!P. (!x y z. P x y z ==> P y x z /\\ P x z y) /\\\n       (!x y z. x <= y /\\ y <= z ==> P x y z)\n       ==> !x y z. P x y z"),
   vMESON_TAC[vLE_CASES]);;
 
@@ -646,18 +646,18 @@ let vWLOG_LE_3 = prove
 (* Existence of least and greatest elements of (finite) set.                 *)
 (* ------------------------------------------------------------------------- *)
 
-let num_WF = prove
+let num_WF = try Cache.lookup_thm "num_WF" with _ ->  prove
  ((parse_term "!P. (!n. (!m. m < n ==> P m) ==> P n) ==> !n. P n"),
   vGEN_TAC ----> vMP_TAC(vSPEC (parse_term "\\n. !m. m < n ==> P m") num_INDUCTION) ---->
   vREWRITE_TAC[vLT; vBETA_THM] ----> vMESON_TAC[vLT]);;
 
-let num_WOP = prove
+let num_WOP = try Cache.lookup_thm "num_WOP" with _ ->  prove
  ((parse_term "!P. (?n. P n) <=> (?n. P(n) /\\ !m. m < n ==> ~P(m))"),
   vGEN_TAC ----> vEQ_TAC ++--> [vALL_TAC; vMESON_TAC[]] ---->
   vCONV_TAC vCONTRAPOS_CONV ----> vREWRITE_TAC[vNOT_EXISTS_THM] ---->
   vDISCH_TAC ----> vMATCH_MP_TAC num_WF ----> vASM_MESON_TAC[]);;
 
-let num_MAX = prove
+let num_MAX = try Cache.lookup_thm "num_MAX" with _ ->  prove
  ((parse_term "!P. (?x. P x) /\\ (?M. !x. P x ==> x <= M) <=>\n       ?m. P m /\\ (!x. P x ==> x <= m)"),
   vGEN_TAC ----> vEQ_TAC ++-->
    [vDISCH_THEN(vCONJUNCTS_THEN2 (vX_CHOOSE_TAC (parse_term "a:num")) vMP_TAC) ---->
@@ -678,14 +678,14 @@ let num_MAX = prove
 (* Other variants of induction.                                              *)
 (* ------------------------------------------------------------------------- *)
 
-let vLE_INDUCT = prove
+let vLE_INDUCT = try Cache.lookup_thm "LE_INDUCT" with _ ->  prove
  ((parse_term "!P. (!m:num. P m m) /\\\n       (!m n. m <= n /\\ P m n ==> P m (SUC n))\n       ==> (!m n. m <= n ==> P m n)"),
    vGEN_TAC ----> vREWRITE_TAC[vIMP_CONJ; vMESON[vLE_EXISTS]
     (parse_term "(!m n:num. m <= n ==> R m n) <=> (!m d. R m (m + d))")] ---->
   vREPEAT vDISCH_TAC ----> vGEN_TAC ----> vINDUCT_TAC ---->
   vASM_SIMP_TAC[vADD_CLAUSES]);;
 
-let num_INDUCTION_DOWN = prove
+let num_INDUCTION_DOWN = try Cache.lookup_thm "num_INDUCTION_DOWN" with _ ->  prove
  ((parse_term "!(P:num->bool) m.\n        (!n. m <= n ==> P n) /\\\n        (!n. n < m /\\ P(n + 1) ==> P n)\n        ==> !n. P n"),
   vREWRITE_TAC[vGSYM vADD1] ----> vREPEAT vGEN_TAC ----> vSTRIP_TAC ---->
   vONCE_REWRITE_TAC[vMESON[] (parse_term "(!x. P x) <=> ~(?x. ~P x)")] ---->
@@ -705,24 +705,24 @@ let vEVEN = new_recursive_definition num_RECURSION
 let vODD = new_recursive_definition num_RECURSION
   (parse_term "(ODD 0 <=> F) /\\\n   (!n. ODD (SUC n) <=> ~(ODD n))");;
 
-let vNOT_EVEN = prove
+let vNOT_EVEN = try Cache.lookup_thm "NOT_EVEN" with _ ->  prove
  ((parse_term "!n. ~(EVEN n) <=> ODD n"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vEVEN; vODD]);;
 
-let vNOT_ODD = prove
+let vNOT_ODD = try Cache.lookup_thm "NOT_ODD" with _ ->  prove
  ((parse_term "!n. ~(ODD n) <=> EVEN n"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vEVEN; vODD]);;
 
-let vEVEN_OR_ODD = prove
+let vEVEN_OR_ODD = try Cache.lookup_thm "EVEN_OR_ODD" with _ ->  prove
  ((parse_term "!n. EVEN n \\/ ODD n"),
   vINDUCT_TAC ----> vREWRITE_TAC[vEVEN; vODD; vNOT_EVEN; vNOT_ODD] ---->
   vONCE_REWRITE_TAC[vDISJ_SYM] ----> vASM_REWRITE_TAC[]);;
 
-let vEVEN_AND_ODD = prove
+let vEVEN_AND_ODD = try Cache.lookup_thm "EVEN_AND_ODD" with _ ->  prove
  ((parse_term "!n. ~(EVEN n /\\ ODD n)"),
   vREWRITE_TAC[vGSYM vNOT_EVEN; vITAUT (parse_term "~(p /\\ ~p)")]);;
 
-let vEVEN_ADD = prove
+let vEVEN_ADD = try Cache.lookup_thm "EVEN_ADD" with _ ->  prove
  ((parse_term "!m n. EVEN(m + n) <=> (EVEN m <=> EVEN n)"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vEVEN; vADD_CLAUSES] ---->
   vX_GEN_TAC (parse_term "p:num") ---->
@@ -731,7 +731,7 @@ let vEVEN_ADD = prove
   vREWRITE_TAC[vGSYM vNOT_EVEN] ----> vDISCH_TAC ---->
   vASM_REWRITE_TAC[]);;
 
-let vEVEN_MULT = prove
+let vEVEN_MULT = try Cache.lookup_thm "EVEN_MULT" with _ ->  prove
  ((parse_term "!m n. EVEN(m * n) <=> EVEN(m) \\/ EVEN(n)"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vMULT_CLAUSES; vEVEN_ADD; vEVEN] ---->
   vX_GEN_TAC (parse_term "p:num") ---->
@@ -740,38 +740,38 @@ let vEVEN_MULT = prove
   vREWRITE_TAC[vGSYM vNOT_EVEN] ----> vDISCH_TAC ---->
   vASM_REWRITE_TAC[]);;
 
-let vEVEN_EXP = prove
+let vEVEN_EXP = try Cache.lookup_thm "EVEN_EXP" with _ ->  prove
  ((parse_term "!m n. EVEN(m EXP n) <=> EVEN(m) /\\ ~(n = 0)"),
   vGEN_TAC ----> vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vEVEN; vEXP; vONE; vEVEN_MULT; vNOT_SUC] ---->
   vCONV_TAC vITAUT);;
 
-let vODD_ADD = prove
+let vODD_ADD = try Cache.lookup_thm "ODD_ADD" with _ ->  prove
  ((parse_term "!m n. ODD(m + n) <=> ~(ODD m <=> ODD n)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vGSYM vNOT_EVEN; vEVEN_ADD] ---->
   vCONV_TAC vITAUT);;
 
-let vODD_MULT = prove
+let vODD_MULT = try Cache.lookup_thm "ODD_MULT" with _ ->  prove
  ((parse_term "!m n. ODD(m * n) <=> ODD(m) /\\ ODD(n)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vGSYM vNOT_EVEN; vEVEN_MULT] ---->
   vCONV_TAC vITAUT);;
 
-let vODD_EXP = prove
+let vODD_EXP = try Cache.lookup_thm "ODD_EXP" with _ ->  prove
  ((parse_term "!m n. ODD(m EXP n) <=> ODD(m) \\/ (n = 0)"),
   vGEN_TAC ----> vINDUCT_TAC ---->
   vASM_REWRITE_TAC[vODD; vEXP; vONE; vODD_MULT; vNOT_SUC] ---->
   vCONV_TAC vITAUT);;
 
-let vEVEN_DOUBLE = prove
+let vEVEN_DOUBLE = try Cache.lookup_thm "EVEN_DOUBLE" with _ ->  prove
  ((parse_term "!n. EVEN(2 * n)"),
   vGEN_TAC ----> vREWRITE_TAC[vEVEN_MULT] ----> vDISJ1_TAC ---->
   vPURE_REWRITE_TAC[vBIT0_THM; vBIT1_THM] ----> vREWRITE_TAC[vEVEN; vEVEN_ADD]);;
 
-let vODD_DOUBLE = prove
+let vODD_DOUBLE = try Cache.lookup_thm "ODD_DOUBLE" with _ ->  prove
  ((parse_term "!n. ODD(SUC(2 * n))"),
   vREWRITE_TAC[vODD] ----> vREWRITE_TAC[vNOT_ODD; vEVEN_DOUBLE]);;
 
-let vEVEN_EXISTS_LEMMA = prove
+let vEVEN_EXISTS_LEMMA = try Cache.lookup_thm "EVEN_EXISTS_LEMMA" with _ ->  prove
  ((parse_term "!n. (EVEN n ==> ?m. n = 2 * m) /\\\n       (~EVEN n ==> ?m. n = SUC(2 * m))"),
   vINDUCT_TAC ----> vREWRITE_TAC[vEVEN] ++-->
    [vEXISTS_TAC (parse_term "0") ----> vREWRITE_TAC[vMULT_CLAUSES];
@@ -781,20 +781,20 @@ let vEVEN_EXISTS_LEMMA = prove
       vREWRITE_TAC[vMULT_2] ----> vREWRITE_TAC[vADD_CLAUSES];
       vEXISTS_TAC (parse_term "m:num") ----> vASM_REWRITE_TAC[]]]);;
 
-let vEVEN_EXISTS = prove
+let vEVEN_EXISTS = try Cache.lookup_thm "EVEN_EXISTS" with _ ->  prove
  ((parse_term "!n. EVEN n <=> ?m. n = 2 * m"),
   vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ++-->
    [vMATCH_MP_TAC(vCONJUNCT1(vSPEC_ALL vEVEN_EXISTS_LEMMA)) ----> vASM_REWRITE_TAC[];
     vPOP_ASSUM(vCHOOSE_THEN vSUBST1_TAC) ----> vREWRITE_TAC[vEVEN_DOUBLE]]);;
 
-let vODD_EXISTS = prove
+let vODD_EXISTS = try Cache.lookup_thm "ODD_EXISTS" with _ ->  prove
  ((parse_term "!n. ODD n <=> ?m. n = SUC(2 * m)"),
   vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ++-->
    [vMATCH_MP_TAC(vCONJUNCT2(vSPEC_ALL vEVEN_EXISTS_LEMMA)) ---->
     vASM_REWRITE_TAC[vNOT_EVEN];
     vPOP_ASSUM(vCHOOSE_THEN vSUBST1_TAC) ----> vREWRITE_TAC[vODD_DOUBLE]]);;
 
-let vEVEN_ODD_DECOMPOSITION = prove
+let vEVEN_ODD_DECOMPOSITION = try Cache.lookup_thm "EVEN_ODD_DECOMPOSITION" with _ ->  prove
  ((parse_term "!n. (?k m. ODD m /\\ (n = 2 EXP k * m)) <=> ~(n = 0)"),
   vMATCH_MP_TAC num_WF ----> vX_GEN_TAC (parse_term "n:num") ----> vDISCH_TAC ---->
   vDISJ_CASES_TAC(vSPEC (parse_term "n:num") vEVEN_OR_ODD) ++-->
@@ -824,58 +824,58 @@ let vEVEN_ODD_DECOMPOSITION = prove
 let vSUB = new_recursive_definition num_RECURSION
  (parse_term "(!m. m - 0 = m) /\\\n  (!m n. m - (SUC n) = PRE(m - n))");;
 
-let vSUB_0 = prove
+let vSUB_0 = try Cache.lookup_thm "SUB_0" with _ ->  prove
  ((parse_term "!m. (0 - m = 0) /\\ (m - 0 = m)"),
   vREWRITE_TAC[vSUB] ----> vINDUCT_TAC ----> vASM_REWRITE_TAC[vSUB; vPRE]);;
 
-let vSUB_PRESUC = prove
+let vSUB_PRESUC = try Cache.lookup_thm "SUB_PRESUC" with _ ->  prove
  ((parse_term "!m n. PRE(SUC m - n) = m - n"),
   vGEN_TAC ----> vINDUCT_TAC ----> vASM_REWRITE_TAC[vSUB; vPRE]);;
 
-let vSUB_SUC = prove
+let vSUB_SUC = try Cache.lookup_thm "SUB_SUC" with _ ->  prove
  ((parse_term "!m n. SUC m - SUC n = m - n"),
   vREPEAT vINDUCT_TAC ----> vASM_REWRITE_TAC[vSUB; vPRE; vSUB_PRESUC]);;
 
-let vSUB_REFL = prove
+let vSUB_REFL = try Cache.lookup_thm "SUB_REFL" with _ ->  prove
  ((parse_term "!n. n - n = 0"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vSUB_SUC; vSUB_0]);;
 
-let vADD_SUB = prove
+let vADD_SUB = try Cache.lookup_thm "ADD_SUB" with _ ->  prove
  ((parse_term "!m n. (m + n) - n = m"),
   vGEN_TAC ----> vINDUCT_TAC ----> vASM_REWRITE_TAC[vADD_CLAUSES; vSUB_SUC; vSUB_0]);;
 
-let vADD_SUB2 = prove
+let vADD_SUB2 = try Cache.lookup_thm "ADD_SUB2" with _ ->  prove
  ((parse_term "!m n. (m + n) - m = n"),
   vONCE_REWRITE_TAC[vADD_SYM] ----> vMATCH_ACCEPT_TAC vADD_SUB);;
 
-let vSUB_EQ_0 = prove
+let vSUB_EQ_0 = try Cache.lookup_thm "SUB_EQ_0" with _ ->  prove
  ((parse_term "!m n. (m - n = 0) <=> m <= n"),
   vREPEAT vINDUCT_TAC ----> vASM_REWRITE_TAC[vSUB_SUC; vLE_SUC; vSUB_0] ---->
   vREWRITE_TAC[vLE; vLE_0]);;
 
-let vADD_SUBR2 = prove
+let vADD_SUBR2 = try Cache.lookup_thm "ADD_SUBR2" with _ ->  prove
  ((parse_term "!m n. m - (m + n) = 0"),
   vREWRITE_TAC[vSUB_EQ_0; vLE_ADD]);;
 
-let vADD_SUBR = prove
+let vADD_SUBR = try Cache.lookup_thm "ADD_SUBR" with _ ->  prove
  ((parse_term "!m n. n - (m + n) = 0"),
   vONCE_REWRITE_TAC[vADD_SYM] ----> vMATCH_ACCEPT_TAC vADD_SUBR2);;
 
-let vSUB_ADD = prove
+let vSUB_ADD = try Cache.lookup_thm "SUB_ADD" with _ ->  prove
  ((parse_term "!m n. n <= m ==> ((m - n) + n = m)"),
   vREWRITE_TAC[vLE_EXISTS] ----> vREPEAT vSTRIP_TAC ---->
   vASM_REWRITE_TAC[vONCE_REWRITE_RULE[vADD_SYM] vADD_SUB] ---->
   vMATCH_ACCEPT_TAC vADD_SYM);;
 
-let vSUB_ADD_LCANCEL = prove
+let vSUB_ADD_LCANCEL = try Cache.lookup_thm "SUB_ADD_LCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + n) - (m + p) = n - p"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vADD_CLAUSES; vSUB_0; vSUB_SUC]);;
 
-let vSUB_ADD_RCANCEL = prove
+let vSUB_ADD_RCANCEL = try Cache.lookup_thm "SUB_ADD_RCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + p) - (n + p) = m - n"),
   vONCE_REWRITE_TAC[vADD_SYM] ----> vMATCH_ACCEPT_TAC vSUB_ADD_LCANCEL);;
 
-let vLEFT_SUB_DISTRIB = prove
+let vLEFT_SUB_DISTRIB = try Cache.lookup_thm "LEFT_SUB_DISTRIB" with _ ->  prove
  ((parse_term "!m n p. m * (n - p) = m * n - m * p"),
   vREPEAT vGEN_TAC ----> vCONV_TAC vSYM_CONV ---->
   vDISJ_CASES_TAC(vSPECL [(parse_term "n:num"); (parse_term "p:num")] vLE_CASES) ++-->
@@ -885,15 +885,15 @@ let vLEFT_SUB_DISTRIB = prove
     vREWRITE_TAC[vLEFT_ADD_DISTRIB] ---->
     vREWRITE_TAC[vONCE_REWRITE_RULE[vADD_SYM] vADD_SUB]]);;
 
-let vRIGHT_SUB_DISTRIB = prove
+let vRIGHT_SUB_DISTRIB = try Cache.lookup_thm "RIGHT_SUB_DISTRIB" with _ ->  prove
  ((parse_term "!m n p. (m - n) * p = m * p - n * p"),
   vONCE_REWRITE_TAC[vMULT_SYM] ----> vMATCH_ACCEPT_TAC vLEFT_SUB_DISTRIB);;
 
-let vSUC_SUB1 = prove
+let vSUC_SUB1 = try Cache.lookup_thm "SUC_SUB1" with _ ->  prove
  ((parse_term "!n. SUC n - 1 = n"),
   vREWRITE_TAC[vONE; vSUB_SUC; vSUB_0]);;
 
-let vEVEN_SUB = prove
+let vEVEN_SUB = try Cache.lookup_thm "EVEN_SUB" with _ ->  prove
  ((parse_term "!m n. EVEN(m - n) <=> m <= n \\/ (EVEN(m) <=> EVEN(n))"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "m <= n:num") ++-->
    [vASM_MESON_TAC[vSUB_EQ_0; vEVEN]; vALL_TAC] ---->
@@ -901,7 +901,7 @@ let vEVEN_SUB = prove
   vFIRST_ASSUM(vMP_TAC -| vAP_TERM (parse_term "EVEN") -| vMATCH_MP vSUB_ADD) ---->
   vASM_MESON_TAC[vEVEN_ADD]);;
 
-let vODD_SUB = prove
+let vODD_SUB = try Cache.lookup_thm "ODD_SUB" with _ ->  prove
  ((parse_term "!m n. ODD(m - n) <=> n < m /\\ ~(ODD m <=> ODD n)"),
   vREWRITE_TAC[vGSYM vNOT_EVEN; vEVEN_SUB; vDE_MORGAN_THM; vNOT_LE] ---->
   vCONV_TAC vTAUT);;
@@ -913,20 +913,20 @@ let vODD_SUB = prove
 let vFACT = new_recursive_definition num_RECURSION
   (parse_term "(FACT 0 = 1) /\\\n   (!n. FACT (SUC n) = (SUC n) * FACT(n))");;
 
-let vFACT_LT = prove
+let vFACT_LT = try Cache.lookup_thm "FACT_LT" with _ ->  prove
  ((parse_term "!n. 0 < FACT n"),
   vINDUCT_TAC ----> vASM_REWRITE_TAC[vFACT; vLT_MULT] ---->
   vREWRITE_TAC[vONE; vLT_0]);;
 
-let vFACT_LE = prove
+let vFACT_LE = try Cache.lookup_thm "FACT_LE" with _ ->  prove
  ((parse_term "!n. 1 <= FACT n"),
   vREWRITE_TAC[vONE; vLE_SUC_LT; vFACT_LT]);;
 
-let vFACT_NZ = prove
+let vFACT_NZ = try Cache.lookup_thm "FACT_NZ" with _ ->  prove
  ((parse_term "!n. ~(FACT n = 0)"),
   vREWRITE_TAC[vGSYM vLT_NZ; vFACT_LT]);;
 
-let vFACT_MONO = prove
+let vFACT_MONO = try Cache.lookup_thm "FACT_MONO" with _ ->  prove
  ((parse_term "!m n. m <= n ==> FACT m <= FACT n"),
   vREPEAT vGEN_TAC ---->
   vDISCH_THEN(vX_CHOOSE_THEN (parse_term "d:num") vSUBST1_TAC -| vREWRITE_RULE[vLE_EXISTS]) ---->
@@ -943,11 +943,11 @@ let vFACT_MONO = prove
 (* More complicated theorems about exponential.                              *)
 (* ------------------------------------------------------------------------- *)
 
-let vEXP_LT_0 = prove
+let vEXP_LT_0 = try Cache.lookup_thm "EXP_LT_0" with _ ->  prove
  ((parse_term "!n x. 0 < x EXP n <=> ~(x = 0) \\/ (n = 0)"),
   vREWRITE_TAC[vGSYM vNOT_LE; vLE; vEXP_EQ_0; vDE_MORGAN_THM]);;
 
-let vLT_EXP = prove
+let vLT_EXP = try Cache.lookup_thm "LT_EXP" with _ ->  prove
  ((parse_term "!x m n. x EXP m < x EXP n <=> 2 <= x /\\ m < n \\/\n                                 (x = 0) /\\ ~(m = 0) /\\ (n = 0)"),
   vREPEAT vGEN_TAC ---->
   vASM_CASES_TAC (parse_term "x = 0") ----> vASM_REWRITE_TAC[] ++-->
@@ -994,25 +994,25 @@ let vLT_EXP = prove
         vCONV_TAC vCONTRAPOS_CONV ----> vREWRITE_TAC[vNOT_LE] ---->
         vREWRITE_TAC[vONE; vLT]]]]);;
 
-let vLE_EXP = prove
+let vLE_EXP = try Cache.lookup_thm "LE_EXP" with _ ->  prove
  ((parse_term "!x m n. x EXP m <= x EXP n <=>\n           if x = 0 then (m = 0) ==> (n = 0)\n           else (x = 1) \\/ m <= n"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vGSYM vNOT_LT; vLT_EXP; vDE_MORGAN_THM] ---->
   vCOND_CASES_TAC ----> vASM_REWRITE_TAC[vTWO; vLT; vONE] ---->
   vCONV_TAC(vEQT_INTRO -| vTAUT));;
 
-let vEQ_EXP = prove
+let vEQ_EXP = try Cache.lookup_thm "EQ_EXP" with _ ->  prove
  ((parse_term "!x m n. x EXP m = x EXP n <=>\n           if x = 0 then (m = 0 <=> n = 0)\n           else (x = 1) \\/ m = n"),
   vREPEAT vGEN_TAC ----> vGEN_REWRITE_TAC vLAND_CONV [vGSYM vLE_ANTISYM; vLE_EXP] ---->
   vCOND_CASES_TAC ----> vASM_REWRITE_TAC[vLE_EXP] ---->
   vREWRITE_TAC[vGSYM vLE_ANTISYM] ----> vCONV_TAC vTAUT);;
 
-let vEXP_MONO_LE_IMP = prove
+let vEXP_MONO_LE_IMP = try Cache.lookup_thm "EXP_MONO_LE_IMP" with _ ->  prove
  ((parse_term "!x y n. x <= y ==> x EXP n <= y EXP n"),
   vREWRITE_TAC[vRIGHT_FORALL_IMP_THM] ---->
   vREPEAT vGEN_TAC ----> vDISCH_TAC ---->
   vINDUCT_TAC ----> vASM_SIMP_TAC[vLE_MULT2; vEXP; vLE_REFL]);;
 
-let vEXP_MONO_LT_IMP = prove
+let vEXP_MONO_LT_IMP = try Cache.lookup_thm "EXP_MONO_LT_IMP" with _ ->  prove
  ((parse_term "!x y n. x < y /\\ ~(n = 0) ==> x EXP n < y EXP n"),
   vGEN_TAC ----> vGEN_TAC ----> vINDUCT_TAC ----> vREWRITE_TAC[vNOT_SUC; vEXP] ---->
   vDISCH_TAC ----> vMATCH_MP_TAC vLET_TRANS ----> vEXISTS_TAC (parse_term "x * y EXP n") ---->
@@ -1020,17 +1020,17 @@ let vEXP_MONO_LT_IMP = prove
                vEXP_EQ_0] ---->
   vASM_MESON_TAC[vCONJUNCT1 vLT]);;
 
-let vEXP_MONO_LE = prove
+let vEXP_MONO_LE = try Cache.lookup_thm "EXP_MONO_LE" with _ ->  prove
  ((parse_term "!x y n. x EXP n <= y EXP n <=> x <= y \\/ n = 0"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vSTRIP_TAC ---->
   vASM_SIMP_TAC[vEXP; vLE_REFL; vEXP_MONO_LE_IMP] ---->
   vASM_MESON_TAC[vNOT_LE; vEXP_MONO_LT_IMP]);;
 
-let vEXP_MONO_LT = prove
+let vEXP_MONO_LT = try Cache.lookup_thm "EXP_MONO_LT" with _ ->  prove
  ((parse_term "!x y n. x EXP n < y EXP n <=> x < y /\\ ~(n = 0)"),
   vREWRITE_TAC[vGSYM vNOT_LE; vEXP_MONO_LE; vDE_MORGAN_THM]);;
 
-let vEXP_MONO_EQ = prove
+let vEXP_MONO_EQ = try Cache.lookup_thm "EXP_MONO_EQ" with _ ->  prove
  ((parse_term "!x y n. x EXP n = y EXP n <=> x = y \\/ n = 0"),
   vREWRITE_TAC[vGSYM vLE_ANTISYM; vEXP_MONO_LE] ----> vCONV_TAC vTAUT);;
 
@@ -1038,7 +1038,7 @@ let vEXP_MONO_EQ = prove
 (* Division and modulus, via existence proof of their basic property.        *)
 (* ------------------------------------------------------------------------- *)
 
-let vDIVMOD_EXIST = prove
+let vDIVMOD_EXIST = try Cache.lookup_thm "DIVMOD_EXIST" with _ ->  prove
  ((parse_term "!m n. ~(n = 0) ==> ?q r. (m = q * n + r) /\\ r < n"),
   vREPEAT vSTRIP_TAC ----> vMP_TAC(vSPEC (parse_term "\\r. ?q. m = q * n + r") num_WOP) ---->
   vBETA_TAC ----> vDISCH_THEN(vMP_TAC -| fst -| vEQ_IMP_RULE) ---->
@@ -1058,7 +1058,7 @@ let vDIVMOD_EXIST = prove
   vREWRITE_TAC[vMULT_CLAUSES; vADD_ASSOC; vLT_ADDR] ---->
   vASM_REWRITE_TAC[vGSYM vNOT_LE; vLE]);;
 
-let vDIVMOD_EXIST_0 = prove
+let vDIVMOD_EXIST_0 = try Cache.lookup_thm "DIVMOD_EXIST_0" with _ ->  prove
  ((parse_term "!m n. ?q r. if n = 0 then q = 0 /\\ r = m\n               else m = q * n + r /\\ r < n"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ---->
   vASM_SIMP_TAC[vDIVMOD_EXIST; vRIGHT_EXISTS_AND_THM; vEXISTS_REFL]);;
@@ -1066,37 +1066,37 @@ let vDIVMOD_EXIST_0 = prove
 let vDIVISION_0 =  new_specification ["DIV"; "MOD"]
   (vREWRITE_RULE[vSKOLEM_THM] vDIVMOD_EXIST_0);;
 
-let vDIVISION = prove
+let vDIVISION = try Cache.lookup_thm "DIVISION" with _ ->  prove
  ((parse_term "!m n. ~(n = 0) ==> (m = m DIV n * n + m MOD n) /\\ m MOD n < n"),
   vMESON_TAC[vDIVISION_0]);;
 
-let vDIV_ZERO = prove
+let vDIV_ZERO = try Cache.lookup_thm "DIV_ZERO" with _ ->  prove
  ((parse_term "!n. n DIV 0 = 0"),
   vMESON_TAC[vDIVISION_0]);;
 
-let vMOD_ZERO = prove
+let vMOD_ZERO = try Cache.lookup_thm "MOD_ZERO" with _ ->  prove
  ((parse_term "!n. n MOD 0 = n"),
   vMESON_TAC[vDIVISION_0]);;
 
-let vDIVISION_SIMP = prove
+let vDIVISION_SIMP = try Cache.lookup_thm "DIVISION_SIMP" with _ ->  prove
  ((parse_term "(!m n. m DIV n * n + m MOD n = m) /\\\n   (!m n. n * m DIV n + m MOD n = m)"),
   vREPEAT vSTRIP_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ---->
   vASM_SIMP_TAC[vDIV_ZERO; vMOD_ZERO; vMULT_CLAUSES; vADD_CLAUSES] ---->
   vASM_MESON_TAC[vDIVISION; vMULT_SYM]);;
 
-let vEQ_DIVMOD = prove
+let vEQ_DIVMOD = try Cache.lookup_thm "EQ_DIVMOD" with _ ->  prove
  ((parse_term "!p m n. m DIV p = n DIV p /\\ m MOD p = n MOD p <=> m = n"),
   vMESON_TAC[vDIVISION_SIMP]);;
 
-let vMOD_LT_EQ = prove
+let vMOD_LT_EQ = try Cache.lookup_thm "MOD_LT_EQ" with _ ->  prove
  ((parse_term "!m n. m MOD n < n <=> ~(n = 0)"),
   vMESON_TAC[vDIVISION; vLE_1; vCONJUNCT1 vLT]);;
 
-let vMOD_LT_EQ_LT = prove
+let vMOD_LT_EQ_LT = try Cache.lookup_thm "MOD_LT_EQ_LT" with _ ->  prove
  ((parse_term "!m n. m MOD n < n <=> 0 < n"),
   vMESON_TAC[vDIVISION; vLE_1; vCONJUNCT1 vLT]);;
 
-let vDIVMOD_UNIQ_LEMMA = prove
+let vDIVMOD_UNIQ_LEMMA = try Cache.lookup_thm "DIVMOD_UNIQ_LEMMA" with _ ->  prove
  ((parse_term "!m n q1 r1 q2 r2. ((m = q1 * n + r1) /\\ r1 < n) /\\\n                     ((m = q2 * n + r2) /\\ r2 < n)\n                     ==> (q1 = q2) /\\ (r1 = r2)"),
   vREPEAT vGEN_TAC ----> vSTRIP_TAC ---->
   vSUBGOAL_THEN (parse_term "r1:num = r2") vMP_TAC ++-->
@@ -1118,7 +1118,7 @@ let vDIVMOD_UNIQ_LEMMA = prove
     vREPEAT (vUNDISCH_TAC (parse_term "r2 < n")) ---->
     vASM_CASES_TAC (parse_term "n = 0") ----> vASM_REWRITE_TAC[vGSYM vNOT_LE; vLE_0]]);;
 
-let vDIVMOD_UNIQ = prove
+let vDIVMOD_UNIQ = try Cache.lookup_thm "DIVMOD_UNIQ" with _ ->  prove
  ((parse_term "!m n q r. (m = q * n + r) /\\ r < n ==> (m DIV n = q) /\\ (m MOD n = r)"),
   vREPEAT vGEN_TAC ----> vDISCH_THEN(vCONJUNCTS_THEN vASSUME_TAC -| vGSYM) ---->
   vMATCH_MP_TAC vDIVMOD_UNIQ_LEMMA ---->
@@ -1127,12 +1127,12 @@ let vDIVMOD_UNIQ = prove
   vDISCH_TAC ----> vUNDISCH_TAC (parse_term "r < n") ---->
   vASM_REWRITE_TAC[vGSYM vNOT_LE; vLE_0]);;
 
-let vMOD_UNIQ = prove
+let vMOD_UNIQ = try Cache.lookup_thm "MOD_UNIQ" with _ ->  prove
  ((parse_term "!m n q r. (m = q * n + r) /\\ r < n ==> (m MOD n = r)"),
   vREPEAT vGEN_TAC ---->
   vDISCH_THEN(fun th -> vREWRITE_TAC[vMATCH_MP vDIVMOD_UNIQ th]));;
 
-let vDIV_UNIQ = prove
+let vDIV_UNIQ = try Cache.lookup_thm "DIV_UNIQ" with _ ->  prove
  ((parse_term "!m n q r. (m = q * n + r) /\\ r < n ==> (m DIV n = q)"),
   vREPEAT vGEN_TAC ---->
   vDISCH_THEN(fun th -> vREWRITE_TAC[vMATCH_MP vDIVMOD_UNIQ th]));;
@@ -1151,16 +1151,16 @@ let vDIV_MULT,vMOD_MULT = (vCONJ_PAIR -| prove)
   vMATCH_MP_TAC vDIVMOD_UNIQ ---->
   vASM_REWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES; vMULT_AC; vLT_NZ]);;
 
-let vMOD_LT = prove
+let vMOD_LT = try Cache.lookup_thm "MOD_LT" with _ ->  prove
  ((parse_term "!m n. m < n ==> m MOD n = m"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vMOD_UNIQ ---->
   vEXISTS_TAC (parse_term "0") ----> vASM_REWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES]);;
 
-let vMOD_EQ_SELF = prove
+let vMOD_EQ_SELF = try Cache.lookup_thm "MOD_EQ_SELF" with _ ->  prove
  ((parse_term "!m n. m MOD n = m <=> n = 0 \\/ m < n"),
   vMESON_TAC[vMOD_ZERO; vMOD_LT; vDIVISION; vLE_1]);;
 
-let vMOD_CASES = prove
+let vMOD_CASES = try Cache.lookup_thm "MOD_CASES" with _ ->  prove
  ((parse_term "!n p. n < 2 * p ==> n MOD p = if n < p then n else n - p"),
   vREPEAT vSTRIP_TAC ----> vCOND_CASES_TAC ----> vASM_SIMP_TAC[vMOD_LT] ---->
   vMATCH_MP_TAC vMOD_UNIQ ----> vEXISTS_TAC (parse_term "1") ---->
@@ -1168,12 +1168,12 @@ let vMOD_CASES = prove
    [vREWRITE_TAC[vMULT_CLAUSES] ----> vASM_MESON_TAC[vSUB_ADD; vADD_SYM];
     vASM_MESON_TAC[vLT_ADD_RCANCEL; vSUB_ADD; vMULT_2; vLT_ADD2]]);;
 
-let vMOD_ADD_CASES = prove
+let vMOD_ADD_CASES = try Cache.lookup_thm "MOD_ADD_CASES" with _ ->  prove
  ((parse_term "!m n p.\n        m < p /\\ n < p\n        ==> (m + n) MOD p = if m + n < p then m + n else (m + n) - p"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vMOD_CASES ---->
   vREWRITE_TAC[vMULT_2] ----> vASM_MESON_TAC[vLT_ADD2]);;
 
-let vMOD_EQ = prove
+let vMOD_EQ = try Cache.lookup_thm "MOD_EQ" with _ ->  prove
  ((parse_term "!m n p q. m = n + q * p ==> m MOD p = n MOD p"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "p = 0") ++-->
    [vASM_REWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES] ---->
@@ -1186,7 +1186,7 @@ let vMOD_EQ = prove
     vASM_REWRITE_TAC[vRIGHT_ADD_DISTRIB; vGSYM vADD_ASSOC] ---->
     vMATCH_ACCEPT_TAC vADD_SYM]);;
 
-let vDIV_LE = prove
+let vDIV_LE = try Cache.lookup_thm "DIV_LE" with _ ->  prove
  ((parse_term "!m n. m DIV n <= m"),
   vREPEAT vSTRIP_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ---->
   vASM_REWRITE_TAC[vDIV_ZERO; vLE_0] ---->
@@ -1194,7 +1194,7 @@ let vDIV_LE = prove
   vUNDISCH_TAC (parse_term "~(n = 0)") ----> vSPEC_TAC((parse_term "n:num"),(parse_term "n:num")) ---->
   vINDUCT_TAC ----> vREWRITE_TAC[vMULT_CLAUSES; vGSYM vADD_ASSOC; vLE_ADD]);;
 
-let vDIV_MUL_LE = prove
+let vDIV_MUL_LE = try Cache.lookup_thm "DIV_MUL_LE" with _ ->  prove
  ((parse_term "!m n. n * (m DIV n) <= m"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ---->
   vASM_REWRITE_TAC[vMULT_CLAUSES; vLE_0] ---->
@@ -1202,7 +1202,7 @@ let vDIV_MUL_LE = prove
   vDISCH_THEN(fun th -> vGEN_REWRITE_TAC vRAND_CONV [vCONJUNCT1 th]) ---->
   vREWRITE_TAC[vLE_ADD; vMULT_AC]);;
 
-let vMOD_LE_TWICE = prove
+let vMOD_LE_TWICE = try Cache.lookup_thm "MOD_LE_TWICE" with _ ->  prove
  ((parse_term "!m n. 0 < m /\\ m <= n ==> 2 * n MOD m <= n"),
   vREPEAT vSTRIP_TAC ----> vASM_CASES_TAC (parse_term "2 * m <= n") ++-->
    [vTRANS_TAC vLE_TRANS (parse_term "2 * m") ---->
@@ -1224,12 +1224,12 @@ let vDIV_1,vMOD_1 = (vCONJ_PAIR -| prove)
   vSIMP_TAC[vAND_FORALL_THM] ----> vGEN_TAC ----> vMATCH_MP_TAC vDIVMOD_UNIQ ---->
   vREWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES] ----> vREWRITE_TAC[vONE; vLT]);;
 
-let vDIV_LT = prove
+let vDIV_LT = try Cache.lookup_thm "DIV_LT" with _ ->  prove
  ((parse_term "!m n. m < n ==> m DIV n = 0"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vDIV_UNIQ ----> vEXISTS_TAC (parse_term "m:num") ---->
   vASM_REWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES]);;
 
-let vMOD_MOD = prove
+let vMOD_MOD = try Cache.lookup_thm "MOD_MOD" with _ ->  prove
  ((parse_term "!m n p. (m MOD (n * p)) MOD n = m MOD n"),
   vREPEAT vGEN_TAC ---->
   vASM_CASES_TAC (parse_term "p = 0") ----> vASM_REWRITE_TAC[vMOD_ZERO; vMULT_CLAUSES] ---->
@@ -1240,23 +1240,23 @@ let vMOD_MOD = prove
   vASM_REWRITE_TAC[vMULT_EQ_0; vMULT_AC; vADD_AC] ---->
   vDISCH_THEN(fun th -> vREWRITE_TAC[vGSYM th]));;
 
-let vMOD_MOD_REFL = prove
+let vMOD_MOD_REFL = try Cache.lookup_thm "MOD_MOD_REFL" with _ ->  prove
  ((parse_term "!m n. (m MOD n) MOD n = m MOD n"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ----> vASM_REWRITE_TAC[vMOD_ZERO] ---->
   vMP_TAC(vSPECL [(parse_term "m:num"); (parse_term "n:num"); (parse_term "1")] vMOD_MOD) ---->
   vASM_REWRITE_TAC[vMULT_CLAUSES; vMULT_EQ_0] ---->
   vREWRITE_TAC[vONE; vNOT_SUC]);;
 
-let vMOD_MOD_LE = prove
+let vMOD_MOD_LE = try Cache.lookup_thm "MOD_MOD_LE" with _ ->  prove
  ((parse_term "!m n p. ~(n = 0) /\\ n <= p ==> (m MOD n) MOD p = m MOD n"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vMOD_LT ---->
   vASM_MESON_TAC[vDIVISION; vLTE_TRANS]);;
 
-let vMOD_EVEN_2 = prove
+let vMOD_EVEN_2 = try Cache.lookup_thm "MOD_EVEN_2" with _ ->  prove
  ((parse_term "!m n. EVEN n ==> m MOD n MOD 2 = m MOD 2"),
   vSIMP_TAC[vEVEN_EXISTS; vLEFT_IMP_EXISTS_THM; vMOD_MOD]);;
 
-let vDIV_MULT2 = prove
+let vDIV_MULT2 = try Cache.lookup_thm "DIV_MULT2" with _ ->  prove
  ((parse_term "!m n p. ~(m = 0) ==> ((m * n) DIV (m * p) = n DIV p)"),
   vREPEAT vSTRIP_TAC ----> vASM_CASES_TAC (parse_term "p = 0") ---->
   vASM_REWRITE_TAC[vDIV_ZERO; vMULT_CLAUSES] ---->
@@ -1266,7 +1266,7 @@ let vDIV_MULT2 = prove
   vREWRITE_TAC[vGSYM vLEFT_ADD_DISTRIB; vEQ_MULT_LCANCEL] ---->
   vASM_SIMP_TAC[vGSYM vDIVISION]);;
 
-let vMOD_MULT2 = prove
+let vMOD_MULT2 = try Cache.lookup_thm "MOD_MULT2" with _ ->  prove
  ((parse_term "!m n p. (m * n) MOD (m * p) = m * n MOD p"),
   vREPEAT vSTRIP_TAC ----> vASM_CASES_TAC (parse_term "p = 0") ---->
   vASM_REWRITE_TAC[vMOD_ZERO; vMULT_CLAUSES] ----> vASM_CASES_TAC (parse_term "m = 0") ---->
@@ -1277,7 +1277,7 @@ let vMOD_MULT2 = prove
   vREWRITE_TAC[vGSYM vLEFT_ADD_DISTRIB; vEQ_MULT_LCANCEL] ---->
   vASM_SIMP_TAC[vGSYM vDIVISION]);;
 
-let vMOD_EXISTS = prove
+let vMOD_EXISTS = try Cache.lookup_thm "MOD_EXISTS" with _ ->  prove
  ((parse_term "!m n. (?q. m = n * q) <=> if n = 0 then (m = 0) else (m MOD n = 0)"),
   vREPEAT vGEN_TAC ----> vCOND_CASES_TAC ----> vASM_REWRITE_TAC[vMULT_CLAUSES] ---->
   vEQ_TAC ----> vSTRIP_TAC ----> vASM_SIMP_TAC[vMOD_MULT] ---->
@@ -1286,7 +1286,7 @@ let vMOD_EXISTS = prove
    (fun th -> vGEN_REWRITE_TAC vLAND_CONV [th]) ++-->
    [vASM_MESON_TAC[vDIVISION]; vASM_REWRITE_TAC[vADD_CLAUSES; vMULT_AC]]);;
 
-let vLE_RDIV_EQ = prove
+let vLE_RDIV_EQ = try Cache.lookup_thm "LE_RDIV_EQ" with _ ->  prove
  ((parse_term "!a b n. ~(a = 0) ==> (n <= b DIV a <=> a * n <= b)"),
   vREPEAT vSTRIP_TAC ----> vEQ_TAC ----> vDISCH_TAC ++-->
    [vMATCH_MP_TAC vLE_TRANS ----> vEXISTS_TAC (parse_term "a * (b DIV a)") ---->
@@ -1298,40 +1298,40 @@ let vLE_RDIV_EQ = prove
       vASM_MESON_TAC[vDIVISION];
       vASM_REWRITE_TAC[vLT_MULT_LCANCEL; vGSYM vADD1; vLT_SUC_LE]]]);;
 
-let vRDIV_LT_EQ = prove
+let vRDIV_LT_EQ = try Cache.lookup_thm "RDIV_LT_EQ" with _ ->  prove
  ((parse_term "!a b n. ~(a = 0) ==> (b DIV a < n <=> b < a * n)"),
   vSIMP_TAC[vGSYM vNOT_LE; vLE_RDIV_EQ]);;
 
-let vLE_LDIV_EQ = prove
+let vLE_LDIV_EQ = try Cache.lookup_thm "LE_LDIV_EQ" with _ ->  prove
  ((parse_term "!a b n. ~(a = 0) ==> (b DIV a <= n <=> b < a * (n + 1))"),
   vREPEAT vSTRIP_TAC ----> vONCE_REWRITE_TAC[vGSYM vNOT_LT] ---->
   vGEN_REWRITE_TAC (vLAND_CONV -| vRAND_CONV) [vGSYM vLE_SUC_LT] ---->
   vASM_SIMP_TAC[vLE_RDIV_EQ] ----> vREWRITE_TAC[vNOT_LT; vNOT_LE; vADD1]);;
 
-let vLDIV_LT_EQ = prove
+let vLDIV_LT_EQ = try Cache.lookup_thm "LDIV_LT_EQ" with _ ->  prove
  ((parse_term "!a b n. ~(a = 0) ==> (n < b DIV a <=> a * (n + 1) <= b)"),
   vSIMP_TAC[vGSYM vNOT_LE; vLE_LDIV_EQ]);;
 
-let vLE_LDIV = prove
+let vLE_LDIV = try Cache.lookup_thm "LE_LDIV" with _ ->  prove
  ((parse_term "!a b n. ~(a = 0) /\\ b <= a * n ==> b DIV a <= n"),
   vSIMP_TAC[vLE_LDIV_EQ; vLEFT_ADD_DISTRIB; vMULT_CLAUSES] ---->
   vMESON_TAC[vLT_ADD; vLT_NZ; vLET_TRANS]);;
 
-let vDIV_MONO = prove
+let vDIV_MONO = try Cache.lookup_thm "DIV_MONO" with _ ->  prove
  ((parse_term "!m n p. m <= n ==> m DIV p <= n DIV p"),
   vREPEAT vSTRIP_TAC ----> vASM_CASES_TAC (parse_term "p = 0") ---->
   vASM_REWRITE_TAC[vDIV_ZERO; vLE_REFL] ---->
   vMATCH_MP_TAC(vMESON[vLE_REFL] (parse_term "(!k:num. k <= a ==> k <= b) ==> a <= b")) ---->
   vASM_SIMP_TAC[vLE_RDIV_EQ] ----> vASM_MESON_TAC[vLE_TRANS]);;
 
-let vDIV_MONO_LT = prove
+let vDIV_MONO_LT = try Cache.lookup_thm "DIV_MONO_LT" with _ ->  prove
  ((parse_term "!m n p. ~(p = 0) /\\ m + p <= n ==> m DIV p < n DIV p"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC(vMESON[vADD1; vLE_SUC_LT; vLE_REFL]
    (parse_term "(!k:num. k <= a ==> k + 1 <= b) ==> a < b")) ---->
   vASM_SIMP_TAC[vLE_RDIV_EQ; vLEFT_ADD_DISTRIB; vMULT_CLAUSES] ---->
   vASM_MESON_TAC[vLE_REFL; vLE_TRANS; vLE_ADD2; vADD_SYM]);;
 
-let vDIV_EQ_0 = prove
+let vDIV_EQ_0 = try Cache.lookup_thm "DIV_EQ_0" with _ ->  prove
  ((parse_term "!m n. ~(n = 0) ==> ((m DIV n = 0) <=> m < n)"),
   vREPEAT(vSTRIP_TAC |---> vEQ_TAC) ++-->
    [vFIRST_ASSUM(vSUBST1_TAC -| vCONJUNCT1 -| vSPEC (parse_term "m:num") -| vMATCH_MP vDIVISION) ---->
@@ -1339,12 +1339,12 @@ let vDIV_EQ_0 = prove
     vMATCH_MP_TAC vDIV_UNIQ ----> vEXISTS_TAC (parse_term "m:num") ---->
     vASM_REWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES]]);;
 
-let vMOD_DIV_EQ_0 = prove
+let vMOD_DIV_EQ_0 = try Cache.lookup_thm "MOD_DIV_EQ_0" with _ ->  prove
  ((parse_term "!m n. ~(n = 0) ==> (m MOD n) DIV n = 0"),
   vREPEAT vGEN_TAC ---->
   vDISCH_THEN (fun th -> vIMP_REWRITE_TAC [th; vDIV_EQ_0; vMOD_LT_EQ]));;
 
-let vMOD_EQ_0 = prove
+let vMOD_EQ_0 = try Cache.lookup_thm "MOD_EQ_0" with _ ->  prove
  ((parse_term "!m n. (m MOD n = 0) <=> ?q. m = q * n"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ---->
   vASM_REWRITE_TAC[vMULT_CLAUSES; vMOD_ZERO] ---->
@@ -1354,7 +1354,7 @@ let vMOD_EQ_0 = prove
     vMATCH_MP_TAC vMOD_UNIQ ----> vASM_SIMP_TAC[vADD_CLAUSES; vMULT_AC] ---->
     vASM_MESON_TAC[vNOT_LE; vCONJUNCT1 vLE]]);;
 
-let vDIV_EQ_SELF = prove
+let vDIV_EQ_SELF = try Cache.lookup_thm "DIV_EQ_SELF" with _ ->  prove
  ((parse_term "!m n. m DIV n = m <=> m = 0 \\/ n = 1"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "m = 0") ----> vASM_REWRITE_TAC[vDIV_0] ---->
   vASM_CASES_TAC (parse_term "n = 1") ----> vASM_REWRITE_TAC[vDIV_1] ---->
@@ -1364,15 +1364,15 @@ let vDIV_EQ_SELF = prove
   vASM_REWRITE_TAC[vLT_MULT_RCANCEL] ---->
   vREWRITE_TAC[vGSYM vNOT_LE; vONE; vLE] ----> vASM_REWRITE_TAC[vGSYM vONE]);;
 
-let vMOD_REFL = prove
+let vMOD_REFL = try Cache.lookup_thm "MOD_REFL" with _ ->  prove
  ((parse_term "!n. n MOD n = 0"),
   vSIMP_TAC[vMOD_EQ_0] ----> vMESON_TAC[vMULT_CLAUSES]);;
 
-let vEVEN_MOD = prove
+let vEVEN_MOD = try Cache.lookup_thm "EVEN_MOD" with _ ->  prove
  ((parse_term "!n. EVEN(n) <=> n MOD 2 = 0"),
   vREWRITE_TAC[vEVEN_EXISTS; vMOD_EQ_0] ----> vMESON_TAC[vMULT_SYM]);;
 
-let vODD_MOD = prove
+let vODD_MOD = try Cache.lookup_thm "ODD_MOD" with _ ->  prove
  ((parse_term "!n. ODD(n) <=> n MOD 2 = 1"),
   vGEN_TAC ----> vREWRITE_TAC[vGSYM vNOT_EVEN; vEVEN_MOD] ---->
   vSUBGOAL_THEN (parse_term "n MOD 2 < 2") vMP_TAC ++-->
@@ -1380,30 +1380,30 @@ let vODD_MOD = prove
   vSPEC_TAC((parse_term "n MOD 2"),(parse_term "n:num")) ---->
   vREWRITE_TAC[vTWO; vONE; vLT] ----> vMESON_TAC[vNOT_SUC]);;
 
-let vMOD_2_CASES = prove
+let vMOD_2_CASES = try Cache.lookup_thm "MOD_2_CASES" with _ ->  prove
  ((parse_term "!n. n MOD 2 = if EVEN n then 0 else 1"),
   vMESON_TAC[vEVEN_MOD; vODD_MOD; vNOT_ODD]);;
 
-let vEVEN_MOD_EVEN = prove
+let vEVEN_MOD_EVEN = try Cache.lookup_thm "EVEN_MOD_EVEN" with _ ->  prove
  ((parse_term "!m n. EVEN n ==> (EVEN(m MOD n) <=> EVEN m)"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vEVEN_MOD] ---->
   vASM_SIMP_TAC[vMOD_EVEN_2]);;
 
-let vODD_MOD_EVEN = prove
+let vODD_MOD_EVEN = try Cache.lookup_thm "ODD_MOD_EVEN" with _ ->  prove
  ((parse_term "!m n. EVEN n ==> (ODD(m MOD n) <=> ODD m)"),
   vSIMP_TAC[vGSYM vNOT_EVEN; vEVEN_MOD_EVEN]);;
 
-let vHALF_DOUBLE = prove
+let vHALF_DOUBLE = try Cache.lookup_thm "HALF_DOUBLE" with _ ->  prove
  ((parse_term "(!n. (2 * n) DIV 2 = n) /\\ (!n. (n * 2) DIV 2 = n)"),
   vGEN_REWRITE_TAC (vRAND_CONV -| vONCE_DEPTH_CONV) [vMULT_SYM] ---->
   vSIMP_TAC[vDIV_MULT; vTWO; vNOT_SUC]);;
 
-let vDOUBLE_HALF = prove
+let vDOUBLE_HALF = try Cache.lookup_thm "DOUBLE_HALF" with _ ->  prove
  ((parse_term "(!n. EVEN n ==> 2 * n DIV 2 = n) /\\\n   (!n. EVEN n ==> n DIV 2 * 2 = n)"),
   vSIMP_TAC[vEVEN_EXISTS; vLEFT_IMP_EXISTS_THM; vHALF_DOUBLE] ---->
   vREWRITE_TAC[vMULT_SYM]);;
 
-let vMOD_MULT_RMOD = prove
+let vMOD_MULT_RMOD = try Cache.lookup_thm "MOD_MULT_RMOD" with _ ->  prove
  ((parse_term "!m n p. (m * (p MOD n)) MOD n = (m * p) MOD n"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ----> vASM_REWRITE_TAC[vMOD_ZERO] ---->
   vCONV_TAC vSYM_CONV ----> vMATCH_MP_TAC vMOD_EQ ----> vEXISTS_TAC (parse_term "m * p DIV n") ---->
@@ -1411,15 +1411,15 @@ let vMOD_MULT_RMOD = prove
   vREWRITE_TAC[vEQ_MULT_LCANCEL] ----> vDISJ2_TAC ---->
   vONCE_REWRITE_TAC[vADD_SYM] ----> vASM_SIMP_TAC[vDIVISION]);;
 
-let vMOD_MULT_LMOD = prove
+let vMOD_MULT_LMOD = try Cache.lookup_thm "MOD_MULT_LMOD" with _ ->  prove
  ((parse_term "!m n p. ((m MOD n) * p) MOD n = (m * p) MOD n"),
   vONCE_REWRITE_TAC[vMULT_SYM] ----> vSIMP_TAC[vMOD_MULT_RMOD]);;
 
-let vMOD_MULT_MOD2 = prove
+let vMOD_MULT_MOD2 = try Cache.lookup_thm "MOD_MULT_MOD2" with _ ->  prove
  ((parse_term "!m n p. ((m MOD n) * (p MOD n)) MOD n = (m * p) MOD n"),
   vSIMP_TAC[vMOD_MULT_RMOD; vMOD_MULT_LMOD]);;
 
-let vMOD_EXP_MOD = prove
+let vMOD_EXP_MOD = try Cache.lookup_thm "MOD_EXP_MOD" with _ ->  prove
  ((parse_term "!m n p. ((m MOD n) EXP p) MOD n = (m EXP p) MOD n"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ---->
   vASM_REWRITE_TAC[vMOD_ZERO] ----> vSPEC_TAC((parse_term "p:num"),(parse_term "p:num")) ---->
@@ -1429,7 +1429,7 @@ let vMOD_EXP_MOD = prove
    [vALL_TAC; vASM_REWRITE_TAC[]] ---->
   vASM_SIMP_TAC[vMOD_MULT_RMOD]);;
 
-let vMOD_MULT_ADD = prove
+let vMOD_MULT_ADD = try Cache.lookup_thm "MOD_MULT_ADD" with _ ->  prove
  ((parse_term "(!m n p. (m * n + p) MOD n = p MOD n) /\\\n   (!m n p. (n * m + p) MOD n = p MOD n) /\\\n   (!m n p. (p + m * n) MOD n = p MOD n) /\\\n   (!m n p. (p + n * m) MOD n = p MOD n)"),
   vMATCH_MP_TAC(vTAUT (parse_term "(p ==> q) /\\ p ==> p /\\ q")) ---->
   vCONJ_TAC ++--> [vSIMP_TAC[vMULT_AC; vADD_AC]; vREPEAT vGEN_TAC] ---->
@@ -1437,7 +1437,7 @@ let vMOD_MULT_ADD = prove
   vMATCH_MP_TAC vMOD_UNIQ ----> vEXISTS_TAC (parse_term "m + p DIV n") ---->
   vASM_SIMP_TAC[vRIGHT_ADD_DISTRIB; vGSYM vADD_ASSOC; vEQ_ADD_LCANCEL; vDIVISION]);;
 
-let vDIV_MULT_ADD = prove
+let vDIV_MULT_ADD = try Cache.lookup_thm "DIV_MULT_ADD" with _ ->  prove
  ((parse_term "(!a b n. ~(n = 0) ==> (a * n + b) DIV n = a + b DIV n) /\\\n   (!a b n. ~(n = 0) ==> (n * a + b) DIV n = a + b DIV n) /\\\n   (!a b n. ~(n = 0) ==> (b + a * n) DIV n = b DIV n + a) /\\\n   (!a b n. ~(n = 0) ==> (b + n * a) DIV n = b DIV n + a)"),
   vMATCH_MP_TAC(vTAUT (parse_term "(p ==> q) /\\ p ==> p /\\ q")) ---->
   vCONJ_TAC ++--> [vSIMP_TAC[vMULT_AC; vADD_AC]; vREPEAT vSTRIP_TAC] ---->
@@ -1445,7 +1445,7 @@ let vDIV_MULT_ADD = prove
   vREWRITE_TAC[vRIGHT_ADD_DISTRIB; vGSYM vADD_ASSOC] ---->
   vASM_MESON_TAC[vDIVISION]);;
 
-let vMOD_ADD_MOD = prove
+let vMOD_ADD_MOD = try Cache.lookup_thm "MOD_ADD_MOD" with _ ->  prove
  ((parse_term "!a b n. (a MOD n + b MOD n) MOD n = (a + b) MOD n"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ---->
   vASM_REWRITE_TAC[vMOD_ZERO] ---->
@@ -1454,7 +1454,7 @@ let vMOD_ADD_MOD = prove
   vONCE_REWRITE_TAC[vAC vADD_AC (parse_term "(a + b) + (c + d) = (c + a) + (d + b)")] ---->
   vBINOP_TAC ----> vASM_SIMP_TAC[vDIVISION]);;
 
-let vDIV_ADD_MOD = prove
+let vDIV_ADD_MOD = try Cache.lookup_thm "DIV_ADD_MOD" with _ ->  prove
  ((parse_term "!a b n. ~(n = 0)\n           ==> (((a + b) MOD n = a MOD n + b MOD n) <=>\n                ((a + b) DIV n = a DIV n + b DIV n))"),
   vREPEAT vSTRIP_TAC ----> vFIRST_ASSUM(vMP_TAC -| vMATCH_MP vDIVISION) ---->
   vDISCH_THEN(fun th -> vMAP_EVERY (vMP_TAC -| vCONJUNCT1 -| vC vSPEC th)
@@ -1468,14 +1468,14 @@ let vDIV_ADD_MOD = prove
   vASM_REWRITE_TAC[vEQ_ADD_RCANCEL; vEQ_ADD_LCANCEL; vEQ_MULT_RCANCEL] ---->
   vREWRITE_TAC[vEQ_SYM_EQ]);;
 
-let vDIV_REFL = prove
+let vDIV_REFL = try Cache.lookup_thm "DIV_REFL" with _ ->  prove
  ((parse_term "!n. ~(n = 0) ==> (n DIV n = 1)"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vDIV_UNIQ ---->
   vEXISTS_TAC (parse_term "0") ----> vREWRITE_TAC[vADD_CLAUSES; vMULT_CLAUSES] ---->
   vPOP_ASSUM vMP_TAC ----> vSPEC_TAC((parse_term "n:num"),(parse_term "n:num")) ---->
   vINDUCT_TAC ----> vREWRITE_TAC[vLT_0]);;
 
-let vMOD_LE = prove
+let vMOD_LE = try Cache.lookup_thm "MOD_LE" with _ ->  prove
  ((parse_term "!m n. m MOD n <= m"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ---->
   vASM_REWRITE_TAC[vMOD_ZERO; vLE_REFL] ----> vFIRST_ASSUM
@@ -1483,14 +1483,14 @@ let vMOD_LE = prove
    [vMATCH_MP vDIVISION th]) ---->
   vONCE_REWRITE_TAC[vADD_SYM] ----> vREWRITE_TAC[vLE_ADD]);;
 
-let vDIV_MONO2 = prove
+let vDIV_MONO2 = try Cache.lookup_thm "DIV_MONO2" with _ ->  prove
  ((parse_term "!m n p. ~(p = 0) /\\ p <= m ==> n DIV m <= n DIV p"),
   vREPEAT vSTRIP_TAC ----> vASM_SIMP_TAC[vLE_RDIV_EQ] ---->
   vMATCH_MP_TAC vLE_TRANS ----> vEXISTS_TAC (parse_term "m * n DIV m") ---->
   vASM_REWRITE_TAC[vLE_MULT_RCANCEL] ----> vONCE_REWRITE_TAC[vMULT_SYM] ---->
   vMP_TAC(vSPECL [(parse_term "n:num"); (parse_term "m:num")] vDIVISION) ----> vASM_MESON_TAC[vLE_ADD; vLE]);;
 
-let vDIV_LE_EXCLUSION = prove
+let vDIV_LE_EXCLUSION = try Cache.lookup_thm "DIV_LE_EXCLUSION" with _ ->  prove
  ((parse_term "!a b c d. ~(b = 0) /\\ b * c < (a + 1) * d ==> c DIV d <= a DIV b"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "d = 0") ---->
   vASM_REWRITE_TAC[vMULT_CLAUSES; vLT] ----> vSTRIP_TAC ---->
@@ -1502,14 +1502,14 @@ let vDIV_LE_EXCLUSION = prove
   vASM_SIMP_TAC[vLE_MULT_LCANCEL; vLT_MULT_RCANCEL; vLE_RDIV_EQ] ---->
   vREWRITE_TAC[vGSYM vADD1; vLT_SUC_LE]);;
 
-let vDIV_EQ_EXCLUSION = prove
+let vDIV_EQ_EXCLUSION = try Cache.lookup_thm "DIV_EQ_EXCLUSION" with _ ->  prove
  ((parse_term "!a b c d.\n        b * c < (a + 1) * d /\\ a * d < (c + 1) * b ==> (a DIV b = c DIV d)"),
   vREPEAT vGEN_TAC ---->
   vASM_CASES_TAC (parse_term "b = 0") ----> vASM_REWRITE_TAC[vMULT_CLAUSES; vLT] ---->
   vASM_CASES_TAC (parse_term "d = 0") ----> vASM_REWRITE_TAC[vMULT_CLAUSES; vLT] ---->
   vASM_MESON_TAC[vMULT_SYM; vLE_ANTISYM; vDIV_LE_EXCLUSION]);;
 
-let vMULT_DIV_LE = prove
+let vMULT_DIV_LE = try Cache.lookup_thm "MULT_DIV_LE" with _ ->  prove
  ((parse_term "!m n p. m * (n DIV p) <= (m * n) DIV p"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "p = 0") ---->
   vASM_REWRITE_TAC[vLE_REFL; vDIV_ZERO; vMULT_CLAUSES] ---->
@@ -1519,7 +1519,7 @@ let vMULT_DIV_LE = prove
     vGEN_REWRITE_TAC (vRAND_CONV -| vRAND_CONV) [vCONJUNCT1 th]) ---->
   vREWRITE_TAC[vLEFT_ADD_DISTRIB] ----> vREWRITE_TAC[vMULT_AC; vLE_ADD]);;
 
-let vDIV_DIV = prove
+let vDIV_DIV = try Cache.lookup_thm "DIV_DIV" with _ ->  prove
  ((parse_term "!m n p. (m DIV n) DIV p = m DIV (n * p)"),
   vREPEAT vGEN_TAC ---->
   vASM_CASES_TAC (parse_term "p = 0") ----> vASM_REWRITE_TAC[vMULT_CLAUSES; vDIV_ZERO] ---->
@@ -1529,7 +1529,7 @@ let vDIV_DIV = prove
   vMATCH_MP_TAC(vMESON[vLE_ANTISYM] (parse_term "(!k. k <= m <=> k <= n) ==> m = n")) ---->
   vASM_SIMP_TAC[vLE_RDIV_EQ; vMULT_EQ_0; vMULT_ASSOC]);;
 
-let vDIV_MOD = prove
+let vDIV_MOD = try Cache.lookup_thm "DIV_MOD" with _ ->  prove
  ((parse_term "!m n p. (m DIV n) MOD p = (m MOD (n * p)) DIV n"),
   vREPEAT vGEN_TAC ---->
   vASM_CASES_TAC (parse_term "p = 0") ----> vASM_REWRITE_TAC[vMOD_ZERO; vMULT_CLAUSES] ---->
@@ -1543,7 +1543,7 @@ let vDIV_MOD = prove
     vASM_SIMP_TAC[vLE_RDIV_EQ; vMULT_EQ_0; vDIV_DIV; vLEFT_ADD_DISTRIB]] ---->
   vREWRITE_TAC[vMULT_AC] ----> vMESON_TAC[vADD_SYM; vMULT_SYM; vLE_ADD_RCANCEL]);;
 
-let vMOD_MULT_MOD = prove
+let vMOD_MULT_MOD = try Cache.lookup_thm "MOD_MULT_MOD" with _ ->  prove
  ((parse_term "!m n p. m MOD (n * p) = n * (m DIV n) MOD p + m MOD n"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ---->
   vASM_REWRITE_TAC[vMULT_CLAUSES; vMOD_ZERO; vADD_CLAUSES] ---->
@@ -1558,7 +1558,7 @@ let vMOD_MULT_MOD = prove
   vREWRITE_TAC[vGSYM vLEFT_ADD_DISTRIB; vADD_ASSOC; vGSYM vDIV_DIV] ---->
   vREWRITE_TAC[vDIVISION_SIMP]);;
 
-let vMOD_MOD_EXP_MIN = prove
+let vMOD_MOD_EXP_MIN = try Cache.lookup_thm "MOD_MOD_EXP_MIN" with _ ->  prove
  ((parse_term "!x p m n. x MOD (p EXP m) MOD (p EXP n) = x MOD (p EXP (MIN m n))"),
   vREPEAT vSTRIP_TAC ----> vASM_CASES_TAC (parse_term "p = 0") ++-->
    [vASM_REWRITE_TAC[vEXP_ZERO; vMIN] ----> vASM_CASES_TAC (parse_term "m = 0") ---->
@@ -1587,19 +1587,19 @@ let vDIV_EXP,vMOD_EXP = (vCONJ_PAIR -| prove)
   vREWRITE_TAC[vLT; vGSYM vNOT_LT; vONE; vTWO] ---->
   vASM_REWRITE_TAC[vSYM vONE; vGSYM vNOT_LE]);;
 
-let vFORALL_LT_MOD_THM = prove
+let vFORALL_LT_MOD_THM = try Cache.lookup_thm "FORALL_LT_MOD_THM" with _ ->  prove
  ((parse_term "!P n. (!a. a < n ==> P a) <=> n = 0 \\/ !a. P(a MOD n)"),
   vMESON_TAC[vLT; vMOD_EQ_SELF; vMOD_LT_EQ]);;
 
-let vFORALL_MOD_THM = prove
+let vFORALL_MOD_THM = try Cache.lookup_thm "FORALL_MOD_THM" with _ ->  prove
  ((parse_term "!P n. ~(n = 0) ==> ((!a. P(a MOD n)) <=> (!a. a < n ==> P a))"),
   vSIMP_TAC[vFORALL_LT_MOD_THM]);;
 
-let vEXISTS_LT_MOD_THM = prove
+let vEXISTS_LT_MOD_THM = try Cache.lookup_thm "EXISTS_LT_MOD_THM" with _ ->  prove
  ((parse_term "!P n. (?a. a < n /\\ P a) <=> ~(n = 0) /\\ ?a. P(a MOD n)"),
   vMESON_TAC[vLT; vMOD_EQ_SELF; vMOD_LT_EQ]);;
 
-let vEXISTS_MOD_THM = prove
+let vEXISTS_MOD_THM = try Cache.lookup_thm "EXISTS_MOD_THM" with _ ->  prove
  ((parse_term "!P n. ~(n = 0) ==> ((?a. P(a MOD n)) <=> (?a. a < n /\\ P a))"),
   vSIMP_TAC[vEXISTS_LT_MOD_THM]);;
 
@@ -1608,33 +1608,33 @@ let vEXISTS_MOD_THM = prove
 (* We have versions that introduce universal or existential quantifiers.     *)
 (* ------------------------------------------------------------------------- *)
 
-let vPRE_ELIM_THM = prove
+let vPRE_ELIM_THM = try Cache.lookup_thm "PRE_ELIM_THM" with _ ->  prove
  ((parse_term "P(PRE n) <=> !m. n = SUC m \\/ m = 0 /\\ n = 0 ==> P m"),
   vSPEC_TAC((parse_term "n:num"),(parse_term "n:num")) ----> vINDUCT_TAC ---->
   vREWRITE_TAC[vNOT_SUC; vSUC_INJ; vPRE] ----> vMESON_TAC[]);;
 
-let vPRE_ELIM_THM' = prove
+let vPRE_ELIM_THM' = try Cache.lookup_thm "PRE_ELIM_THM'" with _ ->  prove
  ((parse_term "P(PRE n) <=> ?m. (n = SUC m \\/ m = 0 /\\ n = 0) /\\ P m"),
   vMP_TAC(vINST [(parse_term "\\x:num. ~P x"),(parse_term "P:num->bool")] vPRE_ELIM_THM) ----> vMESON_TAC[]);;
 
-let vSUB_ELIM_THM = prove
+let vSUB_ELIM_THM = try Cache.lookup_thm "SUB_ELIM_THM" with _ ->  prove
  ((parse_term "P(a - b) <=> !d. a = b + d \\/ a < b /\\ d = 0 ==> P d"),
   vDISJ_CASES_TAC(vSPECL [(parse_term "a:num"); (parse_term "b:num")] vLTE_CASES) ++-->
    [vASM_MESON_TAC[vNOT_LT; vSUB_EQ_0; vLT_IMP_LE; vLE_ADD]; vALL_TAC] ---->
   vFIRST_ASSUM(vX_CHOOSE_THEN (parse_term "e:num") vSUBST1_TAC -| vREWRITE_RULE[vLE_EXISTS]) ---->
   vSIMP_TAC[vADD_SUB2; vGSYM vNOT_LE; vLE_ADD; vEQ_ADD_LCANCEL] ----> vMESON_TAC[]);;
 
-let vSUB_ELIM_THM' = prove
+let vSUB_ELIM_THM' = try Cache.lookup_thm "SUB_ELIM_THM'" with _ ->  prove
  ((parse_term "P(a - b) <=> ?d. (a = b + d \\/ a < b /\\ d = 0) /\\ P d"),
   vMP_TAC(vINST [(parse_term "\\x:num. ~P x"),(parse_term "P:num->bool")] vSUB_ELIM_THM) ----> vMESON_TAC[]);;
 
-let vDIVMOD_ELIM_THM = prove
+let vDIVMOD_ELIM_THM = try Cache.lookup_thm "DIVMOD_ELIM_THM" with _ ->  prove
  ((parse_term "P (m DIV n) (m MOD n) <=>\n        !q r. n = 0 /\\ q = 0 /\\ r = m \\/ m = q * n + r /\\ r < n ==> P q r"),
   vASM_CASES_TAC (parse_term "n = 0") ----> vASM_REWRITE_TAC[] ++-->
    [vASM_MESON_TAC[vDIVISION_0; vLT];
     vFIRST_ASSUM(vMP_TAC -| vMATCH_MP vDIVISION) ----> vMESON_TAC[vDIVMOD_UNIQ]]);;
 
-let vDIVMOD_ELIM_THM' = prove
+let vDIVMOD_ELIM_THM' = try Cache.lookup_thm "DIVMOD_ELIM_THM'" with _ ->  prove
  ((parse_term "P (m DIV n) (m MOD n) <=>\n        ?q r. (n = 0 /\\ q = 0 /\\ r = m \\/ m = q * n + r /\\ r < n) /\\ P q r"),
   vMP_TAC(vINST [(parse_term "\\x:num y:num. ~P x y"),(parse_term "P:num->num->bool")] vDIVMOD_ELIM_THM) ---->
   vMESON_TAC[]);;
@@ -1705,35 +1705,35 @@ parse_as_binder "minimal";;
 let minimal = new_definition
   (parse_term "(minimal) (P:num->bool) = @n. P n /\\ !m. m < n ==> ~(P m)");;
 
-let vMINIMAL = prove
+let vMINIMAL = try Cache.lookup_thm "MINIMAL" with _ ->  prove
  ((parse_term "!P. (?n. P n) <=> P((minimal) P) /\\ (!m. m < (minimal) P ==> ~(P m))"),
   vGEN_TAC ----> vREWRITE_TAC[minimal] ----> vCONV_TAC(vRAND_CONV vSELECT_CONV) ---->
   vREWRITE_TAC[vGSYM num_WOP]);;
 
-let vMINIMAL_UNIQUE = prove
+let vMINIMAL_UNIQUE = try Cache.lookup_thm "MINIMAL_UNIQUE" with _ ->  prove
  ((parse_term "!P n. P n /\\ (!m. m < n ==> ~P m) ==> (minimal) P = n"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[minimal] ---->
   vMATCH_MP_TAC vSELECT_UNIQUE ----> vASM_MESON_TAC[vLT_CASES]);;
 
-let vLE_MINIMAL = prove
+let vLE_MINIMAL = try Cache.lookup_thm "LE_MINIMAL" with _ ->  prove
  ((parse_term "!P n.\n        (?r. P r) ==> (n <= (minimal) P <=> !i. P i ==> n <= i)"),
   vREPEAT vGEN_TAC ----> vGEN_REWRITE_TAC vLAND_CONV [vMINIMAL] ---->
   vMESON_TAC[vNOT_LE; vLE_TRANS]);;
 
-let vMINIMAL_LE = prove
+let vMINIMAL_LE = try Cache.lookup_thm "MINIMAL_LE" with _ ->  prove
  ((parse_term "!P n. (?r. P r) ==> ((minimal) P <= n <=> ?i. i <= n /\\ P i)"),
   vREWRITE_TAC[vGSYM vNOT_LT] ----> vREWRITE_TAC[vGSYM vLE_SUC_LT] ---->
   vSIMP_TAC[vLE_MINIMAL] ----> vMESON_TAC[]);;
 
-let vMINIMAL_UBOUND = prove
+let vMINIMAL_UBOUND = try Cache.lookup_thm "MINIMAL_UBOUND" with _ ->  prove
  ((parse_term "!P n. P n ==> (minimal) P <= n"),
   vMESON_TAC[vMINIMAL; vNOT_LT]);;
 
-let vMINIMAL_LBOUND = prove
+let vMINIMAL_LBOUND = try Cache.lookup_thm "MINIMAL_LBOUND" with _ ->  prove
  ((parse_term "!P n. (?r. P r) /\\ (!m. m < n ==> ~P m) ==> n <= (minimal) P"),
   vSIMP_TAC[vLE_MINIMAL] ----> vMESON_TAC[vNOT_LT]);;
 
-let vMINIMAL_MONO = prove
+let vMINIMAL_MONO = try Cache.lookup_thm "MINIMAL_MONO" with _ ->  prove
  ((parse_term "!P Q. (?n. P n) /\\ (!n. P n ==> Q n) ==> (minimal) Q <= (minimal) P"),
   vREPEAT vGEN_TAC ----> vDISCH_THEN(vCONJUNCTS_THEN vASSUME_TAC) ---->
   vSUBGOAL_THEN (parse_term "?n:num. Q n") vASSUME_TAC ++--> [vASM_MESON_TAC[]; vALL_TAC] ---->
@@ -1745,7 +1745,7 @@ let vMINIMAL_MONO = prove
 (* A common lemma for transitive relations.                                  *)
 (* ------------------------------------------------------------------------- *)
 
-let vTRANSITIVE_STEPWISE_LT_EQ = prove
+let vTRANSITIVE_STEPWISE_LT_EQ = try Cache.lookup_thm "TRANSITIVE_STEPWISE_LT_EQ" with _ ->  prove
  ((parse_term "!R. (!x y z. R x y /\\ R y z ==> R x z)\n         ==> ((!m n. m < n ==> R m n) <=> (!n. R n (SUC n)))"),
   vREPEAT vSTRIP_TAC ----> vEQ_TAC ----> vASM_SIMP_TAC[vLT] ---->
   vDISCH_TAC ----> vSIMP_TAC[vLT_EXISTS; vLEFT_IMP_EXISTS_THM] ---->
@@ -1753,13 +1753,13 @@ let vTRANSITIVE_STEPWISE_LT_EQ = prove
   vREWRITE_TAC[vLEFT_FORALL_IMP_THM; vEXISTS_REFL; vADD_CLAUSES] ---->
   vINDUCT_TAC ----> vREWRITE_TAC[vADD_CLAUSES] ----> vASM_MESON_TAC[]);;
 
-let vTRANSITIVE_STEPWISE_LT = prove
+let vTRANSITIVE_STEPWISE_LT = try Cache.lookup_thm "TRANSITIVE_STEPWISE_LT" with _ ->  prove
  ((parse_term "!R. (!x y z. R x y /\\ R y z ==> R x z) /\\ (!n. R n (SUC n))\n       ==> !m n. m < n ==> R m n"),
   vREPEAT vGEN_TAC ----> vMATCH_MP_TAC(vTAUT
    (parse_term "(a ==> (c <=> b)) ==> a /\\ b ==> c")) ---->
   vMATCH_ACCEPT_TAC vTRANSITIVE_STEPWISE_LT_EQ);;
 
-let vTRANSITIVE_STEPWISE_LE_EQ = prove
+let vTRANSITIVE_STEPWISE_LE_EQ = try Cache.lookup_thm "TRANSITIVE_STEPWISE_LE_EQ" with _ ->  prove
  ((parse_term "!R. (!x. R x x) /\\ (!x y z. R x y /\\ R y z ==> R x z)\n       ==> ((!m n. m <= n ==> R m n) <=> (!n. R n (SUC n)))"),
   vREPEAT vSTRIP_TAC ----> vEQ_TAC ----> vASM_SIMP_TAC[vLE; vLE_REFL] ---->
 
@@ -1768,7 +1768,7 @@ let vTRANSITIVE_STEPWISE_LE_EQ = prove
   vREWRITE_TAC[vLEFT_FORALL_IMP_THM; vEXISTS_REFL; vADD_CLAUSES] ---->
   vINDUCT_TAC ----> vREWRITE_TAC[vADD_CLAUSES] ----> vASM_MESON_TAC[]);;
 
-let vTRANSITIVE_STEPWISE_LE = prove
+let vTRANSITIVE_STEPWISE_LE = try Cache.lookup_thm "TRANSITIVE_STEPWISE_LE" with _ ->  prove
  ((parse_term "!R. (!x. R x x) /\\ (!x y z. R x y /\\ R y z ==> R x z) /\\\n       (!n. R n (SUC n))\n       ==> !m n. m <= n ==> R m n"),
   vREPEAT vGEN_TAC ----> vMATCH_MP_TAC(vTAUT
    (parse_term "(a /\\ a' ==> (c <=> b)) ==> a /\\ a' /\\ b ==> c")) ---->
@@ -1778,7 +1778,7 @@ let vTRANSITIVE_STEPWISE_LE = prove
 (* A couple of forms of Dependent Choice.                                    *)
 (* ------------------------------------------------------------------------- *)
 
-let vDEPENDENT_CHOICE_FIXED = prove
+let vDEPENDENT_CHOICE_FIXED = try Cache.lookup_thm "DEPENDENT_CHOICE_FIXED" with _ ->  prove
  ((parse_term "!P R a:A.\n        P 0 a /\\ (!n x. P n x ==> ?y. P (SUC n) y /\\ R n x y)\n        ==> ?f. f 0 = a /\\ (!n. P n (f n)) /\\ (!n. R n (f n) (f(SUC n)))"),
   vREPEAT vSTRIP_TAC ---->
   (vMP_TAC -| prove_recursive_functions_exist num_RECURSION)
@@ -1788,7 +1788,7 @@ let vDEPENDENT_CHOICE_FIXED = prove
    [vMESON[num_CASES] (parse_term "(!n. P n) <=> P 0 /\\ !n. P(SUC n)")] ---->
   vASM_REWRITE_TAC[vAND_FORALL_THM] ----> vINDUCT_TAC ----> vASM_MESON_TAC[]);;
 
-let vDEPENDENT_CHOICE = prove
+let vDEPENDENT_CHOICE = try Cache.lookup_thm "DEPENDENT_CHOICE" with _ ->  prove
  ((parse_term "!P R:num->A->A->bool.\n        (?a. P 0 a) /\\ (!n x. P n x ==> ?y. P (SUC n) y /\\ R n x y)\n        ==> ?f. (!n. P n (f n)) /\\ (!n. R n (f n) (f(SUC n)))"),
   vMESON_TAC[vDEPENDENT_CHOICE_FIXED]);;
 

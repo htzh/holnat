@@ -35,7 +35,7 @@ open Calc_num
 (* Abstract left inverses for binary injections (we could construct them...) *)
 (* ------------------------------------------------------------------------- *)
 
-let vINJ_INVERSE2 = prove
+let vINJ_INVERSE2 = try Cache.lookup_thm "INJ_INVERSE2" with _ ->  prove
  ((parse_term "!P:A->B->C.\n    (!x1 y1 x2 y2. (P x1 y1 = P x2 y2) <=> (x1 = x2) /\\ (y1 = y2))\n    ==> ?X Y. !x y. (X(P x y) = x) /\\ (Y(P x y) = y)"),
   vGEN_TAC ----> vDISCH_TAC ---->
   vEXISTS_TAC (parse_term "\\z:C. @x:A. ?y:B. P x y = z") ---->
@@ -52,7 +52,7 @@ let vINJ_INVERSE2 = prove
 let vNUMPAIR = new_definition
   (parse_term "NUMPAIR x y = (2 EXP x) * (2 * y + 1)");;
 
-let vNUMPAIR_INJ_LEMMA = prove
+let vNUMPAIR_INJ_LEMMA = try Cache.lookup_thm "NUMPAIR_INJ_LEMMA" with _ ->  prove
  ((parse_term "!x1 y1 x2 y2. (NUMPAIR x1 y1 = NUMPAIR x2 y2) ==> (x1 = x2)"),
   vREWRITE_TAC[vNUMPAIR] ----> vREPEAT(vINDUCT_TAC ----> vGEN_TAC) ---->
   vASM_REWRITE_TAC[vEXP; vGSYM vMULT_ASSOC; vARITH; vEQ_MULT_LCANCEL;
@@ -60,7 +60,7 @@ let vNUMPAIR_INJ_LEMMA = prove
   vDISCH_THEN(vMP_TAC -| vAP_TERM (parse_term "EVEN")) ---->
   vREWRITE_TAC[vEVEN_MULT; vEVEN_ADD; vARITH]);;
 
-let vNUMPAIR_INJ = prove
+let vNUMPAIR_INJ = try Cache.lookup_thm "NUMPAIR_INJ" with _ ->  prove
  ((parse_term "!x1 y1 x2 y2. (NUMPAIR x1 y1 = NUMPAIR x2 y2) <=> (x1 = x2) /\\ (y1 = y2)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ----> vASM_REWRITE_TAC[] ---->
   vFIRST_ASSUM(vSUBST_ALL_TAC -| vMATCH_MP vNUMPAIR_INJ_LEMMA) ---->
@@ -78,7 +78,7 @@ let vNUMPAIR_DEST = new_specification
 let vNUMSUM = new_definition
   (parse_term "NUMSUM b x = if b then SUC(2 * x) else 2 * x");;
 
-let vNUMSUM_INJ = prove
+let vNUMSUM_INJ = try Cache.lookup_thm "NUMSUM_INJ" with _ ->  prove
  ((parse_term "!b1 x1 b2 x2. (NUMSUM b1 x1 = NUMSUM b2 x2) <=> (b1 = b2) /\\ (x1 = x2)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ----> vASM_REWRITE_TAC[] ---->
   vPOP_ASSUM(vMP_TAC -| vREWRITE_RULE[vNUMSUM]) ---->
@@ -97,7 +97,7 @@ let vNUMSUM_DEST = new_specification
 let vINJN = new_definition
  (parse_term "INJN (m:num) = \\(n:num) (a:A). n = m");;
 
-let vINJN_INJ = prove
+let vINJN_INJ = try Cache.lookup_thm "INJN_INJ" with _ ->  prove
  ((parse_term "!n1 n2. (INJN n1 :num->A->bool = INJN n2) <=> (n1 = n2)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ----> vASM_REWRITE_TAC[] ---->
   vPOP_ASSUM(vMP_TAC -| vC vAP_THM (parse_term "n1:num") -| vREWRITE_RULE[vINJN]) ---->
@@ -110,7 +110,7 @@ let vINJN_INJ = prove
 let vINJA = new_definition
  (parse_term "INJA (a:A) = \\(n:num) b. b = a");;
 
-let vINJA_INJ = prove
+let vINJA_INJ = try Cache.lookup_thm "INJA_INJ" with _ ->  prove
  ((parse_term "!a1 a2. (INJA a1 = INJA a2) <=> (a1:A = a2)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vINJA; vFUN_EQ_THM] ----> vEQ_TAC ++-->
    [vDISCH_THEN(vMP_TAC -| vSPEC (parse_term "a1:A")) ----> vREWRITE_TAC[];
@@ -123,7 +123,7 @@ let vINJA_INJ = prove
 let vINJF = new_definition
   (parse_term "INJF (f:num->(num->A->bool)) = \\n. f (NUMFST n) (NUMSND n)");;
 
-let vINJF_INJ = prove
+let vINJF_INJ = try Cache.lookup_thm "INJF_INJ" with _ ->  prove
  ((parse_term "!f1 f2. (INJF f1 :num->A->bool = INJF f2) <=> (f1 = f2)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ----> vASM_REWRITE_TAC[] ---->
   vREWRITE_TAC[vFUN_EQ_THM] ---->
@@ -139,7 +139,7 @@ let vINJF_INJ = prove
 let vINJP = new_definition
   (parse_term "INJP f1 f2:num->A->bool =\n        \\n a. if NUMLEFT n then f1 (NUMRIGHT n) a else f2 (NUMRIGHT n) a");;
 
-let vINJP_INJ = prove
+let vINJP_INJ = try Cache.lookup_thm "INJP_INJ" with _ ->  prove
  ((parse_term "!(f1:num->A->bool) f1' f2 f2'.\n        (INJP f1 f2 = INJP f1' f2') <=> (f1 = f1') /\\ (f2 = f2')"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ----> vASM_REWRITE_TAC[] ---->
   vONCE_REWRITE_TAC[vFUN_EQ_THM] ----> vREWRITE_TAC[vAND_FORALL_THM] ---->
@@ -158,7 +158,7 @@ let vZCONSTR = new_definition
 let vZBOT = new_definition
   (parse_term "ZBOT = INJP (INJN 0) (@z:num->A->bool. T)");;
 
-let vZCONSTR_ZBOT = prove
+let vZCONSTR_ZBOT = try Cache.lookup_thm "ZCONSTR_ZBOT" with _ ->  prove
  ((parse_term "!c i r. ~(ZCONSTR c i r :num->A->bool = ZBOT)"),
   vREWRITE_TAC[vZCONSTR; vZBOT; vINJP_INJ; vINJN_INJ; vNOT_SUC]);;
 
@@ -188,14 +188,14 @@ let vCONSTR = new_definition
 (* Some lemmas.                                                              *)
 (* ------------------------------------------------------------------------- *)
 
-let vMK_REC_INJ = prove
+let vMK_REC_INJ = try Cache.lookup_thm "MK_REC_INJ" with _ ->  prove
  ((parse_term "!x y. (_mk_rec x :(A)recspace = _mk_rec y)\n         ==> (ZRECSPACE x /\\ ZRECSPACE y ==> (x = y))"),
   vREPEAT vGEN_TAC ----> vDISCH_TAC ---->
   vREWRITE_TAC[snd recspace_tydef] ---->
   vDISCH_THEN(fun th -> vONCE_REWRITE_TAC[vGSYM th]) ---->
   vASM_REWRITE_TAC[]);;
 
-let vDEST_REC_INJ = prove
+let vDEST_REC_INJ = try Cache.lookup_thm "DEST_REC_INJ" with _ ->  prove
  ((parse_term "!x y. (_dest_rec x = _dest_rec y) <=> (x:(A)recspace = y)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ----> vASM_REWRITE_TAC[] ---->
   vPOP_ASSUM(vMP_TAC -| vAP_TERM
@@ -206,7 +206,7 @@ let vDEST_REC_INJ = prove
 (* Show that the set is freely inductively generated.                        *)
 (* ------------------------------------------------------------------------- *)
 
-let vCONSTR_BOT = prove
+let vCONSTR_BOT = try Cache.lookup_thm "CONSTR_BOT" with _ ->  prove
  ((parse_term "!c i r. ~(CONSTR c i r :(A)recspace = BOTTOM)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vCONSTR; vBOTTOM] ---->
   vDISCH_THEN(vMP_TAC -| vMATCH_MP vMK_REC_INJ) ---->
@@ -214,7 +214,7 @@ let vCONSTR_BOT = prove
   vMATCH_MP_TAC(vCONJUNCT2 vZRECSPACE_RULES) ---->
   vREWRITE_TAC[fst recspace_tydef; snd recspace_tydef]);;
 
-let vCONSTR_INJ = prove
+let vCONSTR_INJ = try Cache.lookup_thm "CONSTR_INJ" with _ ->  prove
  ((parse_term "!c1 i1 r1 c2 i2 r2. (CONSTR c1 i1 r1 :(A)recspace = CONSTR c2 i2 r2) <=>\n                       (c1 = c2) /\\ (i1 = i2) /\\ (r1 = r2)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ----> vASM_REWRITE_TAC[] ---->
   vPOP_ASSUM(vMP_TAC -| vREWRITE_RULE[vCONSTR]) ---->
@@ -227,7 +227,7 @@ let vCONSTR_INJ = prove
     vONCE_REWRITE_TAC[vFUN_EQ_THM] ----> vBETA_TAC ---->
     vREWRITE_TAC[vSUC_INJ; vDEST_REC_INJ]]);;
 
-let vCONSTR_IND = prove
+let vCONSTR_IND = try Cache.lookup_thm "CONSTR_IND" with _ ->  prove
  ((parse_term "!P. P(BOTTOM) /\\\n       (!c i r. (!n. P(r n)) ==> P(CONSTR c i r))\n       ==> !x:(A)recspace. P(x)"),
   vREPEAT vSTRIP_TAC ---->
   vMP_TAC(vSPEC (parse_term "\\z:num->A->bool. ZRECSPACE(z) /\\ P(_mk_rec z)")
@@ -252,7 +252,7 @@ let vCONSTR_IND = prove
 (* Now prove the recursion theorem (this subcase is all we need).            *)
 (* ------------------------------------------------------------------------- *)
 
-let vCONSTR_REC = prove
+let vCONSTR_REC = try Cache.lookup_thm "CONSTR_REC" with _ ->  prove
  ((parse_term "!Fn:num->A->(num->(A)recspace)->(num->B)->B.\n     ?f. (!c i r. f (CONSTR c i r) = Fn c i r (\\n. f (r n)))"),
   vREPEAT vSTRIP_TAC ----> (vMP_TAC -| prove_inductive_relations_exist)
     (parse_term "(Z:(A)recspace->B->bool) BOTTOM b /\\\n     (!c i r y. (!n. Z (r n) (y n)) ==> Z (CONSTR c i r) (Fn c i r y))") ---->
@@ -294,7 +294,7 @@ let vCONSTR_REC = prove
 let vFCONS = new_recursive_definition num_RECURSION
  (parse_term "(!a f. FCONS (a:A) f 0 = a) /\\\n  (!a f n. FCONS (a:A) f (SUC n) = f n)");;
 
-let vFCONS_UNDO = prove
+let vFCONS_UNDO = try Cache.lookup_thm "FCONS_UNDO" with _ ->  prove
  ((parse_term "!f:num->A. f = FCONS (f 0) (f o SUC)"),
   vGEN_TAC ----> vREWRITE_TAC[vFUN_EQ_THM] ---->
   vINDUCT_TAC ----> vREWRITE_TAC[vFCONS; o_THM]);;
@@ -894,7 +894,7 @@ let list_INDUCT,list_RECURSION =
   define_type_raw
    (parse_inductive_type_specification "list = NIL | CONS A list");;
 
-let vFORALL_OPTION_THM = prove
+let vFORALL_OPTION_THM = try Cache.lookup_thm "FORALL_OPTION_THM" with _ ->  prove
  ((parse_term "!P. (!x. P x) <=> P NONE /\\ !a. P(SOME a)"),
   vGEN_TAC ----> vEQ_TAC ----> vREWRITE_TAC[option_INDUCT] ----> vSIMP_TAC[]);;
 
@@ -1049,11 +1049,11 @@ let cases ty =
   if ty = "num" then num_CASES else
   let _,ith,_ = assoc ty (!inductive_type_store) in prove_cases_thm ith;;
 
-let option_DISTINCT = prove
+let option_DISTINCT = try Cache.lookup_thm "option_DISTINCT" with _ ->  prove
  ((parse_term "!a:A. ~(SOME a = NONE)"),
   vREWRITE_TAC[distinctness "option"]);;
 
-let option_INJ = prove
+let option_INJ = try Cache.lookup_thm "option_INJ" with _ ->  prove
  ((parse_term "!a b:A. SOME a = SOME b <=> a = b"),
   vREWRITE_TAC[injectivity "option"]);;
 
@@ -1064,15 +1064,15 @@ let option_INJ = prove
 let vISO = new_definition
   (parse_term "ISO (f:A->B) (g:B->A) <=> (!x. f(g x) = x) /\\ (!y. g(f y) = y)");;
 
-let vISO_REFL = prove
+let vISO_REFL = try Cache.lookup_thm "ISO_REFL" with _ ->  prove
  ((parse_term "ISO (\\x:A. x) (\\x. x)"),
   vREWRITE_TAC[vISO]);;
 
-let vISO_FUN = prove
+let vISO_FUN = try Cache.lookup_thm "ISO_FUN" with _ ->  prove
  ((parse_term "ISO (f:A->A') f' /\\ ISO (g:B->B') g'\n   ==> ISO (\\h a'. g(h(f' a'))) (\\h a. g'(h(f a)))"),
   vREWRITE_TAC[vISO; vFUN_EQ_THM] ----> vMESON_TAC[]);;
 
-let vISO_USAGE = prove
+let vISO_USAGE = try Cache.lookup_thm "ISO_USAGE" with _ ->  prove
  ((parse_term "ISO f g\n   ==> (!P. (!x. P x) <=> (!x. P(g x))) /\\\n       (!P. (?x. P x) <=> (?x. P(g x))) /\\\n       (!a b. (a = g b) <=> (f a = b))"),
   vREWRITE_TAC[vISO; vFUN_EQ_THM] ----> vMESON_TAC[]);;
 

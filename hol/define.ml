@@ -35,7 +35,7 @@ open Iterate
 let vCASEWISE_DEF = new_recursive_definition list_RECURSION
  (parse_term "(CASEWISE [] f x = @y. T) /\\\n  (CASEWISE (CONS h t) f x =\n        if ?y. FST h y = x then SND h f (@y. FST h y = x)\n        else CASEWISE t f x)");;
 
-let vCASEWISE = prove
+let vCASEWISE = try Cache.lookup_thm "CASEWISE" with _ ->  prove
  ((parse_term "(CASEWISE [] f x = @y. T) /\\\n   (CASEWISE (CONS (s,t) clauses) f x =\n        if ?y. s y = x then t f (@y. s y = x) else CASEWISE clauses f x)"),
   vREWRITE_TAC[vCASEWISE_DEF]);;
 
@@ -43,13 +43,13 @@ let vCASEWISE = prove
 (* Conditions for all the clauses in a casewise definition to hold.          *)
 (* ------------------------------------------------------------------------- *)
 
-let vCASEWISE_CASES = prove
+let vCASEWISE_CASES = try Cache.lookup_thm "CASEWISE_CASES" with _ ->  prove
  ((parse_term "!clauses c x.\n    (?s t a. MEM (s,t) clauses /\\ (s a = x) /\\\n             (CASEWISE clauses c x = t c a)) \\/\n    ~(?s t a. MEM (s,t) clauses /\\ (s a = x)) /\\\n    (CASEWISE clauses c x = @y. T)"),
   vMATCH_MP_TAC list_INDUCT ---->
   vREWRITE_TAC[vMEM; vCASEWISE; vFORALL_PAIR_THM; vPAIR_EQ] ---->
   vREPEAT vSTRIP_TAC ----> vCOND_CASES_TAC ----> vASM_MESON_TAC[]);;
 
-let vCASEWISE_WORKS = prove
+let vCASEWISE_WORKS = try Cache.lookup_thm "CASEWISE_WORKS" with _ ->  prove
  ((parse_term "!clauses c:C.\n     (!s t s' t' x y. MEM (s,t) clauses /\\ MEM (s',t') clauses /\\ (s x = s' y)\n                      ==> (t c x = t' c y))\n     ==> ALL (\\(s:P->A,t). !x. CASEWISE clauses c (s x) :B = t c x) clauses"),
   vREWRITE_TAC[vGSYM vALL_MEM; vFORALL_PAIR_THM] ---->
   vMESON_TAC[vCASEWISE_CASES]);;
@@ -71,7 +71,7 @@ let superadmissible = new_definition
 (* A lemma.                                                                  *)
 (* ------------------------------------------------------------------------- *)
 
-let vMATCH_SEQPATTERN = prove
+let vMATCH_SEQPATTERN = try Cache.lookup_thm "MATCH_SEQPATTERN" with _ ->  prove
  ((parse_term "_MATCH x (_SEQPATTERN r s) =\n   if ?y. r x y then _MATCH x r else _MATCH x s"),
   vREWRITE_TAC[_MATCH; _SEQPATTERN] ----> vMESON_TAC[]);;
 
@@ -79,31 +79,31 @@ let vMATCH_SEQPATTERN = prove
 (* Admissibility combinators.                                                *)
 (* ------------------------------------------------------------------------- *)
 
-let vADMISSIBLE_CONST = prove
+let vADMISSIBLE_CONST = try Cache.lookup_thm "ADMISSIBLE_CONST" with _ ->  prove
  ((parse_term "!p s c. admissible(<<) p s (\\f. c)"),
   vREWRITE_TAC[admissible]);;
 
-let vADMISSIBLE_BASE = prove
+let vADMISSIBLE_BASE = try Cache.lookup_thm "ADMISSIBLE_BASE" with _ ->  prove
  ((parse_term "!(<<) p s t.\n        (!f a. p f a ==> t a << s a)\n        ==> admissible((<<):A->A->bool) p s (\\f:A->B x:P. f(t x))"),
   vREWRITE_TAC[admissible] ----> vMESON_TAC[]);;
 
-let vADMISSIBLE_COMB = prove
+let vADMISSIBLE_COMB = try Cache.lookup_thm "ADMISSIBLE_COMB" with _ ->  prove
  ((parse_term "!(<<) p s:P->A g:(A->B)->P->C->D y:(A->B)->P->C.\n        admissible(<<) p s g /\\ admissible(<<) p s y\n        ==> admissible(<<) p s (\\f x. (g f x) (y f x))"),
   vSIMP_TAC[admissible] ----> vMESON_TAC[]);;
 
-let vADMISSIBLE_RAND = prove
+let vADMISSIBLE_RAND = try Cache.lookup_thm "ADMISSIBLE_RAND" with _ ->  prove
  ((parse_term "!(<<) p s:P->A g:P->C->D y:(A->B)->P->C.\n        admissible(<<) p s y\n        ==> admissible(<<) p s (\\f x. (g x) (y f x))"),
   vSIMP_TAC[admissible] ----> vMESON_TAC[]);;
 
-let vADMISSIBLE_LAMBDA = prove
+let vADMISSIBLE_LAMBDA = try Cache.lookup_thm "ADMISSIBLE_LAMBDA" with _ ->  prove
  ((parse_term "!(<<) p s:P->A t:(A->B)->C->P->bool.\n     admissible(<<) (\\f (u,x). p f x) (\\(u,x). s x) (\\f (u,x). t f u x)\n     ==> admissible(<<) p s (\\f x. \\u. t f u x)"),
   vREWRITE_TAC[admissible; vFUN_EQ_THM; vFORALL_PAIR_THM] ----> vMESON_TAC[]);;
 
-let vADMISSIBLE_NEST = prove
+let vADMISSIBLE_NEST = try Cache.lookup_thm "ADMISSIBLE_NEST" with _ ->  prove
  ((parse_term "!(<<) p s t.\n        admissible(<<) p s t /\\\n        (!f a. p f a ==> t f a << s a)\n        ==> admissible((<<):A->A->bool) p s (\\f:A->B x:P. f(t f x))"),
   vREWRITE_TAC[admissible] ----> vMESON_TAC[]);;
 
-let vADMISSIBLE_COND = prove
+let vADMISSIBLE_COND = try Cache.lookup_thm "ADMISSIBLE_COND" with _ ->  prove
  ((parse_term "!(<<) p P s h k.\n        admissible(<<) p s P /\\\n        admissible(<<) (\\f x. p f x /\\ P f x) s h /\\\n        admissible(<<) (\\f x. p f x /\\ ~P f x) s k\n        ==> admissible(<<) p s (\\f x:P. if P f x then h f x else k f x)"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[admissible; vAND_FORALL_THM] ---->
@@ -111,16 +111,16 @@ let vADMISSIBLE_COND = prove
   vDISCH_THEN(fun th -> vSTRIP_TAC ----> vMP_TAC th) ---->
   vASM_REWRITE_TAC[] ----> vASM_MESON_TAC[]);;
 
-let vADMISSIBLE_MATCH = prove
+let vADMISSIBLE_MATCH = try Cache.lookup_thm "ADMISSIBLE_MATCH" with _ ->  prove
  ((parse_term "!(<<) p s e c.\n        admissible(<<) p s e /\\ admissible(<<) p s (\\f x. c f x (e f x))\n        ==> admissible(<<) p s (\\f x:P. _MATCH (e f x) (c f x))"),
   vREWRITE_TAC[admissible; _MATCH] ---->
   vREPEAT vSTRIP_TAC ----> vREPEAT vCOND_CASES_TAC ----> vASM_MESON_TAC[]);;
 
-let vADMISSIBLE_SEQPATTERN = prove
+let vADMISSIBLE_SEQPATTERN = try Cache.lookup_thm "ADMISSIBLE_SEQPATTERN" with _ ->  prove
  ((parse_term "!(<<) p s c1 c2 e.\n        admissible(<<) p s (\\f x:P. ?y. c1 f x (e f x) y) /\\\n        admissible(<<) (\\f x. p f x /\\ ?y. c1 f x (e f x) y) s\n                       (\\f x. c1 f x (e f x)) /\\\n        admissible(<<) (\\f x. p f x /\\ ~(?y. c1 f x (e f x) y)) s\n                       (\\f x. c2 f x (e f x))\n        ==> admissible(<<) p s (\\f x. _SEQPATTERN (c1 f x) (c2 f x) (e f x))"),
   vREWRITE_TAC[_SEQPATTERN; admissible] ----> vMESON_TAC[]);;
 
-let vADMISSIBLE_UNGUARDED_PATTERN = prove
+let vADMISSIBLE_UNGUARDED_PATTERN = try Cache.lookup_thm "ADMISSIBLE_UNGUARDED_PATTERN" with _ ->  prove
  ((parse_term "!(<<) p s pat e t y.\n      admissible (<<) p s pat /\\\n      admissible (<<) p s e /\\\n      admissible (<<) (\\f x. p f x /\\ pat f x = e f x) s t /\\\n      admissible (<<) (\\f x. p f x /\\ pat f x = e f x) s y\n        ==> admissible(<<) p s\n             (\\f x:P. _UNGUARDED_PATTERN (GEQ (pat f x) (e f x))\n                                         (GEQ (t f x) (y f x)))"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[admissible; vFORALL_PAIR_THM; _UNGUARDED_PATTERN] ---->
@@ -128,7 +128,7 @@ let vADMISSIBLE_UNGUARDED_PATTERN = prove
   vMATCH_MP_TAC(vTAUT (parse_term "(a <=> a') /\\ (a /\\ a' ==> (b <=> b'))\n                     ==> (a /\\ b <=> a' /\\ b')")) ---->
   vASM_MESON_TAC[]);;
 
-let vADMISSIBLE_GUARDED_PATTERN = prove
+let vADMISSIBLE_GUARDED_PATTERN = try Cache.lookup_thm "ADMISSIBLE_GUARDED_PATTERN" with _ ->  prove
  ((parse_term "!(<<) p s pat q e t y.\n      admissible (<<) p s pat /\\\n      admissible (<<) p s e /\\\n      admissible (<<) (\\f x. p f x /\\ pat f x = e f x /\\ q f x) s t /\\\n      admissible (<<) (\\f x. p f x /\\ pat f x = e f x) s q /\\\n      admissible (<<) (\\f x. p f x /\\ pat f x = e f x /\\ q f x) s y\n        ==> admissible(<<) p s\n             (\\f x:P. _GUARDED_PATTERN (GEQ (pat f x) (e f x))\n                                       (q f x)\n                                       (GEQ (t f x) (y f x)))"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[admissible; vFORALL_PAIR_THM; _GUARDED_PATTERN] ---->
@@ -138,17 +138,17 @@ let vADMISSIBLE_GUARDED_PATTERN = prove
   vTRY(vMATCH_MP_TAC(vMESON[] (parse_term "x = x' /\\ y = y' ==> (x = y <=> x' = y')"))) ---->
   vASM_MESON_TAC[]);;
 
-let vADMISSIBLE_NSUM = prove
+let vADMISSIBLE_NSUM = try Cache.lookup_thm "ADMISSIBLE_NSUM" with _ ->  prove
  ((parse_term "!(<<) p:(B->C)->P->bool s:P->A h a b.\n        admissible(<<) (\\f (k,x). a(x) <= k /\\ k <= b(x) /\\ p f x)\n                       (\\(k,x). s x) (\\f (k,x). h f x k)\n   ==> admissible(<<) p s (\\f x. nsum(a(x)..b(x)) (h f x))"),
   vREWRITE_TAC[admissible; vFORALL_PAIR_THM] ----> vREPEAT vSTRIP_TAC ---->
   vMATCH_MP_TAC vNSUM_EQ_NUMSEG ----> vASM_MESON_TAC[]);;
 
-let vADMISSIBLE_SUM = prove
+let vADMISSIBLE_SUM = try Cache.lookup_thm "ADMISSIBLE_SUM" with _ ->  prove
  ((parse_term "!(<<) p:(B->C)->P->bool s:P->A h a b.\n        admissible(<<) (\\f (k,x). a(x) <= k /\\ k <= b(x) /\\ p f x)\n                       (\\(k,x). s x) (\\f (k,x). h f x k)\n   ==> admissible(<<) p s (\\f x. sum(a(x)..b(x)) (h f x))"),
   vREWRITE_TAC[admissible; vFORALL_PAIR_THM] ----> vREPEAT vSTRIP_TAC ---->
   vMATCH_MP_TAC vSUM_EQ_NUMSEG ----> vASM_MESON_TAC[]);;
 
-let vADMISSIBLE_MAP = prove
+let vADMISSIBLE_MAP = try Cache.lookup_thm "ADMISSIBLE_MAP" with _ ->  prove
  ((parse_term "!(<<) p s h l.\n        admissible(<<) p s l /\\\n        admissible (<<) (\\f (y,x). p f x /\\ MEM y (l f x))\n                        (\\(y,x). s x) (\\f (y,x). h f x y)\n   ==> admissible (<<) p s (\\f:A->B x:P. MAP (h f x) (l f x))"),
   vREWRITE_TAC[admissible; vFORALL_PAIR_THM] ----> vREPEAT vSTRIP_TAC ---->
   vMATCH_MP_TAC(vMESON[] (parse_term "x = y /\\ MAP f x = MAP g x ==> MAP f x = MAP g y")) ---->
@@ -157,7 +157,7 @@ let vADMISSIBLE_MAP = prove
   vREPEAT vSTRIP_TAC ----> vFIRST_X_ASSUM vMATCH_MP_TAC ---->
   vASM_REWRITE_TAC[vFORALL_PAIR_THM] ----> vASM_MESON_TAC[]);;
 
-let vADMISSIBLE_MATCH_SEQPATTERN = prove
+let vADMISSIBLE_MATCH_SEQPATTERN = try Cache.lookup_thm "ADMISSIBLE_MATCH_SEQPATTERN" with _ ->  prove
  ((parse_term "!(<<) p s c1 c2 e.\n        admissible(<<) p s (\\f x. ?y. c1 f x (e f x) y) /\\\n        admissible(<<) (\\f x. p f x /\\ ?y. c1 f x (e f x) y) s\n                       (\\f x. _MATCH (e f x) (c1 f x)) /\\\n        admissible(<<) (\\f x. p f x /\\ ~(?y. c1 f x (e f x) y)) s\n                       (\\f x. _MATCH (e f x) (c2 f x))\n        ==> admissible(<<) p s\n              (\\f x:P. _MATCH (e f x) (_SEQPATTERN (c1 f x) (c2 f x)))"),
   vREWRITE_TAC[vMATCH_SEQPATTERN; vADMISSIBLE_COND]);;
 
@@ -172,7 +172,7 @@ let vADMISSIBLE_MATCH_SEQPATTERN = prove
 (* to separate it from the function f or we lose the "tail" optimization.)   *)
 (* ------------------------------------------------------------------------- *)
 
-let vADMISSIBLE_IMP_SUPERADMISSIBLE = prove
+let vADMISSIBLE_IMP_SUPERADMISSIBLE = try Cache.lookup_thm "ADMISSIBLE_IMP_SUPERADMISSIBLE" with _ ->  prove
  ((parse_term "!(<<) p s t:(A->B)->P->B.\n      admissible(<<) p s t ==> superadmissible(<<) p s t"),
   vREWRITE_TAC[admissible; superadmissible; tailadmissible] ---->
   vREPEAT vSTRIP_TAC ---->
@@ -182,13 +182,13 @@ let vADMISSIBLE_IMP_SUPERADMISSIBLE = prove
     (parse_term "\\f:A->B a:P. if p f a then t f a :B else fixed")] ---->
   vASM_REWRITE_TAC[] ----> vASM_MESON_TAC[]);;
 
-let vSUPERADMISSIBLE_CONST = prove
+let vSUPERADMISSIBLE_CONST = try Cache.lookup_thm "SUPERADMISSIBLE_CONST" with _ ->  prove
  ((parse_term "!p s c. superadmissible(<<) p s (\\f. c)"),
   vREPEAT vGEN_TAC ---->
   vMATCH_MP_TAC vADMISSIBLE_IMP_SUPERADMISSIBLE ---->
   vREWRITE_TAC[vADMISSIBLE_CONST]);;
 
-let vSUPERADMISSIBLE_TAIL = prove
+let vSUPERADMISSIBLE_TAIL = try Cache.lookup_thm "SUPERADMISSIBLE_TAIL" with _ ->  prove
  ((parse_term "!(<<) p s t:(A->B)->P->A.\n      admissible(<<) p s t /\\\n      (!f a. p f a ==> !y. y << t f a ==> y << s a)\n      ==> superadmissible(<<) p s (\\f x. f(t f x))"),
   vREWRITE_TAC[admissible; superadmissible; tailadmissible] ---->
   vREPEAT vSTRIP_TAC ----> vMAP_EVERY vEXISTS_TAC
@@ -197,7 +197,7 @@ let vSUPERADMISSIBLE_TAIL = prove
     (parse_term "\\f:A->B. anything:P->B")] ---->
   vASM_REWRITE_TAC[] ----> vASM_MESON_TAC[]);;
 
-let vSUPERADMISSIBLE_COND = prove
+let vSUPERADMISSIBLE_COND = try Cache.lookup_thm "SUPERADMISSIBLE_COND" with _ ->  prove
  ((parse_term "!(<<) p P s h k:(A->B)->P->B.\n        admissible(<<) p s P /\\\n        superadmissible(<<) (\\f x. p f x /\\ P f x) s h /\\\n        superadmissible(<<) (\\f x. p f x /\\ ~P f x) s k\n        ==> superadmissible(<<) p s (\\f x. if P f x then h f x else k f x)"),
   vREWRITE_TAC[superadmissible; admissible] ----> vREPEAT vGEN_TAC ---->
   vDISCH_THEN(vCONJUNCTS_THEN2 vASSUME_TAC vMP_TAC) ---->
@@ -225,11 +225,11 @@ let vSUPERADMISSIBLE_COND = prove
   vDISCH_THEN(fun th -> vDISCH_TAC ----> vMP_TAC th) ---->
   vASM_REWRITE_TAC[] ----> vASM_MESON_TAC[]);;
 
-let vSUPERADMISSIBLE_MATCH_SEQPATTERN = prove
+let vSUPERADMISSIBLE_MATCH_SEQPATTERN = try Cache.lookup_thm "SUPERADMISSIBLE_MATCH_SEQPATTERN" with _ ->  prove
  ((parse_term "!(<<) p s c1 c2 e.\n        admissible(<<) p s (\\f x. ?y. c1 f x (e f x) y) /\\\n        superadmissible(<<) (\\f x. p f x /\\ ?y. c1 f x (e f x) y) s\n                            (\\f x. _MATCH (e f x) (c1 f x)) /\\\n        superadmissible(<<) (\\f x. p f x /\\ ~(?y. c1 f x (e f x) y)) s\n                            (\\f x. _MATCH (e f x) (c2 f x))\n        ==> superadmissible(<<) p s\n              (\\f x:P. _MATCH (e f x) (_SEQPATTERN (c1 f x) (c2 f x)))"),
   vREWRITE_TAC[vMATCH_SEQPATTERN; vSUPERADMISSIBLE_COND]);;
 
-let vSUPERADMISSIBLE_MATCH_UNGUARDED_PATTERN = prove
+let vSUPERADMISSIBLE_MATCH_UNGUARDED_PATTERN = try Cache.lookup_thm "SUPERADMISSIBLE_MATCH_UNGUARDED_PATTERN" with _ ->  prove
  ((parse_term "!(<<) p s e:P->D pat:Q->D arg.\n      (!f a t u. p f a /\\ pat t = e a /\\ pat u = e a ==> arg a t = arg a u) /\\\n      (!f a t. p f a /\\ pat t = e a ==> !y. y << arg a t ==> y << s a)\n      ==> superadmissible(<<) p s\n           (\\f:A->B x. _MATCH (e x)\n                    (\\u v. ?t. _UNGUARDED_PATTERN (GEQ (pat t) u)\n                                                  (GEQ (f(arg x t)) v)))"),
   vREPEAT vGEN_TAC ----> vSTRIP_TAC ---->
   vREWRITE_TAC[superadmissible] ----> vDISCH_TAC ---->
@@ -245,7 +245,7 @@ let vSUPERADMISSIBLE_MATCH_UNGUARDED_PATTERN = prove
   vRULE_ASSUM_TAC(vREWRITE_RULE[admissible]) ----> vSIMP_TAC[] ---->
   vASM_MESON_TAC[]);;
 
-let vSUPERADMISSIBLE_MATCH_GUARDED_PATTERN = prove
+let vSUPERADMISSIBLE_MATCH_GUARDED_PATTERN = try Cache.lookup_thm "SUPERADMISSIBLE_MATCH_GUARDED_PATTERN" with _ ->  prove
  ((parse_term "!(<<) p s e:P->D pat:Q->D q arg.\n      (!f a t u. p f a /\\ pat t = e a /\\ q a t /\\ pat u = e a /\\ q a u\n                 ==> arg a t = arg a u) /\\\n      (!f a t. p f a /\\ q a t /\\ pat t = e a ==> !y. y << arg a t ==> y << s a)\n      ==> superadmissible(<<) p s\n           (\\f:A->B x. _MATCH (e x)\n                    (\\u v. ?t. _GUARDED_PATTERN (GEQ (pat t) u)\n                                                (q x t)\n                                                (GEQ (f(arg x t)) v)))"),
   vREPEAT vGEN_TAC ----> vSTRIP_TAC ---->
   vREWRITE_TAC[superadmissible] ----> vDISCH_TAC ---->
@@ -265,12 +265,12 @@ let vSUPERADMISSIBLE_MATCH_GUARDED_PATTERN = prove
 (* Combine general WF/tail recursion theorem with casewise definitions.      *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_REC_TAIL_GENERAL' = prove
+let vWF_REC_TAIL_GENERAL' = try Cache.lookup_thm "WF_REC_TAIL_GENERAL'" with _ ->  prove
  ((parse_term "!P G H H'.\n         WF (<<) /\\\n         (!f g x. (!z. z << x ==> (f z = g z))\n                  ==> (P f x <=> P g x) /\\\n                      (G f x = G g x) /\\ (H' f x = H' g x)) /\\\n         (!f x y. P f x /\\ y << G f x ==> y << x) /\\\n         (!f x. H f x = if P f x then f(G f x) else H' f x)\n         ==> ?f. !x. f x = H f x"),
   vREPEAT vSTRIP_TAC ----> vASM_REWRITE_TAC[] ---->
   vMATCH_MP_TAC vWF_REC_TAIL_GENERAL ----> vASM_MESON_TAC[]);;
 
-let vWF_REC_CASES = prove
+let vWF_REC_CASES = try Cache.lookup_thm "WF_REC_CASES" with _ ->  prove
  ((parse_term "!(<<) clauses.\n        WF((<<):A->A->bool) /\\\n        ALL (\\(s,t). ?P G H.\n                     (!f a y. P f a /\\ y << G f a ==> y << s a) /\\\n                     (!f g a. (!z. z << s(a) ==> (f z = g z))\n                              ==> (P f a = P g a) /\\\n                                  (G f a = G g a) /\\ (H f a = H g a)) /\\\n                     (!f a:P. t f a = if P f a then f(G f a) else H f a))\n            clauses\n        ==> ?f:A->B. !x. f x = CASEWISE clauses f x"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vWF_REC_TAIL_GENERAL' ---->
   vFIRST_X_ASSUM(vMP_TAC -| check(is_binary "ALL" -| concl)) ---->
@@ -299,11 +299,11 @@ let vWF_REC_CASES = prove
   vEXISTS_TAC (parse_term "\\f:A->B x:A. if ?y:P. s y = x\n                           then H2 f (@y. s y = x) else H1 f x:B") ---->
   vASM_MESON_TAC[]);;
 
-let vWF_REC_CASES' = prove
+let vWF_REC_CASES' = try Cache.lookup_thm "WF_REC_CASES'" with _ ->  prove
  ((parse_term "!(<<) clauses.\n        WF((<<):A->A->bool) /\\\n        ALL (\\(s,t). tailadmissible(<<) (\\f a. T) s t) clauses\n        ==> ?f:A->B. !x. f x = CASEWISE clauses f x"),
   vREWRITE_TAC[vWF_REC_CASES; tailadmissible]);;
 
-let vRECURSION_CASEWISE = prove
+let vRECURSION_CASEWISE = try Cache.lookup_thm "RECURSION_CASEWISE" with _ ->  prove
  ((parse_term "!clauses.\n   (?(<<). WF(<<) /\\\n           ALL (\\(s:P->A,t). tailadmissible(<<) (\\f a. T) s t) clauses) /\\\n   (!s t s' t' f x y. MEM (s,t) clauses /\\ MEM (s',t') clauses\n                      ==> (s x = s' y) ==> (t f x = t' f y))\n   ==> ?f:A->B. ALL (\\(s,t). !x. f (s x) = t f x) clauses"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vIMP_IMP; vCONJ_ASSOC] ---->
   vDISCH_THEN(vCONJUNCTS_THEN2 vMP_TAC vASSUME_TAC) ---->
@@ -311,7 +311,7 @@ let vRECURSION_CASEWISE = prove
   vMATCH_MP_TAC vMONO_EXISTS ----> vREPEAT vSTRIP_TAC ---->
   vASM_REWRITE_TAC[] ----> vASM_MESON_TAC[vCASEWISE_WORKS]);;
 
-let vRECURSION_CASEWISE_PAIRWISE = prove
+let vRECURSION_CASEWISE_PAIRWISE = try Cache.lookup_thm "RECURSION_CASEWISE_PAIRWISE" with _ ->  prove
  ((parse_term "!clauses.\n        (?(<<). WF (<<) /\\\n                ALL (\\(s,t). tailadmissible(<<) (\\f a. T) s t) clauses) /\\\n        ALL (\\(s,t). !f x y. (s x = s y) ==> (t f x = t f y)) clauses /\\\n        PAIRWISE (\\(s,t) (s',t'). !f x y. (s x = s' y) ==> (t f x = t' f y))\n                 clauses\n        ==> (?f. ALL (\\(s,t). !x. f (s x) = t f x) clauses)"),
   let lemma = prove
    ((parse_term "!P. (!x y. P x y ==> P y x)\n         ==> !l. (!x y. MEM x l /\\ MEM y l ==> P x y) <=>\n                 ALL (\\x. P x x) l /\\ PAIRWISE P l"),
@@ -327,11 +327,11 @@ let vRECURSION_CASEWISE_PAIRWISE = prove
   vREWRITE_TAC[vGSYM(vMATCH_MP pth cth); vRIGHT_IMP_FORALL_THM] ---->
   vREWRITE_TAC[vRECURSION_CASEWISE]);;
 
-let vSUPERADMISSIBLE_T = prove
+let vSUPERADMISSIBLE_T = try Cache.lookup_thm "SUPERADMISSIBLE_T" with _ ->  prove
  ((parse_term "superadmissible(<<) (\\f x. T) s t <=> tailadmissible(<<) (\\f x. T) s t"),
   vREWRITE_TAC[superadmissible; admissible]);;
 
-let vRECURSION_SUPERADMISSIBLE = vREWRITE_RULE[vGSYM vSUPERADMISSIBLE_T]
+let vRECURSION_SUPERADMISSIBLE = try Cache.lookup_thm "RECURSION_SUPERADMISSIBLE" with _ ->  vREWRITE_RULE[vGSYM vSUPERADMISSIBLE_T]
         vRECURSION_CASEWISE_PAIRWISE;;
 
 (* ------------------------------------------------------------------------- *)

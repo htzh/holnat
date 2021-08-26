@@ -44,7 +44,7 @@ let vDECIMAL = new_definition
 (* Various handy lemmas.                                                     *)
 (* ------------------------------------------------------------------------- *)
 
-let vRAT_LEMMA1 = prove
+let vRAT_LEMMA1 = try Cache.lookup_thm "RAT_LEMMA1" with _ ->  prove
  ((parse_term "~(y1 = &0) /\\ ~(y2 = &0) ==>\n      ((x1 / y1) + (x2 / y2) = (x1 * y2 + x2 * y1) * inv(y1) * inv(y2))"),
   vSTRIP_TAC ----> vREWRITE_TAC[real_div; vREAL_ADD_RDISTRIB] ----> vBINOP_TAC ++-->
    [vREWRITE_TAC[vGSYM vREAL_MUL_ASSOC] ----> vAP_TERM_TAC ----> vONCE_REWRITE_TAC
@@ -55,20 +55,20 @@ let vRAT_LEMMA1 = prove
   vDISJ2_TAC ----> vCONV_TAC vSYM_CONV ----> vMATCH_MP_TAC vREAL_MUL_RINV ---->
   vASM_REWRITE_TAC[]);;
 
-let vRAT_LEMMA2 = prove
+let vRAT_LEMMA2 = try Cache.lookup_thm "RAT_LEMMA2" with _ ->  prove
  ((parse_term "&0 < y1 /\\ &0 < y2 ==>\n      ((x1 / y1) + (x2 / y2) = (x1 * y2 + x2 * y1) * inv(y1) * inv(y2))"),
   vDISCH_TAC ----> vMATCH_MP_TAC vRAT_LEMMA1 ----> vPOP_ASSUM vMP_TAC ---->
   vONCE_REWRITE_TAC[vGSYM vCONTRAPOS_THM] ---->
   vREWRITE_TAC[vDE_MORGAN_THM] ----> vSTRIP_TAC ---->
   vASM_REWRITE_TAC[vREAL_LT_REFL]);;
 
-let vRAT_LEMMA3 = prove
+let vRAT_LEMMA3 = try Cache.lookup_thm "RAT_LEMMA3" with _ ->  prove
  ((parse_term "&0 < y1 /\\ &0 < y2 ==>\n      ((x1 / y1) - (x2 / y2) = (x1 * y2 - x2 * y1) * inv(y1) * inv(y2))"),
   vDISCH_THEN(vMP_TAC -| vGEN_ALL -| vMATCH_MP vRAT_LEMMA2) ---->
   vREWRITE_TAC[real_div] ----> vDISCH_TAC ---->
   vASM_REWRITE_TAC[real_sub; vGSYM vREAL_MUL_LNEG]);;
 
-let vRAT_LEMMA4 = prove
+let vRAT_LEMMA4 = try Cache.lookup_thm "RAT_LEMMA4" with _ ->  prove
  ((parse_term "&0 < y1 /\\ &0 < y2 ==> (x1 / y1 <= x2 / y2 <=> x1 * y2 <= x2 * y1)"),
   let lemma = prove
    ((parse_term "&0 < y ==> (&0 <= x * y <=> &0 <= x)"),
@@ -92,7 +92,7 @@ let vRAT_LEMMA4 = prove
   vMATCH_MP_TAC lemma ----> vMATCH_MP_TAC vREAL_LT_INV ---->
   vASM_REWRITE_TAC[]);;
 
-let vRAT_LEMMA5 = prove
+let vRAT_LEMMA5 = try Cache.lookup_thm "RAT_LEMMA5" with _ ->  prove
  ((parse_term "&0 < y1 /\\ &0 < y2 ==> ((x1 / y1 = x2 / y2) <=> (x1 * y2 = x2 * y1))"),
   vREPEAT vDISCH_TAC ----> vREWRITE_TAC[vGSYM vREAL_LE_ANTISYM] ---->
   vMATCH_MP_TAC(vTAUT (parse_term "(a <=> a') /\\ (b <=> b') ==> (a /\\ b <=> a' /\\ b')")) ---->
@@ -533,16 +533,16 @@ let vASM_REAL_ARITH_TAC =
 (* A few handy equivalential forms of transitivity.                          *)
 (* ------------------------------------------------------------------------- *)
 
-let vREAL_LE_TRANS_LE = prove
+let vREAL_LE_TRANS_LE = try Cache.lookup_thm "REAL_LE_TRANS_LE" with _ ->  prove
  ((parse_term "!x y:real. x <= y <=> (!z. y <= z ==> x <= z)"),
   vMESON_TAC[vREAL_LE_TRANS; vREAL_LE_REFL]);;
 
-let vREAL_LE_TRANS_LTE = prove
+let vREAL_LE_TRANS_LTE = try Cache.lookup_thm "REAL_LE_TRANS_LTE" with _ ->  prove
  ((parse_term "!x y:real. x <= y <=> (!z. y < z ==> x <= z)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ++--> [vREAL_ARITH_TAC; vALL_TAC] ---->
   vDISCH_THEN(vMP_TAC -| vSPEC (parse_term "y + (x - y) / &2")) ----> vREAL_ARITH_TAC);;
 
-let vREAL_LE_TRANS_LT = prove
+let vREAL_LE_TRANS_LT = try Cache.lookup_thm "REAL_LE_TRANS_LT" with _ ->  prove
  ((parse_term "!x y:real. x <= y <=> (!z. y < z ==> x < z)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ++--> [vREAL_ARITH_TAC; vALL_TAC] ---->
   vDISCH_THEN(vMP_TAC -| vSPEC (parse_term "y + (x - y) / &2")) ----> vREAL_ARITH_TAC);;
@@ -603,14 +603,14 @@ let vREAL_FIELD =
 (* Useful monotone mappings between R and (-1,1)                             *)
 (* ------------------------------------------------------------------------- *)
 
-let vREAL_SHRINK_RANGE = prove
+let vREAL_SHRINK_RANGE = try Cache.lookup_thm "REAL_SHRINK_RANGE" with _ ->  prove
  ((parse_term "!x. abs(x / (&1 + abs x)) < &1"),
   vGEN_TAC ---->
   vREWRITE_TAC[vREAL_ABS_DIV; vREAL_ARITH (parse_term "abs(&1 + abs x) = &1 + abs x")] ---->
   vSIMP_TAC[vREAL_LT_LDIV_EQ; vREAL_ARITH (parse_term "&0 < &1 + abs x")] ---->
   vREAL_ARITH_TAC);;
 
-let vREAL_SHRINK_LT = prove
+let vREAL_SHRINK_LT = try Cache.lookup_thm "REAL_SHRINK_LT" with _ ->  prove
  ((parse_term "!x y. x / (&1 + abs x) < y / (&1 + abs y) <=> x < y"),
   vREPEAT vGEN_TAC ----> vMATCH_MP_TAC(vREAL_ARITH
    (parse_term "(&0 < x' <=> &0 < x) /\\ (&0 < y' <=> &0 < y) /\\\n    (abs x' < abs y' <=> abs x < abs y) /\\ (abs y' < abs x' <=> abs y < abs x)\n    ==> (x' < y' <=> x < y)")) ---->
@@ -624,15 +624,15 @@ let vREAL_SHRINK_LT = prove
   vSIMP_TAC[vREAL_LT_LDIV_EQ; vREAL_ARITH (parse_term "&0 < &1 + abs x")] ---->
   vREAL_ARITH_TAC);;
 
-let vREAL_SHRINK_LE = prove
+let vREAL_SHRINK_LE = try Cache.lookup_thm "REAL_SHRINK_LE" with _ ->  prove
  ((parse_term "!x y. x / (&1 + abs x) <= y / (&1 + abs y) <=> x <= y"),
   vREWRITE_TAC[vGSYM vREAL_NOT_LT; vREAL_SHRINK_LT]);;
 
-let vREAL_SHRINK_EQ = prove
+let vREAL_SHRINK_EQ = try Cache.lookup_thm "REAL_SHRINK_EQ" with _ ->  prove
  ((parse_term "!x y. x / (&1 + abs x) = y / (&1 + abs y) <=> x = y"),
   vREWRITE_TAC[vGSYM vREAL_LE_ANTISYM; vREAL_SHRINK_LE]);;
 
-let vREAL_SHRINK_GALOIS = prove
+let vREAL_SHRINK_GALOIS = try Cache.lookup_thm "REAL_SHRINK_GALOIS" with _ ->  prove
  ((parse_term "!x y. x / (&1 + abs x) = y <=> abs y < &1 /\\ y / (&1 - abs y) = x"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vSTRIP_TAC ---->
   vFIRST_X_ASSUM(vSUBST1_TAC -| vSYM) ---->
@@ -644,14 +644,14 @@ let vREAL_SHRINK_GALOIS = prove
   vMATCH_MP_TAC(vREAL_FIELD (parse_term "x * y = &1 ==> inv x * inv y = &1")) ---->
   vREPEAT(vPOP_ASSUM vMP_TAC) ----> vCONV_TAC vREAL_FIELD);;
 
-let vREAL_GROW_SHRINK = prove
+let vREAL_GROW_SHRINK = try Cache.lookup_thm "REAL_GROW_SHRINK" with _ ->  prove
  ((parse_term "!x. x / (&1 + abs x) / (&1 - abs(x / (&1 + abs x))) = x"),
   vMESON_TAC[vREAL_SHRINK_GALOIS; vREAL_SHRINK_RANGE]);;
 
-let vREAL_SHRINK_GROW_EQ = prove
+let vREAL_SHRINK_GROW_EQ = try Cache.lookup_thm "REAL_SHRINK_GROW_EQ" with _ ->  prove
  ((parse_term "!x. x / (&1 - abs x) / (&1 + abs(x / (&1 - abs x))) = x <=> abs x < &1"),
   vMESON_TAC[vREAL_SHRINK_GALOIS; vREAL_SHRINK_RANGE]);;
 
-let vREAL_SHRINK_GROW = prove
+let vREAL_SHRINK_GROW = try Cache.lookup_thm "REAL_SHRINK_GROW" with _ ->  prove
  ((parse_term "!x. abs x < &1\n       ==> x / (&1 - abs x) / (&1 + abs(x / (&1 - abs x))) = x"),
   vREWRITE_TAC[vREAL_SHRINK_GROW_EQ]);;

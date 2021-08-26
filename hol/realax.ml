@@ -81,47 +81,47 @@ let dist = new_definition
 (* Some easy theorems.                                                       *)
 (* ------------------------------------------------------------------------- *)
 
-let vDIST_REFL = prove
+let vDIST_REFL = try Cache.lookup_thm "DIST_REFL" with _ ->  prove
  ((parse_term "!n. dist(n,n) = 0"),
   vREWRITE_TAC[dist; vSUB_REFL; vADD_CLAUSES]);;
 
-let vDIST_LZERO = prove
+let vDIST_LZERO = try Cache.lookup_thm "DIST_LZERO" with _ ->  prove
  ((parse_term "!n. dist(0,n) = n"),
   vREWRITE_TAC[dist; vSUB_0; vADD_CLAUSES]);;
 
-let vDIST_RZERO = prove
+let vDIST_RZERO = try Cache.lookup_thm "DIST_RZERO" with _ ->  prove
  ((parse_term "!n. dist(n,0) = n"),
   vREWRITE_TAC[dist; vSUB_0; vADD_CLAUSES]);;
 
-let vDIST_SYM = prove
+let vDIST_SYM = try Cache.lookup_thm "DIST_SYM" with _ ->  prove
  ((parse_term "!m n. dist(m,n) = dist(n,m)"),
   vREWRITE_TAC[dist] ----> vMATCH_ACCEPT_TAC vADD_SYM);;
 
-let vDIST_LADD = prove
+let vDIST_LADD = try Cache.lookup_thm "DIST_LADD" with _ ->  prove
  ((parse_term "!m p n. dist(m + n,m + p) = dist(n,p)"),
   vREWRITE_TAC[dist; vSUB_ADD_LCANCEL]);;
 
-let vDIST_RADD = prove
+let vDIST_RADD = try Cache.lookup_thm "DIST_RADD" with _ ->  prove
  ((parse_term "!m p n. dist(m + p,n + p) = dist(m,n)"),
   vREWRITE_TAC[dist; vSUB_ADD_RCANCEL]);;
 
-let vDIST_LADD_0 = prove
+let vDIST_LADD_0 = try Cache.lookup_thm "DIST_LADD_0" with _ ->  prove
  ((parse_term "!m n. dist(m + n,m) = n"),
   vREWRITE_TAC[dist; vADD_SUB2; vADD_SUBR2; vADD_CLAUSES]);;
 
-let vDIST_RADD_0 = prove
+let vDIST_RADD_0 = try Cache.lookup_thm "DIST_RADD_0" with _ ->  prove
  ((parse_term "!m n. dist(m,m + n) = n"),
   vONCE_REWRITE_TAC[vDIST_SYM] ----> vMATCH_ACCEPT_TAC vDIST_LADD_0);;
 
-let vDIST_LMUL = prove
+let vDIST_LMUL = try Cache.lookup_thm "DIST_LMUL" with _ ->  prove
  ((parse_term "!m n p. m * dist(n,p) = dist(m * n,m * p)"),
   vREWRITE_TAC[dist; vLEFT_ADD_DISTRIB; vLEFT_SUB_DISTRIB]);;
 
-let vDIST_RMUL = prove
+let vDIST_RMUL = try Cache.lookup_thm "DIST_RMUL" with _ ->  prove
  ((parse_term "!m n p. dist(m,n) * p = dist(m * p,n * p)"),
   vREWRITE_TAC[dist; vRIGHT_ADD_DISTRIB; vRIGHT_SUB_DISTRIB]);;
 
-let vDIST_EQ_0 = prove
+let vDIST_EQ_0 = try Cache.lookup_thm "DIST_EQ_0" with _ ->  prove
  ((parse_term "!m n. (dist(m,n) = 0) <=> (m = n)"),
   vREWRITE_TAC[dist; vADD_EQ_0; vSUB_EQ_0; vLE_ANTISYM]);;
 
@@ -129,7 +129,7 @@ let vDIST_EQ_0 = prove
 (* Simplifying theorem about the distance operation.                         *)
 (* ------------------------------------------------------------------------- *)
 
-let vDIST_ELIM_THM = prove
+let vDIST_ELIM_THM = try Cache.lookup_thm "DIST_ELIM_THM" with _ ->  prove
  ((parse_term "P(dist(x,y)) <=> !d. ((x = y + d) ==> P(d)) /\\ ((y = x + d) ==> P(d))"),
   vDISJ_CASES_TAC(vSPECL [(parse_term "x:num"); (parse_term "y:num")] vLE_CASES) ---->
   vPOP_ASSUM(vX_CHOOSE_THEN (parse_term "e:num") vSUBST1_TAC -| vREWRITE_RULE[vLE_EXISTS]) ---->
@@ -174,12 +174,12 @@ let vDIST_LE_CASES,vDIST_ADDBOUND,vDIST_TRIANGLE,vDIST_ADD2,vDIST_ADD2_REV =
     vDIST_ELIM_TAC') in
   vDIST_LE_CASES,vDIST_ADDBOUND,vDIST_TRIANGLE,vDIST_ADD2,vDIST_ADD2_REV;;
 
-let vDIST_TRIANGLE_LE = prove
+let vDIST_TRIANGLE_LE = try Cache.lookup_thm "DIST_TRIANGLE_LE" with _ ->  prove
  ((parse_term "!m n p q. dist(m,n) + dist(n,p) <= q ==> dist(m,p) <= q"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vLE_TRANS ---->
   vEXISTS_TAC (parse_term "dist(m,n) + dist(n,p)") ----> vASM_REWRITE_TAC[vDIST_TRIANGLE]);;
 
-let vDIST_TRIANGLES_LE = prove
+let vDIST_TRIANGLES_LE = try Cache.lookup_thm "DIST_TRIANGLES_LE" with _ ->  prove
  ((parse_term "!m n p q r s.\n        dist(m,n) <= r /\\ dist(p,q) <= s ==> dist(m,p) <= dist(n,q) + r + s"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vDIST_TRIANGLE_LE ---->
   vEXISTS_TAC (parse_term "n:num") ----> vGEN_REWRITE_TAC vRAND_CONV [vADD_SYM] ---->
@@ -193,7 +193,7 @@ let vDIST_TRIANGLES_LE = prove
 (* Useful lemmas about bounds.                                               *)
 (* ------------------------------------------------------------------------- *)
 
-let vBOUNDS_LINEAR = prove
+let vBOUNDS_LINEAR = try Cache.lookup_thm "BOUNDS_LINEAR" with _ ->  prove
  ((parse_term "!A B C. (!n. A * n <= B * n + C) <=> A <= B"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ++-->
    [vCONV_TAC vCONTRAPOS_CONV ----> vREWRITE_TAC[vNOT_LE] ---->
@@ -205,12 +205,12 @@ let vBOUNDS_LINEAR = prove
     vDISCH_THEN(vCHOOSE_THEN vSUBST1_TAC -| vREWRITE_RULE[vLE_EXISTS]) ---->
     vREWRITE_TAC[vRIGHT_ADD_DISTRIB; vGSYM vADD_ASSOC; vLE_ADD]]);;
 
-let vBOUNDS_LINEAR_0 = prove
+let vBOUNDS_LINEAR_0 = try Cache.lookup_thm "BOUNDS_LINEAR_0" with _ ->  prove
  ((parse_term "!A B. (!n. A * n <= B) <=> (A = 0)"),
   vREPEAT vGEN_TAC ----> vMP_TAC(vSPECL [(parse_term "A:num"); (parse_term "0"); (parse_term "B:num")] vBOUNDS_LINEAR) ---->
   vREWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES; vLE]);;
 
-let vBOUNDS_DIVIDED = prove
+let vBOUNDS_DIVIDED = try Cache.lookup_thm "BOUNDS_DIVIDED" with _ ->  prove
  ((parse_term "!P. (?B. !n. P(n) <= B) <=>\n       (?A B. !n. n * P(n) <= A * n + B)"),
   vGEN_TAC ----> vEQ_TAC ----> vSTRIP_TAC ++-->
    [vMAP_EVERY vEXISTS_TAC [(parse_term "B:num"); (parse_term "0")] ---->
@@ -232,7 +232,7 @@ let vBOUNDS_DIVIDED = prove
     vSPEC_TAC((parse_term "n:num"),(parse_term "n:num")) ----> vINDUCT_TAC ---->
     vASM_REWRITE_TAC[vMULT_CLAUSES; vLE_ADD]]);;
 
-let vBOUNDS_NOTZERO = prove
+let vBOUNDS_NOTZERO = try Cache.lookup_thm "BOUNDS_NOTZERO" with _ ->  prove
  ((parse_term "!P A B. (P 0 0 = 0) /\\ (!m n. P m n <= A * (m + n) + B) ==>\n       (?B. !m n. P m n <= B * (m + n))"),
   vREPEAT vSTRIP_TAC ----> vEXISTS_TAC (parse_term "A + B") ---->
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "m + n = 0") ++-->
@@ -242,7 +242,7 @@ let vBOUNDS_NOTZERO = prove
     vUNDISCH_TAC (parse_term "~(m + n = 0)") ----> vSPEC_TAC((parse_term "m + n"),(parse_term "p:num")) ---->
     vINDUCT_TAC ----> vREWRITE_TAC[vMULT_CLAUSES; vLE_ADD]]);;
 
-let vBOUNDS_IGNORE = prove
+let vBOUNDS_IGNORE = try Cache.lookup_thm "BOUNDS_IGNORE" with _ ->  prove
  ((parse_term "!P Q. (?B. !i. P(i) <= Q(i) + B) <=>\n         (?B N. !i. N <= i ==> P(i) <= Q(i) + B)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vSTRIP_TAC ++-->
    [vEXISTS_TAC (parse_term "B:num") ----> vASM_REWRITE_TAC[];
@@ -268,7 +268,7 @@ let vBOUNDS_IGNORE = prove
 let is_nadd = new_definition
   (parse_term "is_nadd x <=> (?B. !m n. dist(m * x(n),n * x(m)) <= B * (m + n))");;
 
-let is_nadd_0 = prove
+let is_nadd_0 = try Cache.lookup_thm "is_nadd_0" with _ ->  prove
  ((parse_term "is_nadd (\\n. 0)"),
   vREWRITE_TAC[is_nadd; vMULT_CLAUSES; vDIST_REFL; vLE_0]);;
 
@@ -282,11 +282,11 @@ override_interface ("afn",(parse_term "mk_nadd"));;
 (* Properties of nearly-additive functions.                                  *)
 (* ------------------------------------------------------------------------- *)
 
-let vNADD_CAUCHY = prove
+let vNADD_CAUCHY = try Cache.lookup_thm "NADD_CAUCHY" with _ ->  prove
  ((parse_term "!x. ?B. !m n. dist(m * fn x n,n * fn x m) <= B * (m + n)"),
   vREWRITE_TAC[vGSYM is_nadd; nadd_rep; nadd_abs; vETA_AX]);;
 
-let vNADD_BOUND = prove
+let vNADD_BOUND = try Cache.lookup_thm "NADD_BOUND" with _ ->  prove
  ((parse_term "!x. ?A B. !n. fn x n <= A * n + B"),
   vGEN_TAC ----> vX_CHOOSE_TAC (parse_term "B:num") (vSPEC (parse_term "x:nadd") vNADD_CAUCHY) ---->
   vMAP_EVERY vEXISTS_TAC [(parse_term "B + fn x 1"); (parse_term "B:num")] ----> vGEN_TAC ---->
@@ -296,7 +296,7 @@ let vNADD_BOUND = prove
   vREWRITE_TAC[vLEFT_ADD_DISTRIB; vRIGHT_ADD_DISTRIB; vMULT_CLAUSES] ---->
   vREWRITE_TAC[vADD_AC; vMULT_AC]);;
 
-let vNADD_MULTIPLICATIVE = prove
+let vNADD_MULTIPLICATIVE = try Cache.lookup_thm "NADD_MULTIPLICATIVE" with _ ->  prove
  ((parse_term "!x. ?B. !m n. dist(fn x (m * n),m * fn x n) <= B * m + B"),
   vGEN_TAC ----> vX_CHOOSE_TAC (parse_term "B:num") (vSPEC (parse_term "x:nadd") vNADD_CAUCHY) ---->
   vEXISTS_TAC (parse_term "B + fn x 0") ----> vREPEAT vGEN_TAC ---->
@@ -314,7 +314,7 @@ let vNADD_MULTIPLICATIVE = prove
   vCONV_TAC(vONCE_DEPTH_CONV vNUM_CANCEL_CONV) ---->
   vREWRITE_TAC[vGSYM vEXISTS_REFL]);;
 
-let vNADD_ADDITIVE = prove
+let vNADD_ADDITIVE = try Cache.lookup_thm "NADD_ADDITIVE" with _ ->  prove
  ((parse_term "!x. ?B. !m n. dist(fn x (m + n),fn x m + fn x n) <= B"),
   vGEN_TAC ----> vX_CHOOSE_TAC (parse_term "B:num") (vSPEC (parse_term "x:nadd") vNADD_CAUCHY) ---->
   vEXISTS_TAC (parse_term "3 * B + fn x 0") ----> vREPEAT vGEN_TAC ---->
@@ -334,7 +334,7 @@ let vNADD_ADDITIVE = prove
     vREWRITE_TAC[vMULT_AC] ----> vCONV_TAC vNUM_CANCEL_CONV ----> vREFL_TAC;
     vMATCH_MP_TAC vLE_ADD2 ----> vASM_REWRITE_TAC[]]);;
 
-let vNADD_SUC = prove
+let vNADD_SUC = try Cache.lookup_thm "NADD_SUC" with _ ->  prove
  ((parse_term "!x. ?B. !n. dist(fn x (SUC n),fn x n) <= B"),
   vGEN_TAC ----> vX_CHOOSE_TAC (parse_term "B:num") (vSPEC (parse_term "x:nadd") vNADD_ADDITIVE) ---->
   vEXISTS_TAC (parse_term "B + fn x 1") ----> vGEN_TAC ---->
@@ -343,7 +343,7 @@ let vNADD_SUC = prove
   vASM_REWRITE_TAC[vADD1] ----> vMATCH_MP_TAC vLE_ADD2 ---->
   vASM_REWRITE_TAC[vDIST_LADD_0; vLE_REFL]);;
 
-let vNADD_DIST_LEMMA = prove
+let vNADD_DIST_LEMMA = try Cache.lookup_thm "NADD_DIST_LEMMA" with _ ->  prove
  ((parse_term "!x. ?B. !m n. dist(fn x (m + n),fn x m) <= B * n"),
   vGEN_TAC ----> vX_CHOOSE_TAC (parse_term "B:num") (vSPEC (parse_term "x:nadd") vNADD_SUC) ---->
   vEXISTS_TAC (parse_term "B:num") ----> vGEN_TAC ---->
@@ -354,7 +354,7 @@ let vNADD_DIST_LEMMA = prove
   vGEN_REWRITE_TAC vRAND_CONV [vADD_SYM] ---->
   vMATCH_MP_TAC vLE_ADD2 ----> vASM_REWRITE_TAC[vGSYM vADD1; vMULT_CLAUSES]);;
 
-let vNADD_DIST = prove
+let vNADD_DIST = try Cache.lookup_thm "NADD_DIST" with _ ->  prove
  ((parse_term "!x. ?B. !m n. dist(fn x m,fn x n) <= B * dist(m,n)"),
   vGEN_TAC ----> vX_CHOOSE_TAC (parse_term "B:num") (vSPEC (parse_term "x:nadd") vNADD_DIST_LEMMA) ---->
   vEXISTS_TAC (parse_term "B:num") ----> vREPEAT vGEN_TAC ---->
@@ -363,7 +363,7 @@ let vNADD_DIST = prove
    [vONCE_REWRITE_TAC[vDIST_SYM]; vALL_TAC] ---->
   vASM_REWRITE_TAC[vDIST_LADD_0]);;
 
-let vNADD_ALTMUL = prove
+let vNADD_ALTMUL = try Cache.lookup_thm "NADD_ALTMUL" with _ ->  prove
  ((parse_term "!x y. ?A B. !n. dist(n * fn x (fn y n),fn x n * fn y n) <= A * n + B"),
   vREPEAT vGEN_TAC ----> vX_CHOOSE_TAC (parse_term "B:num") (vSPEC (parse_term "x:nadd") vNADD_CAUCHY) ---->
   vMP_TAC(vSPEC (parse_term "y:nadd") vNADD_BOUND) ---->
@@ -384,16 +384,16 @@ override_interface ("===",(parse_term "(nadd_eq):nadd->nadd->bool"));;
 let nadd_eq = new_definition
   (parse_term "x === y <=> ?B. !n. dist(fn x n,fn y n) <= B");;
 
-let vNADD_EQ_REFL = prove
+let vNADD_EQ_REFL = try Cache.lookup_thm "NADD_EQ_REFL" with _ ->  prove
  ((parse_term "!x. x === x"),
   vGEN_TAC ----> vREWRITE_TAC[nadd_eq; vDIST_REFL; vLE_0]);;
 
-let vNADD_EQ_SYM = prove
+let vNADD_EQ_SYM = try Cache.lookup_thm "NADD_EQ_SYM" with _ ->  prove
  ((parse_term "!x y. x === y <=> y === x"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_eq] ---->
   vGEN_REWRITE_TAC (vRAND_CONV -| vONCE_DEPTH_CONV) [vDIST_SYM] ----> vREFL_TAC);;
 
-let vNADD_EQ_TRANS = prove
+let vNADD_EQ_TRANS = try Cache.lookup_thm "NADD_EQ_TRANS" with _ ->  prove
  ((parse_term "!x y z. x === y /\\ y === z ==> x === z"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_eq] ---->
   vDISCH_THEN(vCONJUNCTS_THEN2
@@ -411,17 +411,17 @@ override_interface ("&",(parse_term "nadd_of_num:num->nadd"));;
 let nadd_of_num = new_definition
   (parse_term "&k = afn(\\n. k * n)");;
 
-let vNADD_OF_NUM = prove
+let vNADD_OF_NUM = try Cache.lookup_thm "NADD_OF_NUM" with _ ->  prove
  ((parse_term "!k. fn(&k) = \\n. k * n"),
   vREWRITE_TAC[nadd_of_num; vGSYM nadd_rep; is_nadd] ---->
   vREWRITE_TAC[vDIST_REFL; vLE_0; vMULT_AC]);;
 
-let vNADD_OF_NUM_WELLDEF = prove
+let vNADD_OF_NUM_WELLDEF = try Cache.lookup_thm "NADD_OF_NUM_WELLDEF" with _ ->  prove
  ((parse_term "!m n. (m = n) ==> &m === &n"),
   vREPEAT vGEN_TAC ----> vDISCH_THEN vSUBST1_TAC ---->
   vMATCH_ACCEPT_TAC vNADD_EQ_REFL);;
 
-let vNADD_OF_NUM_EQ = prove
+let vNADD_OF_NUM_EQ = try Cache.lookup_thm "NADD_OF_NUM_EQ" with _ ->  prove
  ((parse_term "!m n. (&m === &n) <=> (m = n)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vREWRITE_TAC[vNADD_OF_NUM_WELLDEF] ---->
   vREWRITE_TAC[nadd_eq; vNADD_OF_NUM] ---->
@@ -436,7 +436,7 @@ override_interface ("<<=",(parse_term "nadd_le:nadd->nadd->bool"));;
 let nadd_le = new_definition
   (parse_term "x <<= y <=> ?B. !n. fn x n <= fn y n + B");;
 
-let vNADD_LE_WELLDEF_LEMMA = prove
+let vNADD_LE_WELLDEF_LEMMA = try Cache.lookup_thm "NADD_LE_WELLDEF_LEMMA" with _ ->  prove
  ((parse_term "!x x' y y'. x === x' /\\ y === y' /\\ x <<= y ==> x' <<= y'"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_eq; nadd_le] ---->
   vREWRITE_TAC[vDIST_LE_CASES; vFORALL_AND_THM] ---->
@@ -448,7 +448,7 @@ let vNADD_LE_WELLDEF_LEMMA = prove
   vREWRITE_TAC[vADD_ASSOC; vLE_ADD_RCANCEL] ---->
   vFIRST_ASSUM(vMATCH_MP_TAC -| vLE_IMP) ----> vASM_REWRITE_TAC[vLE_ADD_RCANCEL]);;
 
-let vNADD_LE_WELLDEF = prove
+let vNADD_LE_WELLDEF = try Cache.lookup_thm "NADD_LE_WELLDEF" with _ ->  prove
  ((parse_term "!x x' y y'. x === x' /\\ y === y' ==> (x <<= y <=> x' <<= y')"),
   vREPEAT vSTRIP_TAC ----> vEQ_TAC ----> vDISCH_TAC ---->
   vMATCH_MP_TAC vNADD_LE_WELLDEF_LEMMA ----> vASM_REWRITE_TAC[] ++-->
@@ -457,11 +457,11 @@ let vNADD_LE_WELLDEF = prove
     vONCE_REWRITE_TAC[vNADD_EQ_SYM]] ---->
   vASM_REWRITE_TAC[]);;
 
-let vNADD_LE_REFL = prove
+let vNADD_LE_REFL = try Cache.lookup_thm "NADD_LE_REFL" with _ ->  prove
  ((parse_term "!x. x <<= x"),
   vREWRITE_TAC[nadd_le; vLE_ADD]);;
 
-let vNADD_LE_TRANS = prove
+let vNADD_LE_TRANS = try Cache.lookup_thm "NADD_LE_TRANS" with _ ->  prove
  ((parse_term "!x y z. x <<= y /\\ y <<= z ==> x <<= z"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_le] ---->
   vDISCH_THEN(vCONJUNCTS_THEN2 (vX_CHOOSE_TAC (parse_term "B1:num")) vMP_TAC) ---->
@@ -470,7 +470,7 @@ let vNADD_LE_TRANS = prove
   vFIRST_ASSUM(vMATCH_MP_TAC -| vLE_IMP) ---->
   vASM_REWRITE_TAC[vADD_ASSOC; vLE_ADD_RCANCEL]);;
 
-let vNADD_LE_ANTISYM = prove
+let vNADD_LE_ANTISYM = try Cache.lookup_thm "NADD_LE_ANTISYM" with _ ->  prove
  ((parse_term "!x y. x <<= y /\\ y <<= x <=> (x === y)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_le; nadd_eq; vDIST_LE_CASES] ---->
   vEQ_TAC ++-->
@@ -482,7 +482,7 @@ let vNADD_LE_ANTISYM = prove
     vDISCH_THEN(vX_CHOOSE_TAC (parse_term "B:num")) ---->
     vCONJ_TAC ----> vEXISTS_TAC (parse_term "B:num") ----> vASM_REWRITE_TAC[]]);;
 
-let vNADD_LE_TOTAL_LEMMA = prove
+let vNADD_LE_TOTAL_LEMMA = try Cache.lookup_thm "NADD_LE_TOTAL_LEMMA" with _ ->  prove
  ((parse_term "!x y. ~(x <<= y) ==> !B. ?n. ~(n = 0) /\\ fn y n + B < fn x n"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_le; vNOT_FORALL_THM; vNOT_EXISTS_THM] ---->
   vREWRITE_TAC[vNOT_LE] ----> vDISCH_TAC ----> vGEN_TAC ---->
@@ -492,7 +492,7 @@ let vNADD_LE_TOTAL_LEMMA = prove
   vCONV_TAC vCONTRAPOS_CONV ----> vREWRITE_TAC[vNOT_LT] ---->
   vDISCH_THEN(vMATCH_MP_TAC -| vLE_IMP) ----> vREWRITE_TAC[vADD_ASSOC; vLE_ADD]);;
 
-let vNADD_LE_TOTAL = prove
+let vNADD_LE_TOTAL = try Cache.lookup_thm "NADD_LE_TOTAL" with _ ->  prove
  ((parse_term "!x y. x <<= y \\/ y <<= x"),
   vREPEAT vGEN_TAC ----> vGEN_REWRITE_TAC vI [vTAUT (parse_term "a <=> ~ ~ a")] ---->
   vX_CHOOSE_TAC (parse_term "B1:num") (vSPEC (parse_term "x:nadd") vNADD_CAUCHY) ---->
@@ -514,11 +514,11 @@ let vNADD_LE_TOTAL = prove
   vCONJ_TAC ----> vGEN_REWRITE_TAC (vRAND_CONV -| vRAND_CONV) [vMULT_SYM] ---->
   vRULE_ASSUM_TAC(vREWRITE_RULE[vDIST_LE_CASES]) ----> vASM_REWRITE_TAC[]);;
 
-let vNADD_ARCH = prove
+let vNADD_ARCH = try Cache.lookup_thm "NADD_ARCH" with _ ->  prove
  ((parse_term "!x. ?n. x <<= &n"),
   vREWRITE_TAC[nadd_le; vNADD_OF_NUM; vNADD_BOUND]);;
 
-let vNADD_OF_NUM_LE = prove
+let vNADD_OF_NUM_LE = try Cache.lookup_thm "NADD_OF_NUM_LE" with _ ->  prove
  ((parse_term "!m n. (&m <<= &n) <=> m <= n"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_le; vNADD_OF_NUM] ---->
   vREWRITE_TAC[vBOUNDS_LINEAR]);;
@@ -532,7 +532,7 @@ override_interface ("++",(parse_term "nadd_add:nadd->nadd->nadd"));;
 let nadd_add = new_definition
   (parse_term "x ++ y = afn(\\n. fn x n + fn y n)");;
 
-let vNADD_ADD = prove
+let vNADD_ADD = try Cache.lookup_thm "NADD_ADD" with _ ->  prove
  ((parse_term "!x y. fn(x ++ y) = \\n. fn x n + fn y n"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[nadd_add; vGSYM nadd_rep; is_nadd] ---->
@@ -543,7 +543,7 @@ let vNADD_ADD = prove
   vMATCH_MP_TAC (vLE_IMP vDIST_ADD2) ----> vREWRITE_TAC[vRIGHT_ADD_DISTRIB] ---->
   vMATCH_MP_TAC vLE_ADD2 ----> vASM_REWRITE_TAC[]);;
 
-let vNADD_ADD_WELLDEF = prove
+let vNADD_ADD_WELLDEF = try Cache.lookup_thm "NADD_ADD_WELLDEF" with _ ->  prove
  ((parse_term "!x x' y y'. x === x' /\\ y === y' ==> (x ++ y === x' ++ y')"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_eq; vNADD_ADD] ---->
   vDISCH_THEN(vCONJUNCTS_THEN2
@@ -556,32 +556,32 @@ let vNADD_ADD_WELLDEF = prove
 (* Basic properties of addition.                                             *)
 (* ------------------------------------------------------------------------- *)
 
-let vNADD_ADD_SYM = prove
+let vNADD_ADD_SYM = try Cache.lookup_thm "NADD_ADD_SYM" with _ ->  prove
  ((parse_term "!x y. (x ++ y) === (y ++ x)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_add] ---->
   vGEN_REWRITE_TAC (vRAND_CONV -| vONCE_DEPTH_CONV) [vADD_SYM] ---->
   vREWRITE_TAC[vNADD_EQ_REFL]);;
 
-let vNADD_ADD_ASSOC = prove
+let vNADD_ADD_ASSOC = try Cache.lookup_thm "NADD_ADD_ASSOC" with _ ->  prove
  ((parse_term "!x y z. (x ++ (y ++ z)) === ((x ++ y) ++ z)"),
   vREPEAT vGEN_TAC ----> vONCE_REWRITE_TAC[nadd_add] ---->
   vREWRITE_TAC[vNADD_ADD; vADD_ASSOC; vNADD_EQ_REFL]);;
 
-let vNADD_ADD_LID = prove
+let vNADD_ADD_LID = try Cache.lookup_thm "NADD_ADD_LID" with _ ->  prove
  ((parse_term "!x. (&0 ++ x) === x"),
   vGEN_TAC ----> vREWRITE_TAC[nadd_eq; vNADD_ADD; vNADD_OF_NUM] ---->
   vREWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES; vDIST_REFL; vLE_0]);;
 
-let vNADD_ADD_LCANCEL = prove
+let vNADD_ADD_LCANCEL = try Cache.lookup_thm "NADD_ADD_LCANCEL" with _ ->  prove
  ((parse_term "!x y z. (x ++ y) === (x ++ z) ==> y === z"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_eq; vNADD_ADD; vDIST_LADD]);;
 
-let vNADD_LE_ADD = prove
+let vNADD_LE_ADD = try Cache.lookup_thm "NADD_LE_ADD" with _ ->  prove
  ((parse_term "!x y. x <<= (x ++ y)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_le; vNADD_ADD] ---->
   vEXISTS_TAC (parse_term "0") ----> vREWRITE_TAC[vADD_CLAUSES; vLE_ADD]);;
 
-let vNADD_LE_EXISTS = prove
+let vNADD_LE_EXISTS = try Cache.lookup_thm "NADD_LE_EXISTS" with _ ->  prove
  ((parse_term "!x y. x <<= y ==> ?d. y === x ++ d"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_le] ---->
   vDISCH_THEN(vX_CHOOSE_THEN (parse_term "B:num") vMP_TAC) ---->
@@ -609,7 +609,7 @@ let vNADD_LE_EXISTS = prove
     vREWRITE_TAC[vGSYM vDIST_LMUL; vDIST_ADDBOUND; vLE_MULT_LCANCEL];
     vASM_REWRITE_TAC[vDIST_RADD_0; vLE_REFL]]);;
 
-let vNADD_OF_NUM_ADD = prove
+let vNADD_OF_NUM_ADD = try Cache.lookup_thm "NADD_OF_NUM_ADD" with _ ->  prove
  ((parse_term "!m n. &m ++ &n === &(m + n)"),
   vREWRITE_TAC[nadd_eq; vNADD_OF_NUM; vNADD_ADD] ---->
   vREWRITE_TAC[vRIGHT_ADD_DISTRIB; vDIST_REFL; vLE_0]);;
@@ -623,7 +623,7 @@ override_interface ("**",(parse_term "nadd_mul:nadd->nadd->nadd"));;
 let nadd_mul = new_definition
   (parse_term "x ** y = afn(\\n. fn x (fn y n))");;
 
-let vNADD_MUL = prove
+let vNADD_MUL = try Cache.lookup_thm "NADD_MUL" with _ ->  prove
  ((parse_term "!x y. fn(x ** y) = \\n. fn x (fn y n)"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[nadd_mul; vGSYM nadd_rep; is_nadd] ---->
@@ -653,7 +653,7 @@ let vNADD_MUL = prove
 (* Properties of multiplication.                                             *)
 (* ------------------------------------------------------------------------- *)
 
-let vNADD_MUL_SYM = prove
+let vNADD_MUL_SYM = try Cache.lookup_thm "NADD_MUL_SYM" with _ ->  prove
  ((parse_term "!x y. (x ** y) === (y ** x)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_eq; vNADD_MUL] ---->
   vX_CHOOSE_THEN (parse_term "A1:num") vMP_TAC (vSPECL [(parse_term "x:nadd"); (parse_term "y:nadd")] vNADD_ALTMUL) ---->
@@ -670,24 +670,24 @@ let vNADD_MUL_SYM = prove
   vGEN_REWRITE_TAC (vLAND_CONV -| funpow 2 vRAND_CONV) [vMULT_SYM] ---->
   vASM_REWRITE_TAC[]);;
 
-let vNADD_MUL_ASSOC = prove
+let vNADD_MUL_ASSOC = try Cache.lookup_thm "NADD_MUL_ASSOC" with _ ->  prove
  ((parse_term "!x y z. (x ** (y ** z)) === ((x ** y) ** z)"),
   vREPEAT vGEN_TAC ----> vONCE_REWRITE_TAC[nadd_mul] ---->
   vREWRITE_TAC[vNADD_MUL; vNADD_EQ_REFL]);;
 
-let vNADD_MUL_LID = prove
+let vNADD_MUL_LID = try Cache.lookup_thm "NADD_MUL_LID" with _ ->  prove
  ((parse_term "!x. (&1 ** x) === x"),
   vREWRITE_TAC[vNADD_OF_NUM; nadd_mul; vMULT_CLAUSES] ---->
   vREWRITE_TAC[nadd_abs; vNADD_EQ_REFL; vETA_AX]);;
 
-let vNADD_LDISTRIB = prove
+let vNADD_LDISTRIB = try Cache.lookup_thm "NADD_LDISTRIB" with _ ->  prove
  ((parse_term "!x y z. x ** (y ++ z) === (x ** y) ++ (x ** z)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_eq] ---->
   vREWRITE_TAC[vNADD_ADD; vNADD_MUL] ---->
   vX_CHOOSE_TAC (parse_term "B:num") (vSPEC (parse_term "x:nadd") vNADD_ADDITIVE) ---->
   vEXISTS_TAC (parse_term "B:num") ----> vASM_REWRITE_TAC[]);;
 
-let vNADD_MUL_WELLDEF_LEMMA = prove
+let vNADD_MUL_WELLDEF_LEMMA = try Cache.lookup_thm "NADD_MUL_WELLDEF_LEMMA" with _ ->  prove
  ((parse_term "!x y y'. y === y' ==> (x ** y) === (x ** y')"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_eq; vNADD_MUL] ---->
   vDISCH_THEN(vX_CHOOSE_TAC (parse_term "B1:num")) ---->
@@ -697,7 +697,7 @@ let vNADD_MUL_WELLDEF_LEMMA = prove
   vEXISTS_TAC (parse_term "B2 * dist(fn y n,fn y' n)") ---->
   vASM_REWRITE_TAC[vLE_MULT_LCANCEL]);;
 
-let vNADD_MUL_WELLDEF = prove
+let vNADD_MUL_WELLDEF = try Cache.lookup_thm "NADD_MUL_WELLDEF" with _ ->  prove
  ((parse_term "!x x' y y'. x === x' /\\ y === y'\n               ==> (x ** y) === (x' ** y')"),
   vREPEAT vGEN_TAC ----> vSTRIP_TAC ----> vMATCH_MP_TAC vNADD_EQ_TRANS ---->
   vEXISTS_TAC (parse_term "x' ** y") ----> vCONJ_TAC ++-->
@@ -706,7 +706,7 @@ let vNADD_MUL_WELLDEF = prove
     vEXISTS_TAC (parse_term "y ** x") ----> vREWRITE_TAC[vNADD_MUL_SYM]; vALL_TAC] ---->
   vMATCH_MP_TAC vNADD_MUL_WELLDEF_LEMMA ----> vASM_REWRITE_TAC[]);;
 
-let vNADD_OF_NUM_MUL = prove
+let vNADD_OF_NUM_MUL = try Cache.lookup_thm "NADD_OF_NUM_MUL" with _ ->  prove
  ((parse_term "!m n. &m ** &n === &(m * n)"),
   vREWRITE_TAC[nadd_eq; vNADD_OF_NUM; vNADD_MUL] ---->
   vREWRITE_TAC[vMULT_ASSOC; vDIST_REFL; vLE_0]);;
@@ -715,19 +715,19 @@ let vNADD_OF_NUM_MUL = prove
 (* A few handy lemmas.                                                       *)
 (* ------------------------------------------------------------------------- *)
 
-let vNADD_LE_0 = prove
+let vNADD_LE_0 = try Cache.lookup_thm "NADD_LE_0" with _ ->  prove
  ((parse_term "!x. &0 <<= x"),
   vGEN_TAC ---->
   vREWRITE_TAC[nadd_le; vNADD_OF_NUM; vMULT_CLAUSES; vLE_0]);;
 
-let vNADD_EQ_IMP_LE = prove
+let vNADD_EQ_IMP_LE = try Cache.lookup_thm "NADD_EQ_IMP_LE" with _ ->  prove
  ((parse_term "!x y. x === y ==> x <<= y"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[nadd_eq; nadd_le; vDIST_LE_CASES] ---->
   vDISCH_THEN(vX_CHOOSE_TAC (parse_term "B:num")) ----> vEXISTS_TAC (parse_term "B:num") ---->
   vASM_REWRITE_TAC[]);;
 
-let vNADD_LE_LMUL = prove
+let vNADD_LE_LMUL = try Cache.lookup_thm "NADD_LE_LMUL" with _ ->  prove
  ((parse_term "!x y z. y <<= z ==> (x ** y) <<= (x ** z)"),
   vREPEAT vGEN_TAC ---->
   vDISCH_THEN(vX_CHOOSE_TAC (parse_term "d:nadd") -| vMATCH_MP vNADD_LE_EXISTS) ---->
@@ -741,11 +741,11 @@ let vNADD_LE_LMUL = prove
   vMATCH_MP_TAC vNADD_MUL_WELLDEF ---->
   vASM_REWRITE_TAC[vNADD_EQ_REFL]);;
 
-let vNADD_LE_RMUL = prove
+let vNADD_LE_RMUL = try Cache.lookup_thm "NADD_LE_RMUL" with _ ->  prove
  ((parse_term "!x y z. x <<= y ==> (x ** z) <<= (y ** z)"),
   vMESON_TAC[vNADD_LE_LMUL; vNADD_LE_WELLDEF; vNADD_MUL_SYM]);;
 
-let vNADD_LE_RADD = prove
+let vNADD_LE_RADD = try Cache.lookup_thm "NADD_LE_RADD" with _ ->  prove
  ((parse_term "!x y z. x ++ z <<= y ++ z <=> x <<= y"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_le; vNADD_ADD] ---->
   vGEN_REWRITE_TAC (vLAND_CONV -| funpow 2 vBINDER_CONV -| vRAND_CONV)
@@ -754,11 +754,11 @@ let vNADD_LE_RADD = prove
   vGEN_REWRITE_TAC (vLAND_CONV -| funpow 2 vBINDER_CONV -| vRAND_CONV)
     [vADD_SYM] ----> vREFL_TAC);;
 
-let vNADD_LE_LADD = prove
+let vNADD_LE_LADD = try Cache.lookup_thm "NADD_LE_LADD" with _ ->  prove
  ((parse_term "!x y z. x ++ y <<= x ++ z <=> y <<= z"),
   vMESON_TAC[vNADD_LE_RADD; vNADD_ADD_SYM; vNADD_LE_WELLDEF]);;
 
-let vNADD_RDISTRIB = prove
+let vNADD_RDISTRIB = try Cache.lookup_thm "NADD_RDISTRIB" with _ ->  prove
  ((parse_term "!x y z. (x ++ y) ** z === x ** z ++ y ** z"),
   vMESON_TAC[vNADD_LDISTRIB; vNADD_MUL_SYM; vNADD_ADD_WELLDEF;
     vNADD_EQ_TRANS; vNADD_EQ_REFL; vNADD_EQ_SYM]);;
@@ -767,7 +767,7 @@ let vNADD_RDISTRIB = prove
 (* The Archimedean property in a more useful form.                           *)
 (* ------------------------------------------------------------------------- *)
 
-let vNADD_ARCH_MULT = prove
+let vNADD_ARCH_MULT = try Cache.lookup_thm "NADD_ARCH_MULT" with _ ->  prove
  ((parse_term "!x k. ~(x === &0) ==> ?N. &k <<= &N ** x"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[nadd_eq; nadd_le; vNOT_EXISTS_THM] ---->
   vX_CHOOSE_TAC (parse_term "B:num") (vSPEC (parse_term "x:nadd") vNADD_CAUCHY) ---->
@@ -788,7 +788,7 @@ let vNADD_ARCH_MULT = prove
   vMATCH_MP_TAC vLT_IMP_LE ----> vONCE_REWRITE_TAC[vADD_SYM] ---->
   vFIRST_ASSUM vACCEPT_TAC);;
 
-let vNADD_ARCH_ZERO = prove
+let vNADD_ARCH_ZERO = try Cache.lookup_thm "NADD_ARCH_ZERO" with _ ->  prove
  ((parse_term "!x k. (!n. &n ** x <<= k) ==> (x === &0)"),
   vREPEAT vGEN_TAC ----> vCONV_TAC vCONTRAPOS_CONV ----> vDISCH_TAC ---->
   vREWRITE_TAC[vNOT_FORALL_THM] ---->
@@ -814,7 +814,7 @@ let vNADD_ARCH_ZERO = prove
     vASM_MESON_TAC[vNADD_LE_TRANS; vNADD_LE_WELLDEF; vNADD_EQ_REFL;
       vNADD_ADD_LID]]);;
 
-let vNADD_ARCH_LEMMA = prove
+let vNADD_ARCH_LEMMA = try Cache.lookup_thm "NADD_ARCH_LEMMA" with _ ->  prove
  ((parse_term "!x y z. (!n. &n ** x <<= &n ** y ++ z) ==> x <<= y"),
   vREPEAT vSTRIP_TAC ---->
   vDISJ_CASES_TAC(vSPECL [(parse_term "x:nadd"); (parse_term "y:nadd")] vNADD_LE_TOTAL) ---->
@@ -835,7 +835,7 @@ let vNADD_ARCH_LEMMA = prove
 (* Completeness.                                                             *)
 (* ------------------------------------------------------------------------- *)
 
-let vNADD_COMPLETE = prove
+let vNADD_COMPLETE = try Cache.lookup_thm "NADD_COMPLETE" with _ ->  prove
  ((parse_term "!P. (?x. P x) /\\ (?M. !x. P x ==> x <<= M) ==>\n       ?M. (!x. P x ==> x <<= M) /\\\n           !M'. (!x. P x ==> x <<= M') ==> M <<= M'"),
   vGEN_TAC ----> vDISCH_THEN
     (vCONJUNCTS_THEN2 (vX_CHOOSE_TAC (parse_term "a:nadd")) (vX_CHOOSE_TAC (parse_term "m:nadd"))) ---->
@@ -941,7 +941,7 @@ let vNADD_COMPLETE = prove
 (* A bit more on nearly-multiplicative functions.                            *)
 (* ------------------------------------------------------------------------- *)
 
-let vNADD_UBOUND = prove
+let vNADD_UBOUND = try Cache.lookup_thm "NADD_UBOUND" with _ ->  prove
  ((parse_term "!x. ?B N. !n. N <= n ==> fn x n <= B * n"),
   vGEN_TAC ----> vX_CHOOSE_THEN (parse_term "A1:num")
     (vX_CHOOSE_TAC (parse_term "A2:num")) (vSPEC (parse_term "x:nadd") vNADD_BOUND) ---->
@@ -952,7 +952,7 @@ let vNADD_UBOUND = prove
   vGEN_REWRITE_TAC vLAND_CONV [vGSYM(el 3 (vCONJUNCTS vMULT_CLAUSES))] ---->
   vASM_REWRITE_TAC[vLE_MULT_LCANCEL]);;
 
-let vNADD_NONZERO = prove
+let vNADD_NONZERO = try Cache.lookup_thm "NADD_NONZERO" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==> ?N. !n. N <= n ==> ~(fn x n = 0)"),
   vGEN_TAC ----> vDISCH_THEN(vMP_TAC -| vMATCH_MP vNADD_ARCH_MULT) ---->
   vDISCH_THEN(vMP_TAC -| vSPEC (parse_term "1")) ---->
@@ -963,7 +963,7 @@ let vNADD_NONZERO = prove
   vREWRITE_TAC[vNOT_FORALL_THM; vNOT_LE; vGSYM vLE_SUC_LT; vADD1] ---->
   vEXISTS_TAC (parse_term "n:num") ----> vASM_REWRITE_TAC[vMULT_CLAUSES; vADD_CLAUSES]);;
 
-let vNADD_LBOUND = prove
+let vNADD_LBOUND = try Cache.lookup_thm "NADD_LBOUND" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==> ?A N. !n. N <= n ==> n <= A * fn x n"),
   vGEN_TAC ----> vDISCH_TAC ---->
   vFIRST_ASSUM(vX_CHOOSE_TAC (parse_term "N:num") -| vMATCH_MP vNADD_NONZERO) ---->
@@ -987,7 +987,7 @@ let vNADD_LBOUND = prove
 let nadd_rinv = new_definition
  (parse_term "nadd_rinv(x) = \\n. (n * n) DIV (fn x n)");;
 
-let vNADD_MUL_LINV_LEMMA0 = prove
+let vNADD_MUL_LINV_LEMMA0 = try Cache.lookup_thm "NADD_MUL_LINV_LEMMA0" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==> ?A B. !n. nadd_rinv x n <= A * n + B"),
   vGEN_TAC ----> vDISCH_TAC ----> vONCE_REWRITE_TAC[vBOUNDS_IGNORE] ---->
   vFIRST_ASSUM(vMP_TAC -| vMATCH_MP vNADD_LBOUND) ---->
@@ -1010,7 +1010,7 @@ let vNADD_MUL_LINV_LEMMA0 = prove
     vDISCH_THEN(fun t -> vGEN_REWRITE_TAC vRAND_CONV [vCONJUNCT1(vSPEC_ALL t)]) ---->
     vGEN_REWRITE_TAC vLAND_CONV [vMULT_SYM] ----> vREWRITE_TAC[vLE_ADD]]);;
 
-let vNADD_MUL_LINV_LEMMA1 = prove
+let vNADD_MUL_LINV_LEMMA1 = try Cache.lookup_thm "NADD_MUL_LINV_LEMMA1" with _ ->  prove
  ((parse_term "!x n. ~(fn x n = 0) ==> dist(fn x n * nadd_rinv(x) n, n * n) <= fn x n"),
   vREPEAT vGEN_TAC ----> vDISCH_THEN(vMP_TAC -| vMATCH_MP vDIVISION) ---->
   vDISCH_THEN(vCONJUNCTS_THEN2 vSUBST1_TAC vASSUME_TAC -| vSPEC (parse_term "n * n")) ---->
@@ -1019,14 +1019,14 @@ let vNADD_MUL_LINV_LEMMA1 = prove
   vREWRITE_TAC[vDIST_RADD_0] ----> vMATCH_MP_TAC vLT_IMP_LE ---->
   vFIRST_ASSUM vMATCH_ACCEPT_TAC);;
 
-let vNADD_MUL_LINV_LEMMA2 = prove
+let vNADD_MUL_LINV_LEMMA2 = try Cache.lookup_thm "NADD_MUL_LINV_LEMMA2" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==> ?N. !n. N <= n ==>\n         dist(fn x n * nadd_rinv(x) n, n * n) <= fn x n"),
   vGEN_TAC ----> vDISCH_THEN(vMP_TAC -| vMATCH_MP vNADD_NONZERO) ---->
   vDISCH_THEN(vX_CHOOSE_TAC (parse_term "N:num")) ----> vEXISTS_TAC (parse_term "N:num") ---->
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vNADD_MUL_LINV_LEMMA1 ---->
   vFIRST_ASSUM vMATCH_MP_TAC ----> vASM_REWRITE_TAC[]);;
 
-let vNADD_MUL_LINV_LEMMA3 = prove
+let vNADD_MUL_LINV_LEMMA3 = try Cache.lookup_thm "NADD_MUL_LINV_LEMMA3" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==> ?N. !m n. N <= n ==>\n        dist(m * fn x m * fn x n * nadd_rinv(x) n,\n             m * fn x m * n * n) <= m * fn x m * fn x n"),
   vGEN_TAC ----> vDISCH_THEN(vMP_TAC -| vMATCH_MP vNADD_MUL_LINV_LEMMA2) ---->
   vDISCH_THEN(vX_CHOOSE_TAC (parse_term "N:num")) ----> vEXISTS_TAC (parse_term "N:num") ---->
@@ -1034,7 +1034,7 @@ let vNADD_MUL_LINV_LEMMA3 = prove
   vREWRITE_TAC[vLE_MULT_LCANCEL] ----> vDISJ2_TAC ---->
   vFIRST_ASSUM vMATCH_MP_TAC ----> vASM_REWRITE_TAC[]);;
 
-let vNADD_MUL_LINV_LEMMA4 = prove
+let vNADD_MUL_LINV_LEMMA4 = try Cache.lookup_thm "NADD_MUL_LINV_LEMMA4" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==> ?N. !m n. N <= m /\\ N <= n ==>\n        (fn x m * fn x n) * dist(m * nadd_rinv(x) n,n * nadd_rinv(x) m) <=\n          (m * n) * dist(m * fn x n,n * fn x m) + (fn x m * fn x n) * (m + n)"),
   vGEN_TAC ----> vDISCH_THEN(vMP_TAC -| vMATCH_MP vNADD_MUL_LINV_LEMMA3) ---->
   vDISCH_THEN(vX_CHOOSE_TAC (parse_term "N:num")) ----> vEXISTS_TAC (parse_term "N:num") ---->
@@ -1045,7 +1045,7 @@ let vNADD_MUL_LINV_LEMMA4 = prove
     vANTE_RES_THEN(vMP_TAC -| vSPEC (parse_term "n:num")) (vASSUME (parse_term "N <= m"))] ---->
   vMATCH_MP_TAC vEQ_IMP ----> vREWRITE_TAC[vMULT_AC]);;
 
-let vNADD_MUL_LINV_LEMMA5 = prove
+let vNADD_MUL_LINV_LEMMA5 = try Cache.lookup_thm "NADD_MUL_LINV_LEMMA5" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==> ?B N. !m n. N <= m /\\ N <= n ==>\n        (fn x m * fn x n) * dist(m * nadd_rinv(x) n,n * nadd_rinv(x) m) <=\n        B * (m * n) * (m + n)"),
   vGEN_TAC ----> vDISCH_THEN(vMP_TAC -| vMATCH_MP vNADD_MUL_LINV_LEMMA4) ---->
   vDISCH_THEN(vX_CHOOSE_TAC (parse_term "N1:num")) ---->
@@ -1073,7 +1073,7 @@ let vNADD_MUL_LINV_LEMMA5 = prove
     vMATCH_MP_TAC vLE_TRANS ----> vEXISTS_TAC (parse_term "N1 + N2") ---->
     vASM_REWRITE_TAC[vLE_ADD; vLE_ADDR]]);;
 
-let vNADD_MUL_LINV_LEMMA6 = prove
+let vNADD_MUL_LINV_LEMMA6 = try Cache.lookup_thm "NADD_MUL_LINV_LEMMA6" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==> ?B N. !m n. N <= m /\\ N <= n ==>\n        (m * n) * dist(m * nadd_rinv(x) n,n * nadd_rinv(x) m) <=\n        B * (m * n) * (m + n)"),
   vGEN_TAC ----> vDISCH_TAC ---->
   vFIRST_ASSUM(vMP_TAC -| vMATCH_MP vNADD_MUL_LINV_LEMMA5) ---->
@@ -1094,7 +1094,7 @@ let vNADD_MUL_LINV_LEMMA6 = prove
   vMATCH_MP_TAC vLE_TRANS ----> vEXISTS_TAC (parse_term "N1 + N2") ---->
   vASM_REWRITE_TAC[vLE_ADD; vLE_ADDR]);;
 
-let vNADD_MUL_LINV_LEMMA7 = prove
+let vNADD_MUL_LINV_LEMMA7 = try Cache.lookup_thm "NADD_MUL_LINV_LEMMA7" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==> ?B N. !m n. N <= m /\\ N <= n ==>\n        dist(m * nadd_rinv(x) n,n * nadd_rinv(x) m) <= B * (m + n)"),
   vGEN_TAC ----> vDISCH_THEN(vMP_TAC -| vMATCH_MP vNADD_MUL_LINV_LEMMA6) ---->
   vDISCH_THEN(vX_CHOOSE_THEN (parse_term "B:num") (vX_CHOOSE_TAC (parse_term "N:num"))) ---->
@@ -1115,7 +1115,7 @@ let vNADD_MUL_LINV_LEMMA7 = prove
     vMATCH_MP_TAC vLE_TRANS ----> vEXISTS_TAC (parse_term "N + 1") ---->
     vASM_REWRITE_TAC[vLE_ADDR]]);;
 
-let vNADD_MUL_LINV_LEMMA7a = prove
+let vNADD_MUL_LINV_LEMMA7a = try Cache.lookup_thm "NADD_MUL_LINV_LEMMA7a" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==> !N. ?A B. !m n. m <= N ==>\n        dist(m * nadd_rinv(x) n,n * nadd_rinv(x) m) <= A * n + B"),
   vGEN_TAC ----> vDISCH_THEN(vMP_TAC -| vMATCH_MP vNADD_MUL_LINV_LEMMA0) ---->
   vDISCH_THEN(vX_CHOOSE_THEN (parse_term "A0:num") (vX_CHOOSE_TAC (parse_term "B0:num"))) ---->
@@ -1144,7 +1144,7 @@ let vNADD_MUL_LINV_LEMMA7a = prove
         vREWRITE_TAC[vADD_ASSOC; vLE_ADD_RCANCEL] ---->
         vREWRITE_TAC[vRIGHT_ADD_DISTRIB; vGSYM vADD_ASSOC; vLE_ADD]]]]);;
 
-let vNADD_MUL_LINV_LEMMA8 = prove
+let vNADD_MUL_LINV_LEMMA8 = try Cache.lookup_thm "NADD_MUL_LINV_LEMMA8" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==>\n        ?B. !m n. dist(m * nadd_rinv(x) n,n * nadd_rinv(x) m) <= B * (m + n)"),
   vGEN_TAC ----> vDISCH_TAC ---->
   vFIRST_ASSUM(vMP_TAC -| vMATCH_MP vNADD_MUL_LINV_LEMMA7) ---->
@@ -1182,14 +1182,14 @@ let nadd_inv = new_definition
 
 override_interface ("inv",(parse_term "nadd_inv:nadd->nadd"));;
 
-let vNADD_INV = prove
+let vNADD_INV = try Cache.lookup_thm "NADD_INV" with _ ->  prove
  ((parse_term "!x. fn(nadd_inv x) = if x === &0 then (\\n. 0) else nadd_rinv x"),
   vGEN_TAC ----> vREWRITE_TAC[nadd_inv] ---->
   vASM_CASES_TAC (parse_term "x === &0") ----> vASM_REWRITE_TAC[vNADD_OF_NUM; vMULT_CLAUSES] ---->
   vREWRITE_TAC[vGSYM nadd_rep; is_nadd] ---->
   vMATCH_MP_TAC vNADD_MUL_LINV_LEMMA8 ----> vPOP_ASSUM vACCEPT_TAC);;
 
-let vNADD_MUL_LINV = prove
+let vNADD_MUL_LINV = try Cache.lookup_thm "NADD_MUL_LINV" with _ ->  prove
  ((parse_term "!x. ~(x === &0) ==> inv(x) ** x === &1"),
   vGEN_TAC ----> vDISCH_TAC ----> vREWRITE_TAC[nadd_eq; vNADD_MUL] ---->
   vONCE_REWRITE_TAC[vBOUNDS_DIVIDED] ---->
@@ -1214,7 +1214,7 @@ let vNADD_MUL_LINV = prove
     vGEN_REWRITE_TAC (vLAND_CONV -| vRAND_CONV -| vLAND_CONV) [vMULT_SYM] ---->
     vASM_REWRITE_TAC[vNADD_INV]]);;
 
-let vNADD_INV_0 = prove
+let vNADD_INV_0 = try Cache.lookup_thm "NADD_INV_0" with _ ->  prove
  ((parse_term "inv(&0) === &0"),
   vREWRITE_TAC[nadd_inv; vNADD_EQ_REFL]);;
 
@@ -1223,7 +1223,7 @@ let vNADD_INV_0 = prove
 (* x = y then y' = y' 1 = y' (x' x) = y' (x' y) = (y' y) x' = 1 x' = x'      *)
 (* ------------------------------------------------------------------------- *)
 
-let vNADD_INV_WELLDEF = prove
+let vNADD_INV_WELLDEF = try Cache.lookup_thm "NADD_INV_WELLDEF" with _ ->  prove
  ((parse_term "!x y. x === y ==> inv(x) === inv(y)"),
   let vTAC tm ths =
     vMATCH_MP_TAC vNADD_EQ_TRANS ----> vEXISTS_TAC tm ---->
@@ -1312,38 +1312,38 @@ let [@warning "-8"] [vHREAL_OF_NUM_EQ; vHREAL_OF_NUM_LE; vHREAL_OF_NUM_ADD; vHRE
 (* Consequential theorems needed later.                                      *)
 (* ------------------------------------------------------------------------- *)
 
-let vHREAL_LE_EXISTS_DEF = prove
+let vHREAL_LE_EXISTS_DEF = try Cache.lookup_thm "HREAL_LE_EXISTS_DEF" with _ ->  prove
  ((parse_term "!m n. m <= n <=> ?d. n = m + d"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vREWRITE_TAC[vHREAL_LE_EXISTS] ---->
   vDISCH_THEN(vCHOOSE_THEN vSUBST1_TAC) ----> vREWRITE_TAC[vHREAL_LE_ADD]);;
 
-let vHREAL_EQ_ADD_LCANCEL = prove
+let vHREAL_EQ_ADD_LCANCEL = try Cache.lookup_thm "HREAL_EQ_ADD_LCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + n = m + p) <=> (n = p)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vREWRITE_TAC[vHREAL_ADD_LCANCEL] ---->
   vDISCH_THEN vSUBST1_TAC ----> vREFL_TAC);;
 
-let vHREAL_EQ_ADD_RCANCEL = prove
+let vHREAL_EQ_ADD_RCANCEL = try Cache.lookup_thm "HREAL_EQ_ADD_RCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + p = n + p) <=> (m = n)"),
   vONCE_REWRITE_TAC[vHREAL_ADD_SYM] ----> vREWRITE_TAC[vHREAL_EQ_ADD_LCANCEL]);;
 
-let vHREAL_LE_ADD_LCANCEL = prove
+let vHREAL_LE_ADD_LCANCEL = try Cache.lookup_thm "HREAL_LE_ADD_LCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + n <= m + p) <=> (n <= p)"),
   vREWRITE_TAC[vHREAL_LE_EXISTS_DEF; vGSYM vHREAL_ADD_ASSOC;
     vHREAL_EQ_ADD_LCANCEL]);;
 
-let vHREAL_LE_ADD_RCANCEL = prove
+let vHREAL_LE_ADD_RCANCEL = try Cache.lookup_thm "HREAL_LE_ADD_RCANCEL" with _ ->  prove
  ((parse_term "!m n p. (m + p <= n + p) <=> (m <= n)"),
   vONCE_REWRITE_TAC[vHREAL_ADD_SYM] ----> vMATCH_ACCEPT_TAC vHREAL_LE_ADD_LCANCEL);;
 
-let vHREAL_ADD_RID = prove
+let vHREAL_ADD_RID = try Cache.lookup_thm "HREAL_ADD_RID" with _ ->  prove
  ((parse_term "!n. n + &0 = n"),
   vONCE_REWRITE_TAC[vHREAL_ADD_SYM] ----> vMATCH_ACCEPT_TAC vHREAL_ADD_LID);;
 
-let vHREAL_ADD_RDISTRIB = prove
+let vHREAL_ADD_RDISTRIB = try Cache.lookup_thm "HREAL_ADD_RDISTRIB" with _ ->  prove
  ((parse_term "!m n p. (m + n) * p = m * p + n * p"),
   vONCE_REWRITE_TAC[vHREAL_MUL_SYM] ----> vMATCH_ACCEPT_TAC vHREAL_ADD_LDISTRIB);;
 
-let vHREAL_MUL_LZERO = prove
+let vHREAL_MUL_LZERO = try Cache.lookup_thm "HREAL_MUL_LZERO" with _ ->  prove
  ((parse_term "!m. &0 * m = &0"),
   vGEN_TAC ----> vMP_TAC(vSPECL [(parse_term "&0"); (parse_term "&1"); (parse_term "m:hreal")] vHREAL_ADD_RDISTRIB) ---->
   vREWRITE_TAC[vHREAL_ADD_LID] ---->
@@ -1351,23 +1351,23 @@ let vHREAL_MUL_LZERO = prove
   vREWRITE_TAC[vHREAL_EQ_ADD_RCANCEL] ---->
   vDISCH_THEN(vACCEPT_TAC -| vSYM));;
 
-let vHREAL_MUL_RZERO = prove
+let vHREAL_MUL_RZERO = try Cache.lookup_thm "HREAL_MUL_RZERO" with _ ->  prove
  ((parse_term "!m. m * &0 = &0"),
   vONCE_REWRITE_TAC[vHREAL_MUL_SYM] ----> vMATCH_ACCEPT_TAC vHREAL_MUL_LZERO);;
 
-let vHREAL_ADD_AC = prove
+let vHREAL_ADD_AC = try Cache.lookup_thm "HREAL_ADD_AC" with _ ->  prove
  ((parse_term "(m + n = n + m) /\\\n   ((m + n) + p = m + (n + p)) /\\\n   (m + (n + p) = n + (m + p))"),
   vREWRITE_TAC[vHREAL_ADD_ASSOC; vEQT_INTRO(vSPEC_ALL vHREAL_ADD_SYM)] ---->
   vAP_THM_TAC ----> vAP_TERM_TAC ----> vMATCH_ACCEPT_TAC vHREAL_ADD_SYM);;
 
-let vHREAL_LE_ADD2 = prove
+let vHREAL_LE_ADD2 = try Cache.lookup_thm "HREAL_LE_ADD2" with _ ->  prove
  ((parse_term "!a b c d. a <= b /\\ c <= d ==> a + c <= b + d"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vHREAL_LE_EXISTS_DEF] ---->
   vDISCH_THEN(vCONJUNCTS_THEN2 (vX_CHOOSE_TAC (parse_term "d1:hreal"))
     (vX_CHOOSE_TAC (parse_term "d2:hreal"))) ---->
   vEXISTS_TAC (parse_term "d1 + d2") ----> vASM_REWRITE_TAC[vHREAL_ADD_AC]);;
 
-let vHREAL_LE_MUL_RCANCEL_IMP = prove
+let vHREAL_LE_MUL_RCANCEL_IMP = try Cache.lookup_thm "HREAL_LE_MUL_RCANCEL_IMP" with _ ->  prove
  ((parse_term "!a b c. a <= b ==> a * c <= b * c"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vHREAL_LE_EXISTS_DEF] ---->
   vDISCH_THEN(vX_CHOOSE_THEN (parse_term "d:hreal") vSUBST1_TAC) ---->
@@ -1402,15 +1402,15 @@ let treal_inv = new_definition
 let treal_eq = new_definition
   (parse_term "(x1,y1) treal_eq (x2,y2) <=> (x1 + y2 = x2 + y1)");;
 
-let vTREAL_EQ_REFL = prove
+let vTREAL_EQ_REFL = try Cache.lookup_thm "TREAL_EQ_REFL" with _ ->  prove
  ((parse_term "!x. x treal_eq x"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_eq]);;
 
-let vTREAL_EQ_SYM = prove
+let vTREAL_EQ_SYM = try Cache.lookup_thm "TREAL_EQ_SYM" with _ ->  prove
  ((parse_term "!x y. x treal_eq y <=> y treal_eq x"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_eq; vEQ_SYM_EQ]);;
 
-let vTREAL_EQ_TRANS = prove
+let vTREAL_EQ_TRANS = try Cache.lookup_thm "TREAL_EQ_TRANS" with _ ->  prove
  ((parse_term "!x y z. x treal_eq y /\\ y treal_eq z ==> x treal_eq z"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_eq] ----> vREPEAT vGEN_TAC ---->
   vDISCH_THEN(vMP_TAC -| vMK_COMB -| (vAP_TERM (parse_term "(+)") $-$ vI) -| vCONJ_PAIR) ---->
@@ -1423,7 +1423,7 @@ let vTREAL_EQ_TRANS = prove
 (* Useful to avoid unnecessary use of the equivalence relation.              *)
 (* ------------------------------------------------------------------------- *)
 
-let vTREAL_EQ_AP = prove
+let vTREAL_EQ_AP = try Cache.lookup_thm "TREAL_EQ_AP" with _ ->  prove
  ((parse_term "!x y. (x = y) ==> x treal_eq y"),
   vSIMP_TAC[vTREAL_EQ_REFL]);;
 
@@ -1431,20 +1431,20 @@ let vTREAL_EQ_AP = prove
 (* Commutativity properties for injector.                                    *)
 (* ------------------------------------------------------------------------- *)
 
-let vTREAL_OF_NUM_EQ = prove
+let vTREAL_OF_NUM_EQ = try Cache.lookup_thm "TREAL_OF_NUM_EQ" with _ ->  prove
  ((parse_term "!m n. (treal_of_num m treal_eq treal_of_num n) <=> (m = n)"),
   vREWRITE_TAC[treal_of_num; treal_eq; vHREAL_OF_NUM_EQ; vHREAL_ADD_RID]);;
 
-let vTREAL_OF_NUM_LE = prove
+let vTREAL_OF_NUM_LE = try Cache.lookup_thm "TREAL_OF_NUM_LE" with _ ->  prove
  ((parse_term "!m n. (treal_of_num m treal_le treal_of_num n) <=> m <= n"),
   vREWRITE_TAC[treal_of_num; treal_le; vHREAL_OF_NUM_LE; vHREAL_ADD_RID]);;
 
-let vTREAL_OF_NUM_ADD = prove
+let vTREAL_OF_NUM_ADD = try Cache.lookup_thm "TREAL_OF_NUM_ADD" with _ ->  prove
  ((parse_term "!m n. (treal_of_num m treal_add treal_of_num n) treal_eq\n         (treal_of_num(m + n))"),
   vREWRITE_TAC[treal_of_num; treal_eq; treal_add;
    vHREAL_OF_NUM_ADD; vHREAL_ADD_RID; vADD_CLAUSES]);;
 
-let vTREAL_OF_NUM_MUL = prove
+let vTREAL_OF_NUM_MUL = try Cache.lookup_thm "TREAL_OF_NUM_MUL" with _ ->  prove
  ((parse_term "!m n. (treal_of_num m treal_mul treal_of_num n) treal_eq\n         (treal_of_num(m * n))"),
   vREWRITE_TAC[treal_of_num; treal_eq; treal_mul;
    vHREAL_OF_NUM_MUL; vHREAL_MUL_RZERO; vHREAL_MUL_LZERO; vHREAL_ADD_RID;
@@ -1454,11 +1454,11 @@ let vTREAL_OF_NUM_MUL = prove
 (* Strong forms of equality are useful to simplify welldefinedness proofs.   *)
 (* ------------------------------------------------------------------------- *)
 
-let vTREAL_ADD_SYM_EQ = prove
+let vTREAL_ADD_SYM_EQ = try Cache.lookup_thm "TREAL_ADD_SYM_EQ" with _ ->  prove
  ((parse_term "!x y. x treal_add y = y treal_add x"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_add; vPAIR_EQ; vHREAL_ADD_SYM]);;
 
-let vTREAL_MUL_SYM_EQ = prove
+let vTREAL_MUL_SYM_EQ = try Cache.lookup_thm "TREAL_MUL_SYM_EQ" with _ ->  prove
  ((parse_term "!x y. x treal_mul y = y treal_mul x"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_mul; vHREAL_MUL_SYM; vHREAL_ADD_SYM]);;
 
@@ -1466,53 +1466,53 @@ let vTREAL_MUL_SYM_EQ = prove
 (* Prove the properties of operations on representatives.                    *)
 (* ------------------------------------------------------------------------- *)
 
-let vTREAL_ADD_SYM = prove
+let vTREAL_ADD_SYM = try Cache.lookup_thm "TREAL_ADD_SYM" with _ ->  prove
  ((parse_term "!x y. (x treal_add y) treal_eq (y treal_add x)"),
   vREPEAT vGEN_TAC ----> vMATCH_MP_TAC vTREAL_EQ_AP ---->
   vMATCH_ACCEPT_TAC vTREAL_ADD_SYM_EQ);;
 
-let vTREAL_ADD_ASSOC = prove
+let vTREAL_ADD_ASSOC = try Cache.lookup_thm "TREAL_ADD_ASSOC" with _ ->  prove
  ((parse_term "!x y z. (x treal_add (y treal_add z)) treal_eq\n           ((x treal_add y) treal_add z)"),
   vSIMP_TAC[vFORALL_PAIR_THM; vTREAL_EQ_AP; treal_add; vHREAL_ADD_ASSOC]);;
 
-let vTREAL_ADD_LID = prove
+let vTREAL_ADD_LID = try Cache.lookup_thm "TREAL_ADD_LID" with _ ->  prove
  ((parse_term "!x. ((treal_of_num 0) treal_add x) treal_eq x"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_of_num; treal_add; treal_eq;
               vHREAL_ADD_LID]);;
 
-let vTREAL_ADD_LINV = prove
+let vTREAL_ADD_LINV = try Cache.lookup_thm "TREAL_ADD_LINV" with _ ->  prove
  ((parse_term "!x. ((treal_neg x) treal_add x) treal_eq (treal_of_num 0)"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_neg; treal_add; treal_eq; treal_of_num;
               vHREAL_ADD_LID; vHREAL_ADD_RID; vHREAL_ADD_SYM]);;
 
-let vTREAL_MUL_SYM = prove
+let vTREAL_MUL_SYM = try Cache.lookup_thm "TREAL_MUL_SYM" with _ ->  prove
  ((parse_term "!x y. (x treal_mul y) treal_eq (y treal_mul x)"),
   vSIMP_TAC[vTREAL_EQ_AP; vTREAL_MUL_SYM_EQ]);;
 
-let vTREAL_MUL_ASSOC = prove
+let vTREAL_MUL_ASSOC = try Cache.lookup_thm "TREAL_MUL_ASSOC" with _ ->  prove
  ((parse_term "!x y z. (x treal_mul (y treal_mul z)) treal_eq\n           ((x treal_mul y) treal_mul z)"),
   vSIMP_TAC[vFORALL_PAIR_THM; vTREAL_EQ_AP; treal_mul; vHREAL_ADD_LDISTRIB;
            vHREAL_ADD_RDISTRIB; vGSYM vHREAL_MUL_ASSOC; vHREAL_ADD_AC]);;
 
-let vTREAL_MUL_LID = prove
+let vTREAL_MUL_LID = try Cache.lookup_thm "TREAL_MUL_LID" with _ ->  prove
  ((parse_term "!x. ((treal_of_num 1) treal_mul x) treal_eq x"),
   vSIMP_TAC[vFORALL_PAIR_THM; treal_of_num; treal_mul; treal_eq] ---->
   vREWRITE_TAC[vHREAL_MUL_LZERO; vHREAL_MUL_LID; vHREAL_ADD_LID; vHREAL_ADD_RID]);;
 
-let vTREAL_ADD_LDISTRIB = prove
+let vTREAL_ADD_LDISTRIB = try Cache.lookup_thm "TREAL_ADD_LDISTRIB" with _ ->  prove
  ((parse_term "!x y z. (x treal_mul (y treal_add z)) treal_eq\n           ((x treal_mul y) treal_add (x treal_mul z))"),
   vSIMP_TAC[vFORALL_PAIR_THM; vTREAL_EQ_AP; treal_mul; treal_add;
            vHREAL_ADD_LDISTRIB; vPAIR_EQ; vHREAL_ADD_AC]);;
 
-let vTREAL_LE_REFL = prove
+let vTREAL_LE_REFL = try Cache.lookup_thm "TREAL_LE_REFL" with _ ->  prove
  ((parse_term "!x. x treal_le x"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_le; vHREAL_LE_REFL]);;
 
-let vTREAL_LE_ANTISYM = prove
+let vTREAL_LE_ANTISYM = try Cache.lookup_thm "TREAL_LE_ANTISYM" with _ ->  prove
  ((parse_term "!x y. x treal_le y /\\ y treal_le x <=> (x treal_eq y)"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_le; treal_eq; vHREAL_LE_ANTISYM]);;
 
-let vTREAL_LE_TRANS = prove
+let vTREAL_LE_TRANS = try Cache.lookup_thm "TREAL_LE_TRANS" with _ ->  prove
  ((parse_term "!x y z. x treal_le y /\\ y treal_le z ==> x treal_le z"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_le] ----> vREPEAT vGEN_TAC ---->
   vDISCH_THEN(vMP_TAC -| vMATCH_MP vHREAL_LE_ADD2) ---->
@@ -1521,18 +1521,18 @@ let vTREAL_LE_TRANS = prove
   vREWRITE_TAC[vHREAL_ADD_ASSOC; vHREAL_LE_ADD_RCANCEL] ---->
   vDISCH_THEN(vMATCH_ACCEPT_TAC -| vONCE_REWRITE_RULE[vHREAL_ADD_SYM]));;
 
-let vTREAL_LE_TOTAL = prove
+let vTREAL_LE_TOTAL = try Cache.lookup_thm "TREAL_LE_TOTAL" with _ ->  prove
  ((parse_term "!x y. x treal_le y \\/ y treal_le x"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_le; vHREAL_LE_TOTAL]);;
 
-let vTREAL_LE_LADD_IMP = prove
+let vTREAL_LE_LADD_IMP = try Cache.lookup_thm "TREAL_LE_LADD_IMP" with _ ->  prove
  ((parse_term "!x y z. (y treal_le z) ==> (x treal_add y) treal_le (x treal_add z)"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_le; treal_add] ---->
   vREWRITE_TAC[vGSYM vHREAL_ADD_ASSOC; vHREAL_LE_ADD_LCANCEL] ---->
   vONCE_REWRITE_TAC[vHREAL_ADD_SYM] ---->
   vREWRITE_TAC[vGSYM vHREAL_ADD_ASSOC; vHREAL_LE_ADD_LCANCEL]);;
 
-let vTREAL_LE_MUL = prove
+let vTREAL_LE_MUL = try Cache.lookup_thm "TREAL_LE_MUL" with _ ->  prove
  ((parse_term "!x y. (treal_of_num 0) treal_le x /\\ (treal_of_num 0) treal_le y\n         ==> (treal_of_num 0) treal_le (x treal_mul y)"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_of_num; treal_le; treal_mul] ---->
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vHREAL_ADD_LID; vHREAL_ADD_RID] ---->
@@ -1544,11 +1544,11 @@ let vTREAL_LE_MUL = prove
   vASM_REWRITE_TAC[vHREAL_LE_ADD_LCANCEL] ---->
   vMATCH_MP_TAC vHREAL_LE_MUL_RCANCEL_IMP ----> vASM_REWRITE_TAC[]);;
 
-let vTREAL_INV_0 = prove
+let vTREAL_INV_0 = try Cache.lookup_thm "TREAL_INV_0" with _ ->  prove
  ((parse_term "treal_inv (treal_of_num 0) treal_eq (treal_of_num 0)"),
   vREWRITE_TAC[treal_inv; treal_eq; treal_of_num]);;
 
-let vTREAL_MUL_LINV = prove
+let vTREAL_MUL_LINV = try Cache.lookup_thm "TREAL_MUL_LINV" with _ ->  prove
  ((parse_term "!x. ~(x treal_eq treal_of_num 0) ==>\n        (treal_inv(x) treal_mul x) treal_eq (treal_of_num 1)"),
   vREWRITE_TAC[vFORALL_PAIR_THM] ---->
   vMAP_EVERY vX_GEN_TAC [(parse_term "x:hreal"); (parse_term "y:hreal")] ---->
@@ -1577,31 +1577,31 @@ let vTREAL_MUL_LINV = prove
 (* Show that the operations respect the equivalence relation.                *)
 (* ------------------------------------------------------------------------- *)
 
-let vTREAL_OF_NUM_WELLDEF = prove
+let vTREAL_OF_NUM_WELLDEF = try Cache.lookup_thm "TREAL_OF_NUM_WELLDEF" with _ ->  prove
  ((parse_term "!m n. (m = n) ==> (treal_of_num m) treal_eq (treal_of_num n)"),
   vREPEAT vGEN_TAC ----> vDISCH_THEN vSUBST1_TAC ---->
   vMATCH_ACCEPT_TAC vTREAL_EQ_REFL);;
 
-let vTREAL_NEG_WELLDEF = prove
+let vTREAL_NEG_WELLDEF = try Cache.lookup_thm "TREAL_NEG_WELLDEF" with _ ->  prove
  ((parse_term "!x1 x2. x1 treal_eq x2 ==> (treal_neg x1) treal_eq (treal_neg x2)"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_neg; treal_eq] ----> vREPEAT vSTRIP_TAC ---->
   vONCE_REWRITE_TAC[vHREAL_ADD_SYM] ----> vASM_REWRITE_TAC[]);;
 
-let vTREAL_ADD_WELLDEFR = prove
+let vTREAL_ADD_WELLDEFR = try Cache.lookup_thm "TREAL_ADD_WELLDEFR" with _ ->  prove
  ((parse_term "!x1 x2 y. x1 treal_eq x2 ==> (x1 treal_add y) treal_eq (x2 treal_add y)"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_add; treal_eq] ---->
   vREWRITE_TAC[vHREAL_EQ_ADD_RCANCEL; vHREAL_ADD_ASSOC] ---->
   vONCE_REWRITE_TAC[vHREAL_ADD_SYM] ---->
   vREWRITE_TAC[vHREAL_EQ_ADD_RCANCEL; vHREAL_ADD_ASSOC]);;
 
-let vTREAL_ADD_WELLDEF = prove
+let vTREAL_ADD_WELLDEF = try Cache.lookup_thm "TREAL_ADD_WELLDEF" with _ ->  prove
  ((parse_term "!x1 x2 y1 y2. x1 treal_eq x2 /\\ y1 treal_eq y2 ==>\n     (x1 treal_add y1) treal_eq (x2 treal_add y2)"),
   vREPEAT vGEN_TAC ----> vDISCH_TAC ---->
   vMATCH_MP_TAC vTREAL_EQ_TRANS ----> vEXISTS_TAC (parse_term "x1 treal_add y2") ---->
   vCONJ_TAC ++--> [vONCE_REWRITE_TAC[vTREAL_ADD_SYM_EQ]; vALL_TAC] ---->
   vMATCH_MP_TAC vTREAL_ADD_WELLDEFR ----> vASM_REWRITE_TAC[]);;
 
-let vTREAL_MUL_WELLDEFR = prove
+let vTREAL_MUL_WELLDEFR = try Cache.lookup_thm "TREAL_MUL_WELLDEFR" with _ ->  prove
  ((parse_term "!x1 x2 y. x1 treal_eq x2 ==> (x1 treal_mul y) treal_eq (x2 treal_mul y)"),
   vREWRITE_TAC[vFORALL_PAIR_THM; treal_mul; treal_eq] ----> vREPEAT vGEN_TAC ---->
   vONCE_REWRITE_TAC[vAC vHREAL_ADD_AC
@@ -1610,18 +1610,18 @@ let vTREAL_MUL_WELLDEFR = prove
   vASM_REWRITE_TAC[] ----> vAP_TERM_TAC ---->
   vONCE_REWRITE_TAC[vHREAL_ADD_SYM] ----> vPOP_ASSUM vSUBST1_TAC ----> vREFL_TAC);;
 
-let vTREAL_MUL_WELLDEF = prove
+let vTREAL_MUL_WELLDEF = try Cache.lookup_thm "TREAL_MUL_WELLDEF" with _ ->  prove
  ((parse_term "!x1 x2 y1 y2. x1 treal_eq x2 /\\ y1 treal_eq y2 ==>\n     (x1 treal_mul y1) treal_eq (x2 treal_mul y2)"),
   vREPEAT vGEN_TAC ----> vDISCH_TAC ---->
   vMATCH_MP_TAC vTREAL_EQ_TRANS ----> vEXISTS_TAC (parse_term "x1 treal_mul y2") ---->
   vCONJ_TAC ++--> [vONCE_REWRITE_TAC[vTREAL_MUL_SYM_EQ]; vALL_TAC] ---->
   vMATCH_MP_TAC vTREAL_MUL_WELLDEFR ----> vASM_REWRITE_TAC[]);;
 
-let vTREAL_EQ_IMP_LE = prove
+let vTREAL_EQ_IMP_LE = try Cache.lookup_thm "TREAL_EQ_IMP_LE" with _ ->  prove
  ((parse_term "!x y. x treal_eq y ==> x treal_le y"),
   vSIMP_TAC[vFORALL_PAIR_THM; treal_eq; treal_le; vHREAL_LE_REFL]);;
 
-let vTREAL_LE_WELLDEF = prove
+let vTREAL_LE_WELLDEF = try Cache.lookup_thm "TREAL_LE_WELLDEF" with _ ->  prove
  ((parse_term "!x1 x2 y1 y2. x1 treal_eq x2 /\\ y1 treal_eq y2 ==>\n     (x1 treal_le y1 <=> x2 treal_le y2)"),
   vREPEAT (vSTRIP_TAC |---> vEQ_TAC) ++-->
    [vMATCH_MP_TAC vTREAL_LE_TRANS ----> vEXISTS_TAC (parse_term "y1:hreal#hreal") ---->
@@ -1637,7 +1637,7 @@ let vTREAL_LE_WELLDEF = prove
       vMATCH_MP_TAC vTREAL_EQ_IMP_LE ----> vONCE_REWRITE_TAC[vTREAL_EQ_SYM]]] ---->
   vASM_REWRITE_TAC[]);;
 
-let vTREAL_INV_WELLDEF = prove
+let vTREAL_INV_WELLDEF = try Cache.lookup_thm "TREAL_INV_WELLDEF" with _ ->  prove
  ((parse_term "!x y. x treal_eq y ==> (treal_inv x) treal_eq (treal_inv y)"),
   let lemma = prove
    ((parse_term "(@d. x = x + d) = &0"),
@@ -1793,7 +1793,7 @@ let real_min = new_definition
 (* Derive the supremum property for an arbitrary bounded nonempty set         *)
 (*----------------------------------------------------------------------------*)
 
-let vREAL_HREAL_LEMMA1 = prove
+let vREAL_HREAL_LEMMA1 = try Cache.lookup_thm "REAL_HREAL_LEMMA1" with _ ->  prove
  ((parse_term "?r:hreal->real.\n       (!x. &0 <= x <=> ?y. x = r y) /\\\n       (!y z. y <= z <=> r y <= r z)"),
   vEXISTS_TAC (parse_term "\\y. mk_real((treal_eq)(y,hreal_of_num 0))") ---->
   vREWRITE_TAC[vGSYM real_le_th] ---->
@@ -1824,7 +1824,7 @@ let vREAL_HREAL_LEMMA1 = prove
     vGEN_REWRITE_TAC vRAND_CONV [vGSYM vHREAL_ADD_LID] ---->
     vREWRITE_TAC[vHREAL_LE_ADD]]);;
 
-let vREAL_HREAL_LEMMA2 = prove
+let vREAL_HREAL_LEMMA2 = try Cache.lookup_thm "REAL_HREAL_LEMMA2" with _ ->  prove
  ((parse_term "?h r. (!x:hreal. h(r x) = x) /\\\n         (!x. &0 <= x ==> (r(h x) = x)) /\\\n         (!x:hreal. &0 <= r x) /\\\n         (!x y. x <= y <=> r x <= r y)"),
   vSTRIP_ASSUME_TAC vREAL_HREAL_LEMMA1 ---->
   vEXISTS_TAC (parse_term "\\x:real. @y:hreal. x = r y") ---->
@@ -1836,7 +1836,7 @@ let vREAL_HREAL_LEMMA2 = prove
     (vSPEC_ALL vSELECT_REFL); vGSYM vEXISTS_REFL] ---->
   vGEN_TAC ----> vDISCH_THEN(vACCEPT_TAC -| vSYM -| vSELECT_RULE));;
 
-let vREAL_COMPLETE_SOMEPOS = prove
+let vREAL_COMPLETE_SOMEPOS = try Cache.lookup_thm "REAL_COMPLETE_SOMEPOS" with _ ->  prove
  ((parse_term "!P. (?x. P x /\\ &0 <= x) /\\\n       (?M. !x. P x ==> x <= M)\n       ==> ?M. (!x. P x ==> x <= M) /\\\n               !M'. (!x. P x ==> x <= M') ==> M <= M'"),
   vREPEAT vSTRIP_TAC ----> vSTRIP_ASSUME_TAC vREAL_HREAL_LEMMA2 ---->
   vMP_TAC(vSPEC (parse_term "\\y:hreal. (P:real->bool)(r y)") vHREAL_COMPLETE) ---->
@@ -1879,7 +1879,7 @@ let vREAL_COMPLETE_SOMEPOS = prove
     vASM_REWRITE_TAC[] ----> vFIRST_ASSUM vMATCH_MP_TAC ---->
     vASM_REWRITE_TAC[]]);;
 
-let vREAL_COMPLETE = prove
+let vREAL_COMPLETE = try Cache.lookup_thm "REAL_COMPLETE" with _ ->  prove
  ((parse_term "!P. (?x. P x) /\\\n       (?M. !x. P x ==> x <= M)\n       ==> ?M. (!x. P x ==> x <= M) /\\\n               !M'. (!x. P x ==> x <= M') ==> M <= M'"),
   let lemma = prove
    ((parse_term "y = (y - x) + x"),

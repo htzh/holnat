@@ -45,7 +45,7 @@ let vINFINITY_AX = new_axiom
 (* Actually introduce constants.                                             *)
 (* ------------------------------------------------------------------------- *)
 
-let vIND_SUC_0_EXISTS = prove
+let vIND_SUC_0_EXISTS = try Cache.lookup_thm "IND_SUC_0_EXISTS" with _ ->  prove
  ((parse_term "?(f:ind->ind) z. (!x1 x2. (f x1 = f x2) = (x1 = x2)) /\\ (!x. ~(f x = z))"),
   vX_CHOOSE_TAC (parse_term "f:ind->ind") vINFINITY_AX ----> vEXISTS_TAC (parse_term "f:ind->ind") ---->
   vPOP_ASSUM vMP_TAC ----> vREWRITE_TAC[vONE_ONE; vONTO] ----> vMESON_TAC[]);;
@@ -87,7 +87,7 @@ let vNOT_SUC = prove
   vREWRITE_TAC[vSUC_DEF; vZERO_DEF] ---->
   vMESON_TAC[vNUM_REP_RULES; fst num_tydef; snd num_tydef; vIND_SUC_0]);;
 
-let vSUC_INJ = prove
+let vSUC_INJ = try Cache.lookup_thm "SUC_INJ" with _ ->  prove
  ((parse_term "!m n. SUC m = SUC n <=> m = n"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vSUC_DEF] ---->
   vEQ_TAC ----> vDISCH_TAC ----> vASM_REWRITE_TAC[] ---->
@@ -185,7 +185,7 @@ let num_RECURSION =
 (* Cases theorem.                                                            *)
 (* ------------------------------------------------------------------------- *)
 
-let num_CASES = prove
+let num_CASES = try Cache.lookup_thm "num_CASES" with _ ->  prove
  ((parse_term "!m. (m = 0) \\/ (?n. m = SUC n)"),
   vINDUCT_TAC ----> vMESON_TAC[]);;
 

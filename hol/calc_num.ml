@@ -36,54 +36,54 @@ let vDENUMERAL = vGEN_REWRITE_RULE vDEPTH_CONV [vNUMERAL];;
 (* inefficient; log(n)^2 instead of log(n).                                  *)
 (* ------------------------------------------------------------------------- *)
 
-let vARITH_ZERO = prove
+let vARITH_ZERO = try Cache.lookup_thm "ARITH_ZERO" with _ ->  prove
  ((parse_term "(NUMERAL 0 = 0) /\\\n   (BIT0 _0 = _0)"),
   vREWRITE_TAC[vNUMERAL; vBIT0; vDENUMERAL vADD_CLAUSES]);;
 
-let vBIT0_0 = prove
+let vBIT0_0 = try Cache.lookup_thm "BIT0_0" with _ ->  prove
   ((parse_term "BIT0 0 = 0"),
    vREWRITE_TAC [vNUMERAL; vARITH_ZERO]);;
 
-let vBIT1_0 = prove
+let vBIT1_0 = try Cache.lookup_thm "BIT1_0" with _ ->  prove
  ((parse_term "BIT1 0 = 1"),
   vREWRITE_TAC [vNUMERAL]);;
 
-let vARITH_SUC = prove
+let vARITH_SUC = try Cache.lookup_thm "ARITH_SUC" with _ ->  prove
  ((parse_term "(!n. SUC(NUMERAL n) = NUMERAL(SUC n)) /\\\n   (SUC _0 = BIT1 _0) /\\\n   (!n. SUC (BIT0 n) = BIT1 n) /\\\n   (!n. SUC (BIT1 n) = BIT0 (SUC n))"),
   vREWRITE_TAC[vNUMERAL; vBIT0; vBIT1; vDENUMERAL vADD_CLAUSES]);;
 
-let vARITH_PRE = prove
+let vARITH_PRE = try Cache.lookup_thm "ARITH_PRE" with _ ->  prove
  ((parse_term "(!n. PRE(NUMERAL n) = NUMERAL(PRE n)) /\\\n   (PRE _0 = _0) /\\\n   (!n. PRE(BIT0 n) = if n = _0 then _0 else BIT1 (PRE n)) /\\\n   (!n. PRE(BIT1 n) = BIT0 n)"),
   vREWRITE_TAC[vNUMERAL; vBIT1; vBIT0; vDENUMERAL vPRE] ----> vINDUCT_TAC ---->
   vREWRITE_TAC[vNUMERAL; vDENUMERAL vPRE; vDENUMERAL vADD_CLAUSES; vDENUMERAL vNOT_SUC;
               vARITH_ZERO]);;
 
-let vARITH_ADD = prove
+let vARITH_ADD = try Cache.lookup_thm "ARITH_ADD" with _ ->  prove
  ((parse_term "(!m n. NUMERAL(m) + NUMERAL(n) = NUMERAL(m + n)) /\\\n   (_0 + _0 = _0) /\\\n   (!n. _0 + BIT0 n = BIT0 n) /\\\n   (!n.        _0 + BIT1 n = BIT1 n) /\\\n   (!n.   BIT0 n + _0 = BIT0 n) /\\\n   (!n.   BIT1 n + _0 = BIT1 n) /\\\n   (!m n. BIT0 m + BIT0 n = BIT0 (m + n)) /\\\n   (!m n. BIT0 m + BIT1 n = BIT1 (m + n)) /\\\n   (!m n. BIT1 m + BIT0 n = BIT1 (m + n)) /\\\n   (!m n. BIT1 m + BIT1 n = BIT0 (SUC(m + n)))"),
   vPURE_REWRITE_TAC[vNUMERAL; vBIT0; vBIT1; vDENUMERAL vADD_CLAUSES; vSUC_INJ] ---->
   vREWRITE_TAC[vADD_AC]);;
 
-let vARITH_MULT = prove
+let vARITH_MULT = try Cache.lookup_thm "ARITH_MULT" with _ ->  prove
  ((parse_term "(!m n. NUMERAL(m) * NUMERAL(n) = NUMERAL(m * n)) /\\\n   (_0 * _0 = _0) /\\\n   (!n. _0 * BIT0 n = _0) /\\\n   (!n. _0 * BIT1 n = _0) /\\\n   (!n. BIT0 n * _0 = _0) /\\\n   (!n. BIT1 n * _0 = _0) /\\\n   (!m n. BIT0 m * BIT0 n = BIT0 (BIT0 (m * n))) /\\\n   (!m n. BIT0 m * BIT1 n = BIT0 m + BIT0 (BIT0 (m * n))) /\\\n   (!m n. BIT1 m * BIT0 n = BIT0 n + BIT0 (BIT0 (m * n))) /\\\n   (!m n. BIT1 m * BIT1 n = BIT1 m + BIT0 n + BIT0 (BIT0 (m * n)))"),
   vPURE_REWRITE_TAC[vNUMERAL; vBIT0; vBIT1; vDENUMERAL vMULT_CLAUSES;
                    vDENUMERAL vADD_CLAUSES; vSUC_INJ] ---->
   vREWRITE_TAC[vLEFT_ADD_DISTRIB; vRIGHT_ADD_DISTRIB; vADD_AC]);;
 
-let vARITH_EXP = prove
+let vARITH_EXP = try Cache.lookup_thm "ARITH_EXP" with _ ->  prove
  ((parse_term "(!m n. (NUMERAL m) EXP (NUMERAL n) = NUMERAL(m EXP n)) /\\\n   (_0 EXP _0 = BIT1 _0) /\\\n   (!m. (BIT0 m) EXP _0 = BIT1 _0) /\\\n   (!m. (BIT1 m) EXP _0 = BIT1 _0) /\\\n   (!n. _0 EXP (BIT0 n) = (_0 EXP n) * (_0 EXP n)) /\\\n   (!m n. (BIT0 m) EXP (BIT0 n) = ((BIT0 m) EXP n) * ((BIT0 m) EXP n)) /\\\n   (!m n. (BIT1 m) EXP (BIT0 n) = ((BIT1 m) EXP n) * ((BIT1 m) EXP n)) /\\\n   (!n. _0 EXP (BIT1 n) = _0) /\\\n   (!m n. (BIT0 m) EXP (BIT1 n) =\n        BIT0 m * ((BIT0 m) EXP n) * ((BIT0 m) EXP n)) /\\\n   (!m n. (BIT1 m) EXP (BIT1 n) =\n        BIT1 m * ((BIT1 m) EXP n) * ((BIT1 m) EXP n))"),
   vREWRITE_TAC[vNUMERAL] ----> vREPEAT vSTRIP_TAC ---->
   vTRY(vGEN_REWRITE_TAC (vLAND_CONV -| vRAND_CONV) [vBIT0; vBIT1]) ---->
   vREWRITE_TAC[vDENUMERAL vEXP; vDENUMERAL vMULT_CLAUSES; vEXP_ADD]);;
 
-let vARITH_EVEN = prove
+let vARITH_EVEN = try Cache.lookup_thm "ARITH_EVEN" with _ ->  prove
  ((parse_term "(!n. EVEN(NUMERAL n) <=> EVEN n) /\\\n   (EVEN _0 <=> T) /\\\n   (!n. EVEN(BIT0 n) <=> T) /\\\n   (!n. EVEN(BIT1 n) <=> F)"),
   vREWRITE_TAC[vNUMERAL; vBIT1; vBIT0; vDENUMERAL vEVEN; vEVEN_ADD]);;
 
-let vARITH_ODD = prove
+let vARITH_ODD = try Cache.lookup_thm "ARITH_ODD" with _ ->  prove
  ((parse_term "(!n. ODD(NUMERAL n) <=> ODD n) /\\\n   (ODD _0 <=> F) /\\\n   (!n. ODD(BIT0 n) <=> F) /\\\n   (!n. ODD(BIT1 n) <=> T)"),
   vREWRITE_TAC[vNUMERAL; vBIT1; vBIT0; vDENUMERAL vODD; vODD_ADD]);;
 
-let vARITH_LE = prove
+let vARITH_LE = try Cache.lookup_thm "ARITH_LE" with _ ->  prove
  ((parse_term "(!m n. NUMERAL m <= NUMERAL n <=> m <= n) /\\\n   ((_0 <= _0) <=> T) /\\\n   (!n. (BIT0 n <= _0) <=> n <= _0) /\\\n   (!n. (BIT1 n <= _0) <=> F) /\\\n   (!n. (_0 <= BIT0 n) <=> T) /\\\n   (!n. (_0 <= BIT1 n) <=> T) /\\\n   (!m n. (BIT0 m <= BIT0 n) <=> m <= n) /\\\n   (!m n. (BIT0 m <= BIT1 n) <=> m <= n) /\\\n   (!m n. (BIT1 m <= BIT0 n) <=> m < n) /\\\n   (!m n. (BIT1 m <= BIT1 n) <=> m <= n)"),
   vREWRITE_TAC[vNUMERAL; vBIT1; vBIT0; vDENUMERAL vNOT_SUC;
       vDENUMERAL(vGSYM vNOT_SUC); vSUC_INJ] ---->
@@ -102,21 +102,21 @@ let vARITH_LE = prove
     vDISCH_THEN(vMP_TAC -| vAP_TERM (parse_term "EVEN")) ---->
     vREWRITE_TAC[vEVEN_MULT; vEVEN_ADD; vNUMERAL; vBIT1; vEVEN]]);;
 
-let vARITH_LT = prove
+let vARITH_LT = try Cache.lookup_thm "ARITH_LT" with _ ->  prove
  ((parse_term "(!m n. NUMERAL m < NUMERAL n <=> m < n) /\\\n   ((_0 < _0) <=> F) /\\\n   (!n. (BIT0 n < _0) <=> F) /\\\n   (!n. (BIT1 n < _0) <=> F) /\\\n   (!n. (_0 < BIT0 n) <=> _0 < n) /\\\n   (!n. (_0 < BIT1 n) <=> T) /\\\n   (!m n. (BIT0 m < BIT0 n) <=> m < n) /\\\n   (!m n. (BIT0 m < BIT1 n) <=> m <= n) /\\\n   (!m n. (BIT1 m < BIT0 n) <=> m < n) /\\\n   (!m n. (BIT1 m < BIT1 n) <=> m < n)"),
   vREWRITE_TAC[vNUMERAL; vGSYM vNOT_LE; vARITH_LE] ---->
   vREWRITE_TAC[vDENUMERAL vLE]);;
 
-let vARITH_GE = vREWRITE_RULE[vGSYM vGE; vGSYM vGT] vARITH_LE;;
+let vARITH_GE = try Cache.lookup_thm "ARITH_GE" with _ ->  vREWRITE_RULE[vGSYM vGE; vGSYM vGT] vARITH_LE;;
 
-let vARITH_GT = vREWRITE_RULE[vGSYM vGE; vGSYM vGT] vARITH_LT;;
+let vARITH_GT = try Cache.lookup_thm "ARITH_GT" with _ ->  vREWRITE_RULE[vGSYM vGE; vGSYM vGT] vARITH_LT;;
 
-let vARITH_EQ = prove
+let vARITH_EQ = try Cache.lookup_thm "ARITH_EQ" with _ ->  prove
  ((parse_term "(!m n. (NUMERAL m = NUMERAL n) <=> (m = n)) /\\\n   ((_0 = _0) <=> T) /\\\n   (!n. (BIT0 n = _0) <=> (n = _0)) /\\\n   (!n. (BIT1 n = _0) <=> F) /\\\n   (!n. (_0 = BIT0 n) <=> (_0 = n)) /\\\n   (!n. (_0 = BIT1 n) <=> F) /\\\n   (!m n. (BIT0 m = BIT0 n) <=> (m = n)) /\\\n   (!m n. (BIT0 m = BIT1 n) <=> F) /\\\n   (!m n. (BIT1 m = BIT0 n) <=> F) /\\\n   (!m n. (BIT1 m = BIT1 n) <=> (m = n))"),
   vREWRITE_TAC[vNUMERAL; vGSYM vLE_ANTISYM; vARITH_LE] ---->
   vREWRITE_TAC[vLET_ANTISYM; vLTE_ANTISYM; vDENUMERAL vLE_0]);;
 
-let vARITH_SUB = prove
+let vARITH_SUB = try Cache.lookup_thm "ARITH_SUB" with _ ->  prove
  ((parse_term "(!m n. NUMERAL m - NUMERAL n = NUMERAL(m - n)) /\\\n   (_0 - _0 = _0) /\\\n   (!n. _0 - BIT0 n = _0) /\\\n   (!n. _0 - BIT1 n = _0) /\\\n   (!n. BIT0 n - _0 = BIT0 n) /\\\n   (!n. BIT1 n - _0 = BIT1 n) /\\\n   (!m n. BIT0 m - BIT0 n = BIT0 (m - n)) /\\\n   (!m n. BIT0 m - BIT1 n = PRE(BIT0 (m - n))) /\\\n   (!m n. BIT1 m - BIT0 n = if n <= m then BIT1 (m - n) else _0) /\\\n   (!m n. BIT1 m - BIT1 n = BIT0 (m - n))"),
   vREWRITE_TAC[vNUMERAL; vDENUMERAL vSUB_0] ----> vPURE_REWRITE_TAC[vBIT0; vBIT1] ---->
   vREWRITE_TAC[vGSYM vMULT_2; vSUB_SUC; vLEFT_SUB_DISTRIB] ---->
@@ -128,14 +128,14 @@ let vARITH_SUB = prove
   vREWRITE_TAC[vADD1; vLEFT_ADD_DISTRIB] ---->
   vREWRITE_TAC[vADD_SUB2; vGSYM vADD_ASSOC]);;
 
-let vARITH = end_itlist vCONJ
+let vARITH = try Cache.lookup_thm "ARITH" with _ ->  end_itlist vCONJ
   [vARITH_ZERO; vARITH_SUC; vARITH_PRE;
    vARITH_ADD; vARITH_MULT; vARITH_EXP;
    vARITH_EVEN; vARITH_ODD;
    vARITH_EQ; vARITH_LE; vARITH_LT; vARITH_GE; vARITH_GT;
    vARITH_SUB];;
 
-let vEXP_2_NE_0 = prove
+let vEXP_2_NE_0 = try Cache.lookup_thm "EXP_2_NE_0" with _ ->  prove
  ((parse_term "!n. ~(2 EXP n = 0)"),
   vREWRITE_TAC [vEXP_EQ_0; vARITH_EQ]);;
 

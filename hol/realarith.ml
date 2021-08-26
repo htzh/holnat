@@ -33,87 +33,87 @@ open Num
 (* Some lemmas needed now just to drive the decision procedure.              *)
 (* ------------------------------------------------------------------------- *)
 
-let vREAL_LTE_TOTAL = prove
+let vREAL_LTE_TOTAL = try Cache.lookup_thm "REAL_LTE_TOTAL" with _ ->  prove
  ((parse_term "!x y. x < y \\/ y <= x"),
   vREWRITE_TAC[real_lt] ----> vCONV_TAC vTAUT);;
 
-let vREAL_LET_TOTAL = prove
+let vREAL_LET_TOTAL = try Cache.lookup_thm "REAL_LET_TOTAL" with _ ->  prove
  ((parse_term "!x y. x <= y \\/ y < x"),
   vREWRITE_TAC[real_lt] ----> vCONV_TAC vTAUT);;
 
-let vREAL_LT_IMP_LE = prove
+let vREAL_LT_IMP_LE = try Cache.lookup_thm "REAL_LT_IMP_LE" with _ ->  prove
  ((parse_term "!x y. x < y ==> x <= y"),
   vMESON_TAC[real_lt; vREAL_LE_TOTAL]);;
 
-let vREAL_LTE_TRANS = prove
+let vREAL_LTE_TRANS = try Cache.lookup_thm "REAL_LTE_TRANS" with _ ->  prove
  ((parse_term "!x y z. x < y /\\ y <= z ==> x < z"),
   vMESON_TAC[real_lt; vREAL_LE_TRANS]);;
 
-let vREAL_LET_TRANS = prove
+let vREAL_LET_TRANS = try Cache.lookup_thm "REAL_LET_TRANS" with _ ->  prove
  ((parse_term "!x y z. x <= y /\\ y < z ==> x < z"),
   vMESON_TAC[real_lt; vREAL_LE_TRANS]);;
 
-let vREAL_LT_TRANS = prove
+let vREAL_LT_TRANS = try Cache.lookup_thm "REAL_LT_TRANS" with _ ->  prove
  ((parse_term "!x y z. x < y /\\ y < z ==> x < z"),
   vMESON_TAC[vREAL_LTE_TRANS; vREAL_LT_IMP_LE]);;
 
-let vREAL_LE_ADD = prove
+let vREAL_LE_ADD = try Cache.lookup_thm "REAL_LE_ADD" with _ ->  prove
  ((parse_term "!x y. &0 <= x /\\ &0 <= y ==> &0 <= x + y"),
   vMESON_TAC[vREAL_LE_LADD_IMP; vREAL_ADD_RID; vREAL_LE_TRANS]);;
 
-let vREAL_LTE_ANTISYM = prove
+let vREAL_LTE_ANTISYM = try Cache.lookup_thm "REAL_LTE_ANTISYM" with _ ->  prove
  ((parse_term "!x y. ~(x < y /\\ y <= x)"),
   vMESON_TAC[real_lt]);;
 
-let vREAL_SUB_LE = prove
+let vREAL_SUB_LE = try Cache.lookup_thm "REAL_SUB_LE" with _ ->  prove
  ((parse_term "!x y. &0 <= (x - y) <=> y <= x"),
   vREWRITE_TAC[real_sub; vGSYM vREAL_LE_LNEG; vREAL_LE_NEG2]);;
 
-let vREAL_NEG_SUB = prove
+let vREAL_NEG_SUB = try Cache.lookup_thm "REAL_NEG_SUB" with _ ->  prove
  ((parse_term "!x y. --(x - y) = y - x"),
   vREWRITE_TAC[real_sub; vREAL_NEG_ADD; vREAL_NEG_NEG] ---->
   vREWRITE_TAC[vREAL_ADD_AC]);;
 
-let vREAL_LE_LT = prove
+let vREAL_LE_LT = try Cache.lookup_thm "REAL_LE_LT" with _ ->  prove
  ((parse_term "!x y. x <= y <=> x < y \\/ (x = y)"),
   vREWRITE_TAC[real_lt] ----> vMESON_TAC[vREAL_LE_ANTISYM; vREAL_LE_TOTAL]);;
 
-let vREAL_SUB_LT = prove
+let vREAL_SUB_LT = try Cache.lookup_thm "REAL_SUB_LT" with _ ->  prove
  ((parse_term "!x y. &0 < (x - y) <=> y < x"),
   vREWRITE_TAC[real_lt] ----> vONCE_REWRITE_TAC[vGSYM vREAL_NEG_SUB] ---->
   vREWRITE_TAC[vREAL_LE_LNEG; vREAL_ADD_RID; vREAL_SUB_LE]);;
 
-let vREAL_NOT_LT = prove
+let vREAL_NOT_LT = try Cache.lookup_thm "REAL_NOT_LT" with _ ->  prove
  ((parse_term "!x y. ~(x < y) <=> y <= x"),
   vREWRITE_TAC[real_lt]);;
 
-let vREAL_SUB_0 = prove
+let vREAL_SUB_0 = try Cache.lookup_thm "REAL_SUB_0" with _ ->  prove
  ((parse_term "!x y. (x - y = &0) <=> (x = y)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vGSYM vREAL_LE_ANTISYM] ---->
   vGEN_REWRITE_TAC (vLAND_CONV -| vLAND_CONV) [vGSYM vREAL_NOT_LT] ---->
   vREWRITE_TAC[vREAL_SUB_LE; vREAL_SUB_LT] ----> vREWRITE_TAC[vREAL_NOT_LT]);;
 
-let vREAL_LT_LE = prove
+let vREAL_LT_LE = try Cache.lookup_thm "REAL_LT_LE" with _ ->  prove
  ((parse_term "!x y. x < y <=> x <= y /\\ ~(x = y)"),
   vMESON_TAC[real_lt; vREAL_LE_TOTAL; vREAL_LE_ANTISYM]);;
 
-let vREAL_LT_REFL = prove
+let vREAL_LT_REFL = try Cache.lookup_thm "REAL_LT_REFL" with _ ->  prove
  ((parse_term "!x. ~(x < x)"),
   vREWRITE_TAC[real_lt; vREAL_LE_REFL]);;
 
-let vREAL_LTE_ADD = prove
+let vREAL_LTE_ADD = try Cache.lookup_thm "REAL_LTE_ADD" with _ ->  prove
  ((parse_term "!x y. &0 < x /\\ &0 <= y ==> &0 < x + y"),
   vMESON_TAC[vREAL_LE_LADD_IMP; vREAL_ADD_RID; vREAL_LTE_TRANS]);;
 
-let vREAL_LET_ADD = prove
+let vREAL_LET_ADD = try Cache.lookup_thm "REAL_LET_ADD" with _ ->  prove
  ((parse_term "!x y. &0 <= x /\\ &0 < y ==> &0 < x + y"),
   vMESON_TAC[vREAL_LTE_ADD; vREAL_ADD_SYM]);;
 
-let vREAL_LT_ADD = prove
+let vREAL_LT_ADD = try Cache.lookup_thm "REAL_LT_ADD" with _ ->  prove
  ((parse_term "!x y. &0 < x /\\ &0 < y ==> &0 < x + y"),
   vMESON_TAC[vREAL_LT_IMP_LE; vREAL_LTE_ADD]);;
 
-let vREAL_ENTIRE = prove
+let vREAL_ENTIRE = try Cache.lookup_thm "REAL_ENTIRE" with _ ->  prove
  ((parse_term "!x y. (x * y = &0) <=> (x = &0) \\/ (y = &0)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vSTRIP_TAC ---->
   vASM_REWRITE_TAC[vREAL_MUL_LZERO; vREAL_MUL_RZERO] ---->
@@ -123,36 +123,36 @@ let vREAL_ENTIRE = prove
   vFIRST_ASSUM(fun th -> vREWRITE_TAC[vMATCH_MP vREAL_MUL_LINV th]) ---->
   vREWRITE_TAC[vREAL_MUL_LID; vREAL_MUL_RZERO]);;
 
-let vREAL_LE_NEGTOTAL = prove
+let vREAL_LE_NEGTOTAL = try Cache.lookup_thm "REAL_LE_NEGTOTAL" with _ ->  prove
  ((parse_term "!x. &0 <= x \\/ &0 <= --x"),
   vREWRITE_TAC[vREAL_LE_RNEG; vREAL_ADD_LID; vREAL_LE_TOTAL]);;
 
-let vREAL_LE_SQUARE = prove
+let vREAL_LE_SQUARE = try Cache.lookup_thm "REAL_LE_SQUARE" with _ ->  prove
  ((parse_term "!x. &0 <= x * x"),
   vGEN_TAC ----> vDISJ_CASES_TAC(vSPEC (parse_term "x:real") vREAL_LE_NEGTOTAL) ---->
   vPOP_ASSUM(fun th -> vMP_TAC(vMATCH_MP vREAL_LE_MUL (vCONJ th th))) ---->
   vREWRITE_TAC[vREAL_MUL_LNEG; vREAL_MUL_RNEG; vREAL_NEG_NEG]);;
 
-let vREAL_MUL_RID = prove
+let vREAL_MUL_RID = try Cache.lookup_thm "REAL_MUL_RID" with _ ->  prove
  ((parse_term "!x. x * &1 = x"),
   vMESON_TAC[vREAL_MUL_LID; vREAL_MUL_SYM]);;
 
-let vREAL_POW_2 = prove
+let vREAL_POW_2 = try Cache.lookup_thm "REAL_POW_2" with _ ->  prove
  ((parse_term "!x. x pow 2 = x * x"),
   vREWRITE_TAC[num_CONV (parse_term "2"); num_CONV (parse_term "1")] ---->
   vREWRITE_TAC[real_pow; vREAL_MUL_RID]);;
 
-let vREAL_POLY_CLAUSES = prove
+let vREAL_POLY_CLAUSES = try Cache.lookup_thm "REAL_POLY_CLAUSES" with _ ->  prove
  ((parse_term "(!x y z. x + (y + z) = (x + y) + z) /\\\n   (!x y. x + y = y + x) /\\\n   (!x. &0 + x = x) /\\\n   (!x y z. x * (y * z) = (x * y) * z) /\\\n   (!x y. x * y = y * x) /\\\n   (!x. &1 * x = x) /\\\n   (!x. &0 * x = &0) /\\\n   (!x y z. x * (y + z) = x * y + x * z) /\\\n   (!x. x pow 0 = &1) /\\\n   (!x n. x pow (SUC n) = x * x pow n)"),
   vREWRITE_TAC[real_pow; vREAL_ADD_LDISTRIB; vREAL_MUL_LZERO] ---->
   vREWRITE_TAC[vREAL_MUL_ASSOC; vREAL_ADD_LID; vREAL_MUL_LID] ---->
   vREWRITE_TAC[vREAL_ADD_AC] ----> vREWRITE_TAC[vREAL_MUL_SYM]);;
 
-let vREAL_POLY_NEG_CLAUSES = prove
+let vREAL_POLY_NEG_CLAUSES = try Cache.lookup_thm "REAL_POLY_NEG_CLAUSES" with _ ->  prove
  ((parse_term "(!x. --x = --(&1) * x) /\\\n   (!x y. x - y = x + --(&1) * y)"),
   vREWRITE_TAC[vREAL_MUL_LNEG; real_sub; vREAL_MUL_LID]);;
 
-let vREAL_POS = prove
+let vREAL_POS = try Cache.lookup_thm "REAL_POS" with _ ->  prove
  ((parse_term "!n. &0 <= &n"),
   vREWRITE_TAC[vREAL_OF_NUM_LE; vLE_0]);;
 

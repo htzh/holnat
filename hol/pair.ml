@@ -62,14 +62,14 @@ let _FUNCTION = new_definition
 let mk_pair_def = new_definition
   (parse_term "mk_pair (x:A) (y:B) = \\a b. (a = x) /\\ (b = y)");;
 
-let vPAIR_EXISTS_THM = prove
+let vPAIR_EXISTS_THM = try Cache.lookup_thm "PAIR_EXISTS_THM" with _ ->  prove
  ((parse_term "?x. ?(a:A) (b:B). x = mk_pair a b"),
   vMESON_TAC[]);;
 
 let prod_tybij = new_type_definition
   "prod" ("ABS_prod","REP_prod") vPAIR_EXISTS_THM;;
 
-let vREP_ABS_PAIR = prove
+let vREP_ABS_PAIR = try Cache.lookup_thm "REP_ABS_PAIR" with _ ->  prove
  ((parse_term "!(x:A) (y:B). REP_prod (ABS_prod (mk_pair x y)) = mk_pair x y"),
   vMESON_TAC[prod_tybij]);;
 
@@ -84,7 +84,7 @@ let vFST_DEF = new_definition
 let vSND_DEF = new_definition
  (parse_term "SND (p:A#B) = @y. ?x. p = x,y");;
 
-let vPAIR_EQ = prove
+let vPAIR_EQ = try Cache.lookup_thm "PAIR_EQ" with _ ->  prove
  ((parse_term "!(x:A) (y:B) a b. (x,y = a,b) <=> (x = a) /\\ (y = b)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ++-->
    [vREWRITE_TAC[vCOMMA_DEF] ---->
@@ -93,7 +93,7 @@ let vPAIR_EQ = prove
     vALL_TAC] ---->
   vMESON_TAC[]);;
 
-let vPAIR_SURJECTIVE = prove
+let vPAIR_SURJECTIVE = try Cache.lookup_thm "PAIR_SURJECTIVE" with _ ->  prove
  ((parse_term "!p:A#B. ?x y. p = x,y"),
   vGEN_TAC ----> vREWRITE_TAC[vCOMMA_DEF] ---->
   vMP_TAC(vSPEC (parse_term "REP_prod p :A->B->bool") (vCONJUNCT2 prod_tybij)) ---->
@@ -103,7 +103,7 @@ let vPAIR_SURJECTIVE = prove
   vREWRITE_TAC[vCONJUNCT1 prod_tybij] ----> vDISCH_THEN vSUBST1_TAC ---->
   vMAP_EVERY vEXISTS_TAC [(parse_term "a:A"); (parse_term "b:B")] ----> vREFL_TAC);;
 
-let vFST = prove
+let vFST = try Cache.lookup_thm "FST" with _ ->  prove
  ((parse_term "!(x:A) (y:B). FST(x,y) = x"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vFST_DEF] ---->
   vMATCH_MP_TAC vSELECT_UNIQUE ----> vGEN_TAC ----> vBETA_TAC ---->
@@ -111,7 +111,7 @@ let vFST = prove
   vSTRIP_TAC ----> vASM_REWRITE_TAC[] ---->
   vEXISTS_TAC (parse_term "y:B") ----> vASM_REWRITE_TAC[]);;
 
-let vSND = prove
+let vSND = try Cache.lookup_thm "SND" with _ ->  prove
  ((parse_term "!(x:A) (y:B). SND(x,y) = y"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vSND_DEF] ---->
   vMATCH_MP_TAC vSELECT_UNIQUE ----> vGEN_TAC ----> vBETA_TAC ---->
@@ -119,20 +119,20 @@ let vSND = prove
   vSTRIP_TAC ----> vASM_REWRITE_TAC[] ---->
   vEXISTS_TAC (parse_term "x:A") ----> vASM_REWRITE_TAC[]);;
 
-let vPAIR = prove
+let vPAIR = try Cache.lookup_thm "PAIR" with _ ->  prove
  ((parse_term "!x:A#B. FST x,SND x = x"),
   vGEN_TAC ---->
   (vX_CHOOSE_THEN (parse_term "a:A") (vX_CHOOSE_THEN (parse_term "b:B") vSUBST1_TAC)
      (vSPEC (parse_term "x:A#B") vPAIR_SURJECTIVE)) ---->
   vREWRITE_TAC[vFST; vSND]);;
 
-let pair_INDUCT = prove
+let pair_INDUCT = try Cache.lookup_thm "pair_INDUCT" with _ ->  prove
  ((parse_term "!P. (!x y. P (x,y)) ==> !p. P p"),
   vREPEAT vSTRIP_TAC ---->
   vGEN_REWRITE_TAC vRAND_CONV [vGSYM vPAIR] ---->
   vFIRST_ASSUM vMATCH_ACCEPT_TAC);;
 
-let pair_RECURSION = prove
+let pair_RECURSION = try Cache.lookup_thm "pair_RECURSION" with _ ->  prove
  ((parse_term "!PAIR'. ?fn:A#B->C. !a0 a1. fn (a0,a1) = PAIR' a0 a1"),
   vGEN_TAC ----> vEXISTS_TAC (parse_term "\\p. (PAIR':A->B->C) (FST p) (SND p)") ---->
   vREWRITE_TAC[vFST; vSND]);;
@@ -306,81 +306,81 @@ inductive_type_store :=
 (* Convenient rules to eliminate binders over pairs.                         *)
 (* ------------------------------------------------------------------------- *)
 
-let vFORALL_PAIR_THM = prove
+let vFORALL_PAIR_THM = try Cache.lookup_thm "FORALL_PAIR_THM" with _ ->  prove
  ((parse_term "!P. (!p. P p) <=> (!p1 p2. P(p1,p2))"),
   vMESON_TAC[vPAIR]);;
 
-let vEXISTS_PAIR_THM = prove
+let vEXISTS_PAIR_THM = try Cache.lookup_thm "EXISTS_PAIR_THM" with _ ->  prove
  ((parse_term "!P. (?p. P p) <=> ?p1 p2. P(p1,p2)"),
   vMESON_TAC[vPAIR]);;
 
-let vLAMBDA_PAIR_THM = prove
+let vLAMBDA_PAIR_THM = try Cache.lookup_thm "LAMBDA_PAIR_THM" with _ ->  prove
  ((parse_term "!t. (\\p. t p) = (\\(x,y). t(x,y))"),
   vREWRITE_TAC[vFORALL_PAIR_THM; vFUN_EQ_THM]);;
 
-let vLAMBDA_PAIR = prove
+let vLAMBDA_PAIR = try Cache.lookup_thm "LAMBDA_PAIR" with _ ->  prove
  ((parse_term "!f:A->B->C. (\\(x,y). f x y) = (\\p. f (FST p) (SND p))"),
   vREWRITE_TAC[vLAMBDA_PAIR_THM]);;
 
-let vLAMBDA_TRIPLE_THM = prove
+let vLAMBDA_TRIPLE_THM = try Cache.lookup_thm "LAMBDA_TRIPLE_THM" with _ ->  prove
  ((parse_term "!f:A#B#C->D. (\\t. f t) = (\\(x,y,z). f(x,y,z))"),
   vREWRITE_TAC[vFORALL_PAIR_THM; vFUN_EQ_THM]);;
 
-let vLAMBDA_TRIPLE = prove
+let vLAMBDA_TRIPLE = try Cache.lookup_thm "LAMBDA_TRIPLE" with _ ->  prove
  ((parse_term "!f:A->B->C->D.\n   (\\(x,y,z). f x y z) = (\\t. f (FST t) (FST(SND t)) (SND(SND t)))"),
   vREWRITE_TAC[vLAMBDA_TRIPLE_THM]);;
 
-let vPAIRED_ETA_THM = prove
+let vPAIRED_ETA_THM = try Cache.lookup_thm "PAIRED_ETA_THM" with _ ->  prove
  ((parse_term "(!f. (\\(x,y). f (x,y)) = f) /\\\n   (!f. (\\(x,y,z). f (x,y,z)) = f) /\\\n   (!f. (\\(w,x,y,z). f (w,x,y,z)) = f)"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vFUN_EQ_THM; vFORALL_PAIR_THM]);;
 
-let vFORALL_UNCURRY = prove
+let vFORALL_UNCURRY = try Cache.lookup_thm "FORALL_UNCURRY" with _ ->  prove
  ((parse_term "!P. (!f:A->B->C. P f) <=> (!f. P (\\a b. f(a,b)))"),
   vGEN_TAC ----> vEQ_TAC ----> vSIMP_TAC[] ----> vDISCH_TAC ---->
   vX_GEN_TAC (parse_term "f:A->B->C") ---->
   vFIRST_ASSUM(vMP_TAC -| vSPEC (parse_term "\\(a,b). (f:A->B->C) a b")) ----> vSIMP_TAC[vETA_AX]);;
 
-let vEXISTS_UNCURRY = prove
+let vEXISTS_UNCURRY = try Cache.lookup_thm "EXISTS_UNCURRY" with _ ->  prove
  ((parse_term "!P. (?f:A->B->C. P f) <=> (?f. P (\\a b. f(a,b)))"),
   vONCE_REWRITE_TAC[vMESON[] (parse_term "(?x. P x) <=> ~(!x. ~P x)")] ---->
   vREWRITE_TAC[vFORALL_UNCURRY]);;
 
-let vEXISTS_CURRY = prove
+let vEXISTS_CURRY = try Cache.lookup_thm "EXISTS_CURRY" with _ ->  prove
  ((parse_term "!P. (?f. P f) <=> (?f. P (\\(a,b). f a b))"),
   vREWRITE_TAC[vEXISTS_UNCURRY; vPAIRED_ETA_THM]);;
 
-let vFORALL_CURRY = prove
+let vFORALL_CURRY = try Cache.lookup_thm "FORALL_CURRY" with _ ->  prove
  ((parse_term "!P. (!f. P f) <=> (!f. P (\\(a,b). f a b))"),
   vREWRITE_TAC[vFORALL_UNCURRY; vPAIRED_ETA_THM]);;
 
-let vFORALL_UNPAIR_THM = prove
+let vFORALL_UNPAIR_THM = try Cache.lookup_thm "FORALL_UNPAIR_THM" with _ ->  prove
  ((parse_term "!P. (!x y. P x y) <=> !z. P (FST z) (SND z)"),
   vREWRITE_TAC[vFORALL_PAIR_THM; vFST; vSND] ----> vMESON_TAC[]);;
 
-let vEXISTS_UNPAIR_THM = prove
+let vEXISTS_UNPAIR_THM = try Cache.lookup_thm "EXISTS_UNPAIR_THM" with _ ->  prove
  ((parse_term "!P. (?x y. P x y) <=> ?z. P (FST z) (SND z)"),
   vREWRITE_TAC[vEXISTS_PAIR_THM; vFST; vSND] ----> vMESON_TAC[]);;
 
-let vFORALL_PAIR_FUN_THM = prove
+let vFORALL_PAIR_FUN_THM = try Cache.lookup_thm "FORALL_PAIR_FUN_THM" with _ ->  prove
  ((parse_term "!P. (!f:A->B#C. P f) <=> (!g h. P(\\a. g a,h a))"),
   vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ----> vASM_REWRITE_TAC[] ---->
   vGEN_TAC ----> vGEN_REWRITE_TAC vRAND_CONV [vGSYM vETA_AX] ---->
   vGEN_REWRITE_TAC vBINDER_CONV [vGSYM vPAIR] ----> vPURE_ASM_REWRITE_TAC[]);;
 
-let vEXISTS_PAIR_FUN_THM = prove
+let vEXISTS_PAIR_FUN_THM = try Cache.lookup_thm "EXISTS_PAIR_FUN_THM" with _ ->  prove
  ((parse_term "!P. (?f:A->B#C. P f) <=> (?g h. P(\\a. g a,h a))"),
   vREWRITE_TAC[vMESON[] (parse_term "(?x. P x) <=> ~(!x. ~P x)")] ---->
   vREWRITE_TAC[vFORALL_PAIR_FUN_THM]);;
 
-let vFORALL_UNPAIR_FUN_THM = prove
+let vFORALL_UNPAIR_FUN_THM = try Cache.lookup_thm "FORALL_UNPAIR_FUN_THM" with _ ->  prove
  ((parse_term "!P. (!f g. P f g) <=> (!h. P (FST o h) (SND o h))"),
   vREWRITE_TAC[vFORALL_PAIR_FUN_THM; o_DEF; vETA_AX]);;
 
-let vEXISTS_UNPAIR_FUN_THM = prove
+let vEXISTS_UNPAIR_FUN_THM = try Cache.lookup_thm "EXISTS_UNPAIR_FUN_THM" with _ ->  prove
  ((parse_term "!P. (?f g. P f g) <=> (?h. P (FST o h) (SND o h))"),
   vREWRITE_TAC[vEXISTS_PAIR_FUN_THM; o_DEF; vETA_AX]);;
 
-let vEXISTS_SWAP_FUN_THM = prove
+let vEXISTS_SWAP_FUN_THM = try Cache.lookup_thm "EXISTS_SWAP_FUN_THM" with _ ->  prove
  ((parse_term "!P:(A->B->C)->bool. (?f. P f) <=> (?f. P (\\a b. f b a))"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ++-->
    [vDISCH_THEN(vX_CHOOSE_TAC (parse_term "f:A->B->C")) ---->
@@ -393,12 +393,12 @@ let vEXISTS_SWAP_FUN_THM = prove
 (* Related theorems for explicitly paired quantifiers.                       *)
 (* ------------------------------------------------------------------------- *)
 
-let vFORALL_PAIRED_THM = prove
+let vFORALL_PAIRED_THM = try Cache.lookup_thm "FORALL_PAIRED_THM" with _ ->  prove
  ((parse_term "!P. (!(x,y). P x y) <=> (!x y. P x y)"),
   vGEN_TAC ----> vGEN_REWRITE_TAC (vLAND_CONV -| vRATOR_CONV) [vFORALL_DEF] ---->
   vREWRITE_TAC[vFUN_EQ_THM; vFORALL_PAIR_THM]);;
 
-let vEXISTS_PAIRED_THM = prove
+let vEXISTS_PAIRED_THM = try Cache.lookup_thm "EXISTS_PAIRED_THM" with _ ->  prove
  ((parse_term "!P. (?(x,y). P x y) <=> (?x y. P x y)"),
   vGEN_TAC ----> vMATCH_MP_TAC(vTAUT (parse_term "(~p <=> ~q) ==> (p <=> q)")) ---->
   vREWRITE_TAC[vREWRITE_RULE[vETA_AX] vNOT_EXISTS_THM; vFORALL_PAIR_THM]);;
@@ -407,12 +407,12 @@ let vEXISTS_PAIRED_THM = prove
 (* Likewise for tripled quantifiers (could continue with the same proof).    *)
 (* ------------------------------------------------------------------------- *)
 
-let vFORALL_TRIPLED_THM = prove
+let vFORALL_TRIPLED_THM = try Cache.lookup_thm "FORALL_TRIPLED_THM" with _ ->  prove
  ((parse_term "!P. (!(x,y,z). P x y z) <=> (!x y z. P x y z)"),
   vGEN_TAC ----> vGEN_REWRITE_TAC (vLAND_CONV -| vRATOR_CONV) [vFORALL_DEF] ---->
   vREWRITE_TAC[vFUN_EQ_THM; vFORALL_PAIR_THM]);;
 
-let vEXISTS_TRIPLED_THM = prove
+let vEXISTS_TRIPLED_THM = try Cache.lookup_thm "EXISTS_TRIPLED_THM" with _ ->  prove
  ((parse_term "!P. (?(x,y,z). P x y z) <=> (?x y z. P x y z)"),
   vGEN_TAC ----> vMATCH_MP_TAC(vTAUT (parse_term "(~p <=> ~q) ==> (p <=> q)")) ---->
   vREWRITE_TAC[vREWRITE_RULE[vETA_AX] vNOT_EXISTS_THM; vFORALL_PAIR_THM]);;
@@ -421,11 +421,11 @@ let vEXISTS_TRIPLED_THM = prove
 (* Similar theorems for the choice operator.                                 *)
 (* ------------------------------------------------------------------------- *)
 
-let vCHOICE_UNPAIR_THM = prove
+let vCHOICE_UNPAIR_THM = try Cache.lookup_thm "CHOICE_UNPAIR_THM" with _ ->  prove
  ((parse_term "!P. (@(x:A,y:B). P x y) = (@p. P (FST p) (SND p))"),
   vREWRITE_TAC[vLAMBDA_PAIR]);;
 
-let vCHOICE_PAIRED_THM = prove
+let vCHOICE_PAIRED_THM = try Cache.lookup_thm "CHOICE_PAIRED_THM" with _ ->  prove
  ((parse_term "!P Q. (?x:A y:B. P x y) /\\ (!x y. P x y ==> Q(x,y)) ==> Q (@(x,y). P x y)"),
   vINTRO_TAC "!P Q; (@x0 y0. P0) PQ" ---->
   vSUBGOAL_THEN (parse_term "(\\ (x:A,y:B). P x y:bool) = (\\p. P (FST p) (SND p))")

@@ -10,6 +10,12 @@
 (executable
  (name bindings)
  (modules bindings)
- (libraries compiler-libs.common)
+ (libraries str compiler-libs.common)
+ (promote (until-clean))
+)
+(executable
+ (name query)
+ (modules query)
+ (libraries hol)
  (promote (until-clean))
 )

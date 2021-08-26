@@ -44,7 +44,7 @@ include Sets1
 (* Cardinality of product.                                                   *)
 (* ------------------------------------------------------------------------- *)
 
-let vHAS_SIZE_PRODUCT_DEPENDENT = prove
+let vHAS_SIZE_PRODUCT_DEPENDENT = try Cache.lookup_thm "HAS_SIZE_PRODUCT_DEPENDENT" with _ ->  prove
  ((parse_term "!s m t n.\n         s HAS_SIZE m /\\ (!x. x IN s ==> t(x) HAS_SIZE n)\n         ==> {(x:A,y:B) | x IN s /\\ y IN t(x)} HAS_SIZE (m * n)"),
   vGEN_REWRITE_TAC (funpow 4 vBINDER_CONV -| funpow 2 vLAND_CONV) [vHAS_SIZE] ---->
   vREWRITE_TAC[vIMP_CONJ; vRIGHT_FORALL_IMP_THM] ---->
@@ -68,7 +68,7 @@ let vHAS_SIZE_PRODUCT_DEPENDENT = prove
               vNOT_IN_EMPTY; vEXISTS_PAIR_THM; vPAIR_EQ] ---->
   vREPEAT vSTRIP_TAC ----> vASM_MESON_TAC[vPAIR_EQ]);;
 
-let vFINITE_PRODUCT_DEPENDENT = prove
+let vFINITE_PRODUCT_DEPENDENT = try Cache.lookup_thm "FINITE_PRODUCT_DEPENDENT" with _ ->  prove
  ((parse_term "!f:A->B->C s t.\n        FINITE s /\\ (!x. x IN s ==> FINITE(t x))\n        ==> FINITE {f x y | x IN s /\\ y IN (t x)}"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vFINITE_SUBSET ---->
   vEXISTS_TAC (parse_term "IMAGE (\\(x,y). (f:A->B->C) x y) {x,y | x IN s /\\ y IN t x}") ---->
@@ -92,18 +92,18 @@ let vFINITE_PRODUCT_DEPENDENT = prove
   vREWRITE_TAC[vEXTENSION; vIN_IMAGE; vIN_ELIM_THM; vIN_INSERT; vIN_UNION] ---->
   vMESON_TAC[]);;
 
-let vFINITE_PRODUCT = prove
+let vFINITE_PRODUCT = try Cache.lookup_thm "FINITE_PRODUCT" with _ ->  prove
  ((parse_term "!s t. FINITE s /\\ FINITE t ==> FINITE {(x:A,y:B) | x IN s /\\ y IN t}"),
   vSIMP_TAC[vFINITE_PRODUCT_DEPENDENT]);;
 
-let vCARD_PRODUCT = prove
+let vCARD_PRODUCT = try Cache.lookup_thm "CARD_PRODUCT" with _ ->  prove
  ((parse_term "!s t. FINITE s /\\ FINITE t\n         ==> (CARD {(x:A,y:B) | x IN s /\\ y IN t} = CARD s * CARD t)"),
   vREPEAT vSTRIP_TAC ---->
   vMP_TAC(vSPECL [(parse_term "s:A->bool"); (parse_term "CARD(s:A->bool)"); (parse_term "\\x:A. t:B->bool");
                   (parse_term "CARD(t:B->bool)")] vHAS_SIZE_PRODUCT_DEPENDENT) ---->
   vASM_SIMP_TAC[vHAS_SIZE]);;
 
-let vHAS_SIZE_PRODUCT = prove
+let vHAS_SIZE_PRODUCT = try Cache.lookup_thm "HAS_SIZE_PRODUCT" with _ ->  prove
  ((parse_term "!s m t n. s HAS_SIZE m /\\ t HAS_SIZE n\n             ==> {(x:A,y:B) | x IN s /\\ y IN t} HAS_SIZE (m * n)"),
   vSIMP_TAC[vHAS_SIZE; vCARD_PRODUCT; vFINITE_PRODUCT]);;
 
@@ -116,40 +116,40 @@ parse_as_infix("CROSS",(22,"right"));;
 let vCROSS = new_definition
  (parse_term "s CROSS t = {x,y | x IN s /\\ y IN t}");;
 
-let vIN_CROSS = prove
+let vIN_CROSS = try Cache.lookup_thm "IN_CROSS" with _ ->  prove
  ((parse_term "!x y s t. (x,y) IN (s CROSS t) <=> x IN s /\\ y IN t"),
   vREWRITE_TAC[vCROSS; vIN_ELIM_PAIR_THM]);;
 
-let vHAS_SIZE_CROSS = prove
+let vHAS_SIZE_CROSS = try Cache.lookup_thm "HAS_SIZE_CROSS" with _ ->  prove
  ((parse_term "!s t m n. s HAS_SIZE m /\\ t HAS_SIZE n ==> (s CROSS t) HAS_SIZE (m * n)"),
   vREWRITE_TAC[vCROSS; vHAS_SIZE_PRODUCT]);;
 
-let vFINITE_CROSS = prove
+let vFINITE_CROSS = try Cache.lookup_thm "FINITE_CROSS" with _ ->  prove
  ((parse_term "!s t. FINITE s /\\ FINITE t ==> FINITE(s CROSS t)"),
   vSIMP_TAC[vCROSS; vFINITE_PRODUCT]);;
 
-let vCARD_CROSS = prove
+let vCARD_CROSS = try Cache.lookup_thm "CARD_CROSS" with _ ->  prove
  ((parse_term "!s t. FINITE s /\\ FINITE t ==> CARD(s CROSS t) = CARD s * CARD t"),
   vSIMP_TAC[vCROSS; vCARD_PRODUCT]);;
 
-let vCROSS_EQ_EMPTY = prove
+let vCROSS_EQ_EMPTY = try Cache.lookup_thm "CROSS_EQ_EMPTY" with _ ->  prove
  ((parse_term "!s t. s CROSS t = {} <=> s = {} \\/ t = {}"),
   vREWRITE_TAC[vEXTENSION; vFORALL_PAIR_THM; vIN_CROSS; vNOT_IN_EMPTY] ---->
   vMESON_TAC[]);;
 
-let vCROSS_EMPTY = prove
+let vCROSS_EMPTY = try Cache.lookup_thm "CROSS_EMPTY" with _ ->  prove
  ((parse_term "(!s:A->bool. s CROSS {} = {}) /\\ (!t:B->bool. {} CROSS t = {})"),
   vREWRITE_TAC[vCROSS_EQ_EMPTY]);;
 
-let vCROSS_SING = prove
+let vCROSS_SING = try Cache.lookup_thm "CROSS_SING" with _ ->  prove
  ((parse_term "!x:A y:B. {x} CROSS {y} = {(x,y)}"),
   vREWRITE_TAC[vEXTENSION; vFORALL_PAIR_THM; vIN_SING; vIN_CROSS; vPAIR_EQ]);;
 
-let vCROSS_UNIV = prove
+let vCROSS_UNIV = try Cache.lookup_thm "CROSS_UNIV" with _ ->  prove
  ((parse_term "(:A) CROSS (:B) = (:A#B)"),
   vREWRITE_TAC[vCROSS; vEXTENSION; vIN_ELIM_PAIR_THM; vFORALL_PAIR_THM; vIN_UNIV]);;
 
-let vFINITE_CROSS_EQ = prove
+let vFINITE_CROSS_EQ = try Cache.lookup_thm "FINITE_CROSS_EQ" with _ ->  prove
  ((parse_term "!s:A->bool t:B->bool.\n        FINITE(s CROSS t) <=> s = {} \\/ t = {} \\/ FINITE s /\\ FINITE t"),
   vREPEAT vGEN_TAC ---->
   vASM_CASES_TAC (parse_term "s:A->bool = {}") ---->
@@ -163,84 +163,84 @@ let vFINITE_CROSS_EQ = prove
   vREWRITE_TAC[vSUBSET; vIN_IMAGE; vEXISTS_PAIR_THM; vIN_CROSS] ---->
   vASM vSET_TAC[]);;
 
-let vINFINITE_CROSS_EQ = prove
+let vINFINITE_CROSS_EQ = try Cache.lookup_thm "INFINITE_CROSS_EQ" with _ ->  prove
  ((parse_term "!(s:A->bool) (t:B->bool).\n        INFINITE(s CROSS t) <=>\n        ~(s = {}) /\\ INFINITE t \\/ INFINITE s /\\ ~(t = {})"),
   vREWRITE_TAC[vINFINITE; vFINITE_CROSS_EQ] ----> vMESON_TAC[vFINITE_EMPTY]);;
 
-let vFINITE_CROSS_UNIV = prove
+let vFINITE_CROSS_UNIV = try Cache.lookup_thm "FINITE_CROSS_UNIV" with _ ->  prove
  ((parse_term "FINITE(:A#B) <=> FINITE(:A) /\\ FINITE(:B)"),
   vREWRITE_TAC[vGSYM vCROSS_UNIV; vFINITE_CROSS_EQ; vUNIV_NOT_EMPTY]);;
 
-let vINFINITE_CROSS_UNIV = prove
+let vINFINITE_CROSS_UNIV = try Cache.lookup_thm "INFINITE_CROSS_UNIV" with _ ->  prove
  ((parse_term "INFINITE(:A#B) <=> INFINITE(:A) \\/ INFINITE(:B)"),
   vREWRITE_TAC[vGSYM vCROSS_UNIV; vINFINITE_CROSS_EQ; vUNIV_NOT_EMPTY] ---->
   vMESON_TAC[]);;
 
-let vFINITE_UNIV_PAIR = prove
+let vFINITE_UNIV_PAIR = try Cache.lookup_thm "FINITE_UNIV_PAIR" with _ ->  prove
  ((parse_term "FINITE(:A#A) <=> FINITE(:A)"),
   vREWRITE_TAC[vFINITE_CROSS_UNIV]);;
 
-let vINFINITE_UNIV_PAIR = prove
+let vINFINITE_UNIV_PAIR = try Cache.lookup_thm "INFINITE_UNIV_PAIR" with _ ->  prove
  ((parse_term "INFINITE(:A#A) <=> INFINITE(:A)"),
   vREWRITE_TAC[vINFINITE_CROSS_UNIV]);;
 
-let vFORALL_IN_CROSS = prove
+let vFORALL_IN_CROSS = try Cache.lookup_thm "FORALL_IN_CROSS" with _ ->  prove
  ((parse_term "!P s t. (!z. z IN s CROSS t ==> P z) <=>\n           (!x y. x IN s /\\ y IN t ==> P(x,y))"),
   vREWRITE_TAC[vFORALL_PAIR_THM; vIN_CROSS]);;
 
-let vEXISTS_IN_CROSS = prove
+let vEXISTS_IN_CROSS = try Cache.lookup_thm "EXISTS_IN_CROSS" with _ ->  prove
  ((parse_term "!P s t. (?z. z IN s CROSS t /\\ P z) <=>\n           (?x y. x IN s /\\ y IN t /\\ P(x,y))"),
   vREWRITE_TAC[vEXISTS_PAIR_THM; vGSYM vCONJ_ASSOC; vIN_CROSS]);;
 
-let vSUBSET_CROSS = prove
+let vSUBSET_CROSS = try Cache.lookup_thm "SUBSET_CROSS" with _ ->  prove
  ((parse_term "!s t s' t'. s CROSS t SUBSET s' CROSS t' <=>\n                s = {} \\/ t = {} \\/ s SUBSET s' /\\ t SUBSET t'"),
   vSIMP_TAC[vCROSS; vEXTENSION; vIN_ELIM_PAIR_THM; vSUBSET;
    vFORALL_PAIR_THM; vIN_CROSS; vNOT_IN_EMPTY] ----> vMESON_TAC[]);;
 
-let vCROSS_MONO = prove
+let vCROSS_MONO = try Cache.lookup_thm "CROSS_MONO" with _ ->  prove
  ((parse_term "!s t s' t'. s SUBSET s' /\\ t SUBSET t' ==> s CROSS t SUBSET s' CROSS t'"),
   vSIMP_TAC[vSUBSET_CROSS]);;
 
-let vCROSS_EQ = prove
+let vCROSS_EQ = try Cache.lookup_thm "CROSS_EQ" with _ ->  prove
  ((parse_term "!s s':A->bool t t':B->bool.\n        s CROSS t = s' CROSS t' <=>\n        (s = {} \\/ t = {}) /\\ (s' = {} \\/ t' = {}) \\/ s = s' /\\ t = t'"),
   vREWRITE_TAC[vGSYM vSUBSET_ANTISYM_EQ; vSUBSET_CROSS] ----> vSET_TAC[]);;
 
-let vIMAGE_FST_CROSS = prove
+let vIMAGE_FST_CROSS = try Cache.lookup_thm "IMAGE_FST_CROSS" with _ ->  prove
  ((parse_term "!s:A->bool t:B->bool.\n        IMAGE FST (s CROSS t) = if t = {} then {} else s"),
   vREPEAT vGEN_TAC ----> vCOND_CASES_TAC ---->
   vASM_REWRITE_TAC[vCROSS_EMPTY; vIMAGE_CLAUSES] ---->
   vREWRITE_TAC[vEXTENSION; vIN_IMAGE] ----> vONCE_REWRITE_TAC[vCONJ_SYM] ---->
   vREWRITE_TAC[vEXISTS_IN_CROSS; vFST] ----> vASM vSET_TAC[]);;
 
-let vIMAGE_SND_CROSS = prove
+let vIMAGE_SND_CROSS = try Cache.lookup_thm "IMAGE_SND_CROSS" with _ ->  prove
  ((parse_term "!s:A->bool t:B->bool.\n        IMAGE SND (s CROSS t) = if s = {} then {} else t"),
   vREPEAT vGEN_TAC ----> vCOND_CASES_TAC ---->
   vASM_REWRITE_TAC[vCROSS_EMPTY; vIMAGE_CLAUSES] ---->
   vREWRITE_TAC[vEXTENSION; vIN_IMAGE] ----> vONCE_REWRITE_TAC[vCONJ_SYM] ---->
   vREWRITE_TAC[vEXISTS_IN_CROSS; vSND] ----> vASM vSET_TAC[]);;
 
-let vIMAGE_PAIRED_CROSS = prove
+let vIMAGE_PAIRED_CROSS = try Cache.lookup_thm "IMAGE_PAIRED_CROSS" with _ ->  prove
  ((parse_term "!(f:A->B) (g:C->D) s t.\n         IMAGE (\\(x,y). f x,g y) (s CROSS t) = (IMAGE f s) CROSS (IMAGE g t)"),
   vREWRITE_TAC[vEXTENSION; vIN_IMAGE; vEXISTS_PAIR_THM; vIN_CROSS; vFORALL_PAIR_THM;
               vPAIR_EQ] ---->
   vMESON_TAC[]);;
 
-let vCROSS_INTER = prove
+let vCROSS_INTER = try Cache.lookup_thm "CROSS_INTER" with _ ->  prove
  ((parse_term "(!s t u. s CROSS (t INTER u) = (s CROSS t) INTER (s CROSS u)) /\\\n   (!s t u. (s INTER t) CROSS u = (s CROSS u) INTER (t CROSS u))"),
   vREWRITE_TAC[vEXTENSION; vFORALL_PAIR_THM; vIN_INTER; vIN_CROSS] ---->
   vREPEAT vSTRIP_TAC ----> vCONV_TAC vTAUT);;
 
-let vCROSS_UNION = prove
+let vCROSS_UNION = try Cache.lookup_thm "CROSS_UNION" with _ ->  prove
  ((parse_term "(!s t u. s CROSS (t UNION u) = (s CROSS t) UNION (s CROSS u)) /\\\n   (!s t u. (s UNION t) CROSS u = (s CROSS u) UNION (t CROSS u))"),
   vREWRITE_TAC[vEXTENSION; vFORALL_PAIR_THM; vIN_UNION; vIN_CROSS] ---->
   vREPEAT vSTRIP_TAC ----> vCONV_TAC vTAUT);;
 
-let vCROSS_DIFF = prove
+let vCROSS_DIFF = try Cache.lookup_thm "CROSS_DIFF" with _ ->  prove
  ((parse_term "(!s t u. s CROSS (t DIFF u) = (s CROSS t) DIFF (s CROSS u)) /\\\n   (!s t u. (s DIFF t) CROSS u = (s CROSS u) DIFF (t CROSS u))"),
   vREWRITE_TAC[vEXTENSION; vFORALL_PAIR_THM; vIN_DIFF; vIN_CROSS] ---->
   vREPEAT vSTRIP_TAC ----> vCONV_TAC vTAUT);;
 
-let vINTER_CROSS = prove
+let vINTER_CROSS = try Cache.lookup_thm "INTER_CROSS" with _ ->  prove
  ((parse_term "!s s' t t'.\n      (s CROSS t) INTER (s' CROSS t') = (s INTER s') CROSS (t INTER t')"),
   vREWRITE_TAC[vEXTENSION; vIN_INTER; vFORALL_PAIR_THM; vIN_CROSS] ---->
   vCONV_TAC vTAUT);;
@@ -258,7 +258,7 @@ let vCROSS_INTERS_INTERS,vCROSS_INTERS = (vCONJ_PAIR -| prove)
                   vIN_CROSS; vNOT_IN_EMPTY] ---->
   vASM vSET_TAC[]);;
 
-let vDISJOINT_CROSS = prove
+let vDISJOINT_CROSS = try Cache.lookup_thm "DISJOINT_CROSS" with _ ->  prove
  ((parse_term "!s:A->bool t:B->bool s' t'.\n        DISJOINT (s CROSS t) (s' CROSS t') <=>\n        DISJOINT s s' \\/ DISJOINT t t'"),
   vREWRITE_TAC[vDISJOINT; vINTER_CROSS; vCROSS_EQ_EMPTY]);;
 
@@ -274,24 +274,24 @@ let vARB = new_definition
 let vEXTENSIONAL = new_definition
   (parse_term "EXTENSIONAL s = {f:A->B | !x. ~(x IN s) ==> f x = ARB}");;
 
-let vIN_EXTENSIONAL = prove
+let vIN_EXTENSIONAL = try Cache.lookup_thm "IN_EXTENSIONAL" with _ ->  prove
  ((parse_term "!s f:A->B. f IN EXTENSIONAL s <=> (!x. ~(x IN s) ==> f x = ARB)"),
   vREWRITE_TAC[vEXTENSIONAL; vIN_ELIM_THM]);;
 
-let vIN_EXTENSIONAL_UNDEFINED = prove
+let vIN_EXTENSIONAL_UNDEFINED = try Cache.lookup_thm "IN_EXTENSIONAL_UNDEFINED" with _ ->  prove
  ((parse_term "!s f:A->B x. f IN EXTENSIONAL s /\\ ~(x IN s) ==> f x = ARB"),
   vSIMP_TAC[vIN_EXTENSIONAL]);;
 
-let vEXTENSIONAL_EMPTY = prove
+let vEXTENSIONAL_EMPTY = try Cache.lookup_thm "EXTENSIONAL_EMPTY" with _ ->  prove
  ((parse_term "EXTENSIONAL {} = {\\x:A. ARB:B}"),
   vREWRITE_TAC[vEXTENSION; vIN_EXTENSIONAL; vIN_SING; vNOT_IN_EMPTY] ---->
   vREWRITE_TAC[vFUN_EQ_THM]);;
 
-let vEXTENSIONAL_UNIV = prove
+let vEXTENSIONAL_UNIV = try Cache.lookup_thm "EXTENSIONAL_UNIV" with _ ->  prove
  ((parse_term "!f. EXTENSIONAL (:A) f"),
   vREWRITE_TAC[vEXTENSIONAL; vIN_UNIV; vIN_ELIM_THM]);;
 
-let vEXTENSIONAL_EQ = prove
+let vEXTENSIONAL_EQ = try Cache.lookup_thm "EXTENSIONAL_EQ" with _ ->  prove
  ((parse_term "!s f g:A->B.\n     f IN EXTENSIONAL s /\\ g IN EXTENSIONAL s /\\ (!x. x IN s ==> f x = g x)\n     ==> f = g"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vFUN_EQ_THM] ----> vGEN_TAC ---->
   vASM_CASES_TAC (parse_term "x:A IN s") ++-->
@@ -304,66 +304,66 @@ let vEXTENSIONAL_EQ = prove
 let vRESTRICTION = new_definition
   (parse_term "RESTRICTION s (f:A->B) x = if x IN s then f x else ARB");;
 
-let vRESTRICTION_THM = prove
+let vRESTRICTION_THM = try Cache.lookup_thm "RESTRICTION_THM" with _ ->  prove
  ((parse_term "!s (f:A->B). RESTRICTION s f = \\x. if x IN s then f x else ARB"),
   vREWRITE_TAC[vFUN_EQ_THM; vRESTRICTION]);;
 
-let vRESTRICTION_DEFINED = prove
+let vRESTRICTION_DEFINED = try Cache.lookup_thm "RESTRICTION_DEFINED" with _ ->  prove
  ((parse_term "!s f:A->B x. x IN s ==> RESTRICTION s f x = f x"),
   vSIMP_TAC[vRESTRICTION]);;
 
-let vRESTRICTION_UNDEFINED = prove
+let vRESTRICTION_UNDEFINED = try Cache.lookup_thm "RESTRICTION_UNDEFINED" with _ ->  prove
  ((parse_term "!s f:A->B x. ~(x IN s) ==> RESTRICTION s f x = ARB"),
   vSIMP_TAC[vRESTRICTION]);;
 
-let vRESTRICTION_EQ = prove
+let vRESTRICTION_EQ = try Cache.lookup_thm "RESTRICTION_EQ" with _ ->  prove
  ((parse_term "!s f:A->B x y. x IN s /\\ f x = y ==> RESTRICTION s f x = y"),
   vSIMP_TAC[vRESTRICTION_DEFINED]);;
 
-let vRESTRICTION_IN_EXTENSIONAL = prove
+let vRESTRICTION_IN_EXTENSIONAL = try Cache.lookup_thm "RESTRICTION_IN_EXTENSIONAL" with _ ->  prove
  ((parse_term "!s f:A->B. RESTRICTION s f IN EXTENSIONAL s"),
   vSIMP_TAC[vIN_EXTENSIONAL; vRESTRICTION]);;
 
-let vRESTRICTION_EXTENSION = prove
+let vRESTRICTION_EXTENSION = try Cache.lookup_thm "RESTRICTION_EXTENSION" with _ ->  prove
  ((parse_term "!s f g:A->B. RESTRICTION s f = RESTRICTION s g <=>\n                (!x. x IN s ==> f x = g x)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vRESTRICTION; vFUN_EQ_THM] ----> vMESON_TAC[]);;
 
-let vRESTRICTION_FIXPOINT = prove
+let vRESTRICTION_FIXPOINT = try Cache.lookup_thm "RESTRICTION_FIXPOINT" with _ ->  prove
  ((parse_term "!s f:A->B. RESTRICTION s f = f <=> f IN EXTENSIONAL s"),
   vREWRITE_TAC[vIN_EXTENSIONAL; vFUN_EQ_THM; vRESTRICTION] ----> vMESON_TAC[]);;
 
-let vRESTRICTION_RESTRICTION = prove
+let vRESTRICTION_RESTRICTION = try Cache.lookup_thm "RESTRICTION_RESTRICTION" with _ ->  prove
  ((parse_term "!s t f:A->B.\n        s SUBSET t ==> RESTRICTION s (RESTRICTION t f) = RESTRICTION s f"),
   vREWRITE_TAC[vFUN_EQ_THM; vRESTRICTION] ----> vSET_TAC[]);;
 
-let vRESTRICTION_IDEMP = prove
+let vRESTRICTION_IDEMP = try Cache.lookup_thm "RESTRICTION_IDEMP" with _ ->  prove
  ((parse_term "!s f:A->B. RESTRICTION s (RESTRICTION s f) = RESTRICTION s f"),
   vREWRITE_TAC[vRESTRICTION_FIXPOINT; vRESTRICTION_IN_EXTENSIONAL]);;
 
-let vIMAGE_RESTRICTION = prove
+let vIMAGE_RESTRICTION = try Cache.lookup_thm "IMAGE_RESTRICTION" with _ ->  prove
  ((parse_term "!f:A->B s t. s SUBSET t ==> IMAGE (RESTRICTION t f) s = IMAGE f s"),
   vREWRITE_TAC[vEXTENSION; vIN_IMAGE; vRESTRICTION] ----> vSET_TAC[]);;
 
-let vRESTRICTION_COMPOSE_RIGHT = prove
+let vRESTRICTION_COMPOSE_RIGHT = try Cache.lookup_thm "RESTRICTION_COMPOSE_RIGHT" with _ ->  prove
  ((parse_term "!f:A->B g:B->C s.\n        RESTRICTION s (g o RESTRICTION s f) =\n        RESTRICTION s (g o f)"),
   vREWRITE_TAC[vFUN_EQ_THM; o_DEF; vRESTRICTION] ---->
   vSIMP_TAC[vSUBSET; vFORALL_IN_IMAGE] ----> vSET_TAC[]);;
 
-let vRESTRICTION_COMPOSE_LEFT = prove
+let vRESTRICTION_COMPOSE_LEFT = try Cache.lookup_thm "RESTRICTION_COMPOSE_LEFT" with _ ->  prove
  ((parse_term "!f:A->B g:B->C s t.\n        IMAGE f s SUBSET t\n        ==> RESTRICTION s (RESTRICTION t g o f) =\n            RESTRICTION s (g o f)"),
   vREWRITE_TAC[vFUN_EQ_THM; o_DEF; vRESTRICTION] ---->
   vSIMP_TAC[vSUBSET; vFORALL_IN_IMAGE] ----> vSET_TAC[]);;
 
-let vRESTRICTION_COMPOSE = prove
+let vRESTRICTION_COMPOSE = try Cache.lookup_thm "RESTRICTION_COMPOSE" with _ ->  prove
  ((parse_term "!f:A->B g:B->C s t.\n        IMAGE f s SUBSET t\n        ==> RESTRICTION s (RESTRICTION t g o RESTRICTION s f) =\n            RESTRICTION s (g o f)"),
   vSIMP_TAC[vRESTRICTION_COMPOSE_LEFT; vRESTRICTION_COMPOSE_RIGHT]);;
 
-let vRESTRICTION_UNIQUE = prove
+let vRESTRICTION_UNIQUE = try Cache.lookup_thm "RESTRICTION_UNIQUE" with _ ->  prove
  ((parse_term "!s (f:A->B) g.\n        RESTRICTION s f = g <=> EXTENSIONAL s g /\\ !x. x IN s ==> f x = g x"),
   vREWRITE_TAC[vFUN_EQ_THM; vRESTRICTION; vEXTENSIONAL; vIN_ELIM_THM] ---->
   vMESON_TAC[]);;
 
-let vRESTRICTION_UNIQUE_ALT = prove
+let vRESTRICTION_UNIQUE_ALT = try Cache.lookup_thm "RESTRICTION_UNIQUE_ALT" with _ ->  prove
  ((parse_term "!s (f:A->B) g.\n        f = RESTRICTION s g <=> EXTENSIONAL s f /\\ !x. x IN s ==> f x = g x"),
   vREWRITE_TAC[vFUN_EQ_THM; vRESTRICTION; vEXTENSIONAL; vIN_ELIM_THM] ---->
   vMESON_TAC[]);;
@@ -375,22 +375,22 @@ let vRESTRICTION_UNIQUE_ALT = prove
 let cartesian_product = new_definition
  (parse_term "cartesian_product k s =\n        {f:K->A | EXTENSIONAL k f /\\ !i. i IN k ==> f i IN s i}");;
 
-let vIN_CARTESIAN_PRODUCT = prove
+let vIN_CARTESIAN_PRODUCT = try Cache.lookup_thm "IN_CARTESIAN_PRODUCT" with _ ->  prove
  ((parse_term "!k s (x:K->A).\n        x IN cartesian_product k s <=>\n        EXTENSIONAL k x /\\ (!i. i IN k ==> x i IN s i)"),
   vREWRITE_TAC[cartesian_product; vIN_ELIM_THM]);;
 
-let vCARTESIAN_PRODUCT = prove
+let vCARTESIAN_PRODUCT = try Cache.lookup_thm "CARTESIAN_PRODUCT" with _ ->  prove
  ((parse_term "!k s. cartesian_product k s =\n         {f:K->A | !i. f i IN (if i IN k then s i else {ARB})}"),
   vREPEAT vGEN_TAC ----> vGEN_REWRITE_TAC vI [vEXTENSION] ---->
   vREWRITE_TAC[cartesian_product; vIN_ELIM_THM; vEXTENSIONAL] ---->
   vMESON_TAC[vIN_SING]);;
 
-let vRESTRICTION_IN_CARTESIAN_PRODUCT = prove
+let vRESTRICTION_IN_CARTESIAN_PRODUCT = try Cache.lookup_thm "RESTRICTION_IN_CARTESIAN_PRODUCT" with _ ->  prove
  ((parse_term "!k s (f:K->A).\n        RESTRICTION k f IN cartesian_product k s <=>\n        !i. i IN k ==> (f i) IN (s i)"),
   vREWRITE_TAC[vRESTRICTION; cartesian_product; vEXTENSIONAL; vIN_ELIM_THM] ---->
   vSET_TAC[]);;
 
-let vCARTESIAN_PRODUCT_AS_RESTRICTIONS = prove
+let vCARTESIAN_PRODUCT_AS_RESTRICTIONS = try Cache.lookup_thm "CARTESIAN_PRODUCT_AS_RESTRICTIONS" with _ ->  prove
  ((parse_term "!k (s:K->A->bool).\n      cartesian_product k s =\n      {RESTRICTION k f |f| !i. i IN k ==> f i IN s i}"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[vGSYM vSUBSET_ANTISYM_EQ; vSUBSET; vFORALL_IN_GSPEC] ---->
@@ -400,7 +400,7 @@ let vCARTESIAN_PRODUCT_AS_RESTRICTIONS = prove
   vSTRIP_TAC ----> vEXISTS_TAC (parse_term "x:K->A") ---->
   vASM_REWRITE_TAC[vFUN_EQ_THM; vRESTRICTION] ----> vASM_MESON_TAC[]);;
 
-let vCARTESIAN_PRODUCT_EQ_EMPTY = prove
+let vCARTESIAN_PRODUCT_EQ_EMPTY = try Cache.lookup_thm "CARTESIAN_PRODUCT_EQ_EMPTY" with _ ->  prove
  ((parse_term "!k s:K->A->bool.\n        cartesian_product k s = {} <=> ?i. i IN k /\\ s i = {}"),
   vREPEAT vGEN_TAC ----> vGEN_REWRITE_TAC vLAND_CONV [vEXTENSION] ---->
   vREWRITE_TAC[vSET_RULE
@@ -411,22 +411,22 @@ let vCARTESIAN_PRODUCT_EQ_EMPTY = prove
   vFIRST_X_ASSUM(vMP_TAC -| vSPEC (parse_term "\\i. if i IN k then (f:K->A) i else ARB")) ---->
   vREWRITE_TAC[vEXTENSIONAL; vIN_ELIM_THM] ----> vSIMP_TAC[]);;
 
-let vCARTESIAN_PRODUCT_EMPTY = prove
+let vCARTESIAN_PRODUCT_EMPTY = try Cache.lookup_thm "CARTESIAN_PRODUCT_EMPTY" with _ ->  prove
  ((parse_term "!s. cartesian_product {} s = {(\\i. ARB)}"),
   vREWRITE_TAC[vCARTESIAN_PRODUCT; vNOT_IN_EMPTY; vEXTENSION] ---->
   vREWRITE_TAC[vIN_ELIM_THM; vIN_SING] ----> vREWRITE_TAC[vFUN_EQ_THM]);;
 
-let vCARTESIAN_PRODUCT_EQ_MEMBERS = prove
+let vCARTESIAN_PRODUCT_EQ_MEMBERS = try Cache.lookup_thm "CARTESIAN_PRODUCT_EQ_MEMBERS" with _ ->  prove
  ((parse_term "!k s x y:K->A.\n        x IN cartesian_product k s /\\ y IN cartesian_product k s /\\\n        (!i. i IN k ==> x i = y i)\n        ==> x = y"),
   vREWRITE_TAC[cartesian_product; vIN_ELIM_THM] ---->
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vEXTENSIONAL_EQ ---->
   vEXISTS_TAC (parse_term "k:K->bool") ----> vASM_REWRITE_TAC[vIN]);;
 
-let vCARTESIAN_PRODUCT_EQ_MEMBERS_EQ = prove
+let vCARTESIAN_PRODUCT_EQ_MEMBERS_EQ = try Cache.lookup_thm "CARTESIAN_PRODUCT_EQ_MEMBERS_EQ" with _ ->  prove
  ((parse_term "!k s x y.\n        x IN cartesian_product k s /\\\n        y IN cartesian_product k s\n        ==> (x = y <=> !i. i IN k ==> x i = y i)"),
   vMESON_TAC[vCARTESIAN_PRODUCT_EQ_MEMBERS]);;
 
-let vSUBSET_CARTESIAN_PRODUCT = prove
+let vSUBSET_CARTESIAN_PRODUCT = try Cache.lookup_thm "SUBSET_CARTESIAN_PRODUCT" with _ ->  prove
  ((parse_term "!k s t:K->A->bool.\n        cartesian_product k s SUBSET cartesian_product k t <=>\n        cartesian_product k s = {} \\/ !i. i IN k ==> s i SUBSET t i"),
   vREPEAT vGEN_TAC ---->
   vASM_CASES_TAC (parse_term "cartesian_product k (s:K->A->bool) = {}") ---->
@@ -444,7 +444,7 @@ let vSUBSET_CARTESIAN_PRODUCT = prove
   vREWRITE_TAC[vEXTENSIONAL; vIN_ELIM_THM] ----> vSIMP_TAC[] ---->
   vASM_MESON_TAC[]);;
 
-let vCARTESIAN_PRODUCT_EQ = prove
+let vCARTESIAN_PRODUCT_EQ = try Cache.lookup_thm "CARTESIAN_PRODUCT_EQ" with _ ->  prove
  ((parse_term "!k s t:K->A->bool.\n        cartesian_product k s = cartesian_product k t <=>\n        cartesian_product k s = {} /\\ cartesian_product k t = {} \\/\n        !i. i IN k ==> s i = t i"),
   vREPEAT vGEN_TAC ---->
   vASM_CASES_TAC (parse_term "!i. i IN k ==> (s:K->A->bool) i = t i") ---->
@@ -457,29 +457,29 @@ let vCARTESIAN_PRODUCT_EQ = prove
     vASM_REWRITE_TAC[vGSYM vSUBSET_ANTISYM_EQ; vSUBSET_CARTESIAN_PRODUCT] ---->
     vASM vSET_TAC[]]);;
 
-let vINTER_CARTESIAN_PRODUCT = prove
+let vINTER_CARTESIAN_PRODUCT = try Cache.lookup_thm "INTER_CARTESIAN_PRODUCT" with _ ->  prove
  ((parse_term "!k s t:K->A->bool.\n        (cartesian_product k s) INTER (cartesian_product k t) =\n        cartesian_product k (\\i. s i INTER t i)"),
   vREWRITE_TAC[vEXTENSION; cartesian_product; vIN_INTER; vIN_ELIM_THM] ---->
   vSET_TAC[]);;
 
-let vCARTESIAN_PRODUCT_UNIV = prove
+let vCARTESIAN_PRODUCT_UNIV = try Cache.lookup_thm "CARTESIAN_PRODUCT_UNIV" with _ ->  prove
  ((parse_term "cartesian_product (:K) (\\i. (:A)) = (:K->A)"),
   vREWRITE_TAC[vEXTENSION; vIN_UNIV; cartesian_product; vIN_ELIM_THM] ---->
   vREWRITE_TAC[vEXTENSIONAL_UNIV]);;
 
-let vCARTESIAN_PRODUCT_SINGS = prove
+let vCARTESIAN_PRODUCT_SINGS = try Cache.lookup_thm "CARTESIAN_PRODUCT_SINGS" with _ ->  prove
  ((parse_term "!k x:K->A. EXTENSIONAL k x ==> cartesian_product k (\\i. {x i}) = {x}"),
   vREWRITE_TAC[cartesian_product; vIN_SING] ---->
   vREWRITE_TAC[vEXTENSION; vEXTENSIONAL; vIN_ELIM_THM; vIN_SING] ---->
   vREWRITE_TAC[vFUN_EQ_THM] ----> vMESON_TAC[]);;
 
-let vCARTESIAN_PRODUCT_SINGS_GEN = prove
+let vCARTESIAN_PRODUCT_SINGS_GEN = try Cache.lookup_thm "CARTESIAN_PRODUCT_SINGS_GEN" with _ ->  prove
  ((parse_term "!k x. cartesian_product k (\\i. {x i}) = {RESTRICTION k x}"),
   vREWRITE_TAC[cartesian_product; vIN_SING] ---->
   vREWRITE_TAC[vEXTENSION; vEXTENSIONAL; vIN_ELIM_THM; vIN_SING] ---->
   vREWRITE_TAC[vFUN_EQ_THM; vRESTRICTION] ----> vMESON_TAC[]);;
 
-let vIMAGE_PROJECTION_CARTESIAN_PRODUCT = prove
+let vIMAGE_PROJECTION_CARTESIAN_PRODUCT = try Cache.lookup_thm "IMAGE_PROJECTION_CARTESIAN_PRODUCT" with _ ->  prove
  ((parse_term "!k s:K->A->bool i.\n        IMAGE (\\x. x i) (cartesian_product k s) =\n        if cartesian_product k s = {} then {}\n        else if i IN k then s i else {ARB}"),
   vREPEAT vGEN_TAC ---->
   vASM_CASES_TAC (parse_term "cartesian_product k (s:K->A->bool) = {}") ---->
@@ -497,7 +497,7 @@ let vIMAGE_PROJECTION_CARTESIAN_PRODUCT = prove
    (parse_term "\\j. if j = i then x else if j IN k then (z:K->A) j else ARB") ---->
   vASM_REWRITE_TAC[] ----> vASM_MESON_TAC[vIN_SING]);;
 
-let vFORALL_CARTESIAN_PRODUCT_ELEMENTS = prove
+let vFORALL_CARTESIAN_PRODUCT_ELEMENTS = try Cache.lookup_thm "FORALL_CARTESIAN_PRODUCT_ELEMENTS" with _ ->  prove
  ((parse_term "!P k s:K->A->bool.\n        (!z i. z IN cartesian_product k s /\\ i IN k ==> P i (z i)) <=>\n        cartesian_product k s = {} \\/\n        (!i x. i IN k /\\ x IN s i ==> P i x)"),
   vREPEAT vGEN_TAC ---->
   vASM_CASES_TAC (parse_term "cartesian_product k (s:K->A->bool) = {}") ---->
@@ -514,11 +514,11 @@ let vFORALL_CARTESIAN_PRODUCT_ELEMENTS = prove
    [(parse_term "\\j. if j = i then x else if j IN k then (z:K->A) j else ARB"); (parse_term "i:K")]) ---->
   vASM_REWRITE_TAC[vEXTENSIONAL; vIN_ELIM_THM] ----> vASM_MESON_TAC[]);;
 
-let vFORALL_CARTESIAN_PRODUCT_ELEMENTS_EQ = prove
+let vFORALL_CARTESIAN_PRODUCT_ELEMENTS_EQ = try Cache.lookup_thm "FORALL_CARTESIAN_PRODUCT_ELEMENTS_EQ" with _ ->  prove
  ((parse_term "!P k s.\n        ~(cartesian_product k s = {})\n        ==> ((!i x. i IN k /\\ x IN s i ==> P i x) <=>\n             !z i. z IN cartesian_product k s /\\ i IN k ==> P i (z i))"),
   vSIMP_TAC[vFORALL_CARTESIAN_PRODUCT_ELEMENTS]);;
 
-let vEXISTS_CARTESIAN_PRODUCT_ELEMENT = prove
+let vEXISTS_CARTESIAN_PRODUCT_ELEMENT = try Cache.lookup_thm "EXISTS_CARTESIAN_PRODUCT_ELEMENT" with _ ->  prove
  ((parse_term "!P k s:K->A->bool.\n        (?z. z IN cartesian_product k s /\\ (!i. i IN k ==> P i (z i))) <=>\n        (!i. i IN k ==> ?x. x IN (s i) /\\ P i x)"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[vCARTESIAN_PRODUCT_AS_RESTRICTIONS; vEXISTS_IN_GSPEC] ---->
@@ -531,11 +531,11 @@ let vEXISTS_CARTESIAN_PRODUCT_ELEMENT = prove
 let product_map = new_definition
  (parse_term "product_map k (f:K->A->B) = \\x. RESTRICTION k (\\i. f i (x i))");;
 
-let vPRODUCT_MAP_RESTRICTION = prove
+let vPRODUCT_MAP_RESTRICTION = try Cache.lookup_thm "PRODUCT_MAP_RESTRICTION" with _ ->  prove
  ((parse_term "!(f:K->A->B) k x.\n        product_map k f (RESTRICTION k x) = RESTRICTION k (\\i. f i (x i))"),
   vSIMP_TAC[product_map; vRESTRICTION; o_THM; vFUN_EQ_THM]);;
 
-let vIMAGE_PRODUCT_MAP = prove
+let vIMAGE_PRODUCT_MAP = try Cache.lookup_thm "IMAGE_PRODUCT_MAP" with _ ->  prove
  ((parse_term "!(f:K->A->B) k s.\n        IMAGE (product_map k f) (cartesian_product k s) =\n        cartesian_product k (\\i. IMAGE (f i) (s i))"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vCARTESIAN_PRODUCT_AS_RESTRICTIONS] ---->
   vONCE_REWRITE_TAC[vSIMPLE_IMAGE_GEN] ---->
@@ -553,17 +553,17 @@ let vIMAGE_PRODUCT_MAP = prove
 let disjoint_union = new_definition
  (parse_term "disjoint_union (k:K->bool) (s:K->A->bool) = { (i,x) | i IN k /\\ x IN s i}");;
 
-let vSUBSET_DISJOINT_UNION = prove
+let vSUBSET_DISJOINT_UNION = try Cache.lookup_thm "SUBSET_DISJOINT_UNION" with _ ->  prove
  ((parse_term "!k (s:K->A->bool) t.\n        disjoint_union k s SUBSET disjoint_union k t <=>\n        !i. i IN k ==> s i SUBSET t i"),
   vREWRITE_TAC[vSUBSET; disjoint_union; vFORALL_IN_GSPEC] ---->
   vREWRITE_TAC[vIN_ELIM_PAIR_THM] ----> vSET_TAC[]);;
 
-let vDISJOINT_UNION_EQ = prove
+let vDISJOINT_UNION_EQ = try Cache.lookup_thm "DISJOINT_UNION_EQ" with _ ->  prove
  ((parse_term "!k (s:K->A->bool) t.\n        disjoint_union k s = disjoint_union k t <=>\n        !i. i IN k ==> s i = t i"),
   vREWRITE_TAC[vGSYM vSUBSET_ANTISYM_EQ; vSUBSET_DISJOINT_UNION] ---->
   vSET_TAC[]);;
 
-let vSUBSET_DISJOINT_UNION_EXISTS = prove
+let vSUBSET_DISJOINT_UNION_EXISTS = try Cache.lookup_thm "SUBSET_DISJOINT_UNION_EXISTS" with _ ->  prove
  ((parse_term "!k (s:K->A->bool) u.\n        u SUBSET disjoint_union k s <=>\n        ?t. u = disjoint_union k t /\\ !i. i IN k ==> t i SUBSET s i"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ++-->
    [vDISCH_TAC; vMESON_TAC[vSUBSET_DISJOINT_UNION]] ---->
@@ -572,25 +572,25 @@ let vSUBSET_DISJOINT_UNION_EXISTS = prove
   vREWRITE_TAC[disjoint_union; vFORALL_PAIR_THM; vIN_ELIM_PAIR_THM] ---->
   vSET_TAC[]);;
 
-let vINTER_DISJOINT_UNION = prove
+let vINTER_DISJOINT_UNION = try Cache.lookup_thm "INTER_DISJOINT_UNION" with _ ->  prove
  ((parse_term "!k s t:K->A->bool.\n        (disjoint_union k s) INTER (disjoint_union k t) =\n        disjoint_union k (\\i. s i INTER t i)"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[vEXTENSION; disjoint_union; vIN_INTER; vIN_ELIM_THM] ---->
   vMESON_TAC[vPAIR_EQ]);;
 
-let vUNION_DISJOINT_UNION = prove
+let vUNION_DISJOINT_UNION = try Cache.lookup_thm "UNION_DISJOINT_UNION" with _ ->  prove
  ((parse_term "!k s t:K->A->bool.\n        (disjoint_union k s) UNION (disjoint_union k t) =\n        disjoint_union k (\\i. s i UNION t i)"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[vEXTENSION; disjoint_union; vIN_UNION; vIN_ELIM_THM] ---->
   vMESON_TAC[vPAIR_EQ]);;
 
-let vDISJOINT_UNION_EQ_EMPTY = prove
+let vDISJOINT_UNION_EQ_EMPTY = try Cache.lookup_thm "DISJOINT_UNION_EQ_EMPTY" with _ ->  prove
  ((parse_term "!k s:K->A->bool.\n        disjoint_union k s = {} <=> !i. i IN k ==> s i = {}"),
   vREWRITE_TAC[vEXTENSION; vFORALL_PAIR_THM; disjoint_union; vIN_ELIM_PAIR_THM;
               vNOT_IN_EMPTY] ---->
   vSET_TAC[]);;
 
-let vDISJOINT_DISJOINT_UNION = prove
+let vDISJOINT_DISJOINT_UNION = try Cache.lookup_thm "DISJOINT_DISJOINT_UNION" with _ ->  prove
  ((parse_term "!k s t:K->A->bool.\n        DISJOINT (disjoint_union k s) (disjoint_union k t) =\n        !i. i IN k ==> DISJOINT (s i) (t i)"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[vDISJOINT; vINTER_DISJOINT_UNION; vDISJOINT_UNION_EQ_EMPTY]);;
@@ -599,7 +599,7 @@ let vDISJOINT_DISJOINT_UNION = prove
 (* Cardinality of functions with bounded domain (support) and range.         *)
 (* ------------------------------------------------------------------------- *)
 
-let vHAS_SIZE_FUNSPACE = prove
+let vHAS_SIZE_FUNSPACE = try Cache.lookup_thm "HAS_SIZE_FUNSPACE" with _ ->  prove
  ((parse_term "!d n t:B->bool m s:A->bool.\n        s HAS_SIZE m /\\ t HAS_SIZE n\n        ==> {f | (!x. x IN s ==> f(x) IN t) /\\ (!x. ~(x IN s) ==> (f x = d))}\n            HAS_SIZE (n EXP m)"),
   vGEN_TAC ----> vGEN_TAC ----> vGEN_TAC ----> vINDUCT_TAC ---->
   vREWRITE_TAC[vHAS_SIZE_CLAUSES] ++-->
@@ -635,25 +635,25 @@ let vHAS_SIZE_FUNSPACE = prove
     vX_GEN_TAC (parse_term "x:A") ----> vFIRST_X_ASSUM(vMP_TAC -| vSPEC (parse_term "x:A")) ---->
     vASM_MESON_TAC[]]);;
 
-let vCARD_FUNSPACE = prove
+let vCARD_FUNSPACE = try Cache.lookup_thm "CARD_FUNSPACE" with _ ->  prove
  ((parse_term "!s t. FINITE s /\\ FINITE t\n         ==> (CARD {f | (!x. x IN s ==> f(x) IN t) /\\\n                        (!x. ~(x IN s) ==> (f x = d))} =\n              (CARD t) EXP (CARD s))"),
   vMESON_TAC[vHAS_SIZE_FUNSPACE; vHAS_SIZE]);;
 
-let vFINITE_FUNSPACE = prove
+let vFINITE_FUNSPACE = try Cache.lookup_thm "FINITE_FUNSPACE" with _ ->  prove
  ((parse_term "!s t. FINITE s /\\ FINITE t\n         ==> FINITE {f | (!x. x IN s ==> f(x) IN t) /\\\n                         (!x. ~(x IN s) ==> (f x = d))}"),
   vMESON_TAC[vHAS_SIZE_FUNSPACE; vHAS_SIZE]);;
 
-let vHAS_SIZE_FUNSPACE_UNIV = prove
+let vHAS_SIZE_FUNSPACE_UNIV = try Cache.lookup_thm "HAS_SIZE_FUNSPACE_UNIV" with _ ->  prove
  ((parse_term "!m n. (:A) HAS_SIZE m /\\ (:B) HAS_SIZE n ==> (:A->B) HAS_SIZE (n EXP m)"),
   vREPEAT vGEN_TAC ---->
   vDISCH_THEN(vMP_TAC -| vMATCH_MP vHAS_SIZE_FUNSPACE) ---->
   vREWRITE_TAC[vIN_UNIV; vUNIV_GSPEC]);;
 
-let vCARD_FUNSPACE_UNIV = prove
+let vCARD_FUNSPACE_UNIV = try Cache.lookup_thm "CARD_FUNSPACE_UNIV" with _ ->  prove
  ((parse_term "FINITE(:A) /\\ FINITE(:B) ==> CARD(:A->B) = CARD(:B) EXP CARD(:A)"),
   vMESON_TAC[vHAS_SIZE_FUNSPACE_UNIV; vHAS_SIZE]);;
 
-let vFINITE_FUNSPACE_UNIV = prove
+let vFINITE_FUNSPACE_UNIV = try Cache.lookup_thm "FINITE_FUNSPACE_UNIV" with _ ->  prove
  ((parse_term "FINITE(:A) /\\ FINITE(:B) ==> FINITE(:A->B)"),
   vMESON_TAC[vHAS_SIZE_FUNSPACE_UNIV; vHAS_SIZE]);;
 
@@ -661,18 +661,18 @@ let vFINITE_FUNSPACE_UNIV = prove
 (* Cardinality of type bool.                                                 *)
 (* ------------------------------------------------------------------------- *)
 
-let vHAS_SIZE_BOOL = prove
+let vHAS_SIZE_BOOL = try Cache.lookup_thm "HAS_SIZE_BOOL" with _ ->  prove
  ((parse_term "(:bool) HAS_SIZE 2"),
   vSUBGOAL_THEN (parse_term "(:bool) = {F,T}") vSUBST1_TAC ++-->
    [vREWRITE_TAC[vEXTENSION; vIN_UNIV; vIN_INSERT] ----> vCONV_TAC vTAUT;
     vSIMP_TAC[vHAS_SIZE; vCARD_CLAUSES; vFINITE_INSERT; vFINITE_EMPTY; vARITH;
              vIN_SING; vNOT_IN_EMPTY]]);;
 
-let vCARD_BOOL = prove
+let vCARD_BOOL = try Cache.lookup_thm "CARD_BOOL" with _ ->  prove
  ((parse_term "CARD(:bool) = 2"),
   vMESON_TAC[vHAS_SIZE_BOOL; vHAS_SIZE]);;
 
-let vFINITE_BOOL = prove
+let vFINITE_BOOL = try Cache.lookup_thm "FINITE_BOOL" with _ ->  prove
  ((parse_term "FINITE(:bool)"),
   vMESON_TAC[vHAS_SIZE_BOOL; vHAS_SIZE]);;
 
@@ -680,7 +680,7 @@ let vFINITE_BOOL = prove
 (* Hence cardinality of powerset.                                            *)
 (* ------------------------------------------------------------------------- *)
 
-let vHAS_SIZE_POWERSET = prove
+let vHAS_SIZE_POWERSET = try Cache.lookup_thm "HAS_SIZE_POWERSET" with _ ->  prove
  ((parse_term "!(s:A->bool) n. s HAS_SIZE n ==> {t | t SUBSET s} HAS_SIZE (2 EXP n)"),
   vREPEAT vSTRIP_TAC ----> vSUBGOAL_THEN
    (parse_term "{t | t SUBSET s} =\n    {f | (!x:A. x IN s ==> f(x) IN UNIV) /\\ (!x. ~(x IN s) ==> (f x = F))}")
@@ -691,15 +691,15 @@ let vHAS_SIZE_POWERSET = prove
     vREWRITE_TAC[vEXTENSION; vIN_UNIV; vIN_INSERT; vNOT_IN_EMPTY] ---->
     vCONV_TAC vTAUT]);;
 
-let vCARD_POWERSET = prove
+let vCARD_POWERSET = try Cache.lookup_thm "CARD_POWERSET" with _ ->  prove
  ((parse_term "!s:A->bool. FINITE s ==> (CARD {t | t SUBSET s} = 2 EXP (CARD s))"),
   vMESON_TAC[vHAS_SIZE_POWERSET; vHAS_SIZE]);;
 
-let vFINITE_POWERSET = prove
+let vFINITE_POWERSET = try Cache.lookup_thm "FINITE_POWERSET" with _ ->  prove
  ((parse_term "!s:A->bool. FINITE s ==> FINITE {t | t SUBSET s}"),
   vMESON_TAC[vHAS_SIZE_POWERSET; vHAS_SIZE]);;
 
-let vFINITE_POWERSET_EQ = prove
+let vFINITE_POWERSET_EQ = try Cache.lookup_thm "FINITE_POWERSET_EQ" with _ ->  prove
  ((parse_term "!s:A->bool. FINITE {t | t SUBSET s} <=> FINITE s"),
   vGEN_TAC ----> vEQ_TAC ----> vREWRITE_TAC[vFINITE_POWERSET] ----> vDISCH_TAC ---->
   vSUBGOAL_THEN (parse_term "FINITE(IMAGE (\\x:A. {x}) s)") vMP_TAC ++-->
@@ -709,13 +709,13 @@ let vFINITE_POWERSET_EQ = prove
     vMATCH_MP_TAC vEQ_IMP ----> vMATCH_MP_TAC vFINITE_IMAGE_INJ_EQ ---->
     vSET_TAC[]]);;
 
-let vFINITE_RESTRICTED_SUBSETS = prove
+let vFINITE_RESTRICTED_SUBSETS = try Cache.lookup_thm "FINITE_RESTRICTED_SUBSETS" with _ ->  prove
  ((parse_term "!P s:A->bool. FINITE s ==> FINITE {t | t SUBSET s /\\ P t}"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vFINITE_SUBSET ---->
   vEXISTS_TAC (parse_term "{t:A->bool | t SUBSET s}") ---->
   vASM_SIMP_TAC[vFINITE_POWERSET] ----> vSET_TAC[]);;
 
-let vFINITE_UNIONS = prove
+let vFINITE_UNIONS = try Cache.lookup_thm "FINITE_UNIONS" with _ ->  prove
  ((parse_term "!s:(A->bool)->bool.\n        FINITE(UNIONS s) <=> FINITE s /\\ (!t. t IN s ==> FINITE t)"),
   vGEN_TAC ----> vASM_CASES_TAC (parse_term "FINITE(s:(A->bool)->bool)") ---->
   vASM_SIMP_TAC[vFINITE_FINITE_UNIONS] ---->
@@ -723,7 +723,7 @@ let vFINITE_UNIONS = prove
   vPOP_ASSUM vMP_TAC ----> vREWRITE_TAC[vCONTRAPOS_THM] ---->
   vMATCH_MP_TAC(vREWRITE_RULE[vIMP_CONJ_ALT] vFINITE_SUBSET) ----> vSET_TAC[]);;
 
-let vFINITE_CARD_LE_UNIONS = prove
+let vFINITE_CARD_LE_UNIONS = try Cache.lookup_thm "FINITE_CARD_LE_UNIONS" with _ ->  prove
  ((parse_term "!s (t:A->B->bool) m n.\n        (!x. x IN s ==> FINITE(t x) /\\ CARD(t x) <= n) /\\\n        FINITE s /\\ CARD s <= m\n        ==> FINITE(UNIONS {t x | x IN s}) /\\\n            CARD(UNIONS {t x | x IN s}) <= m * n"),
   vREPEAT vSTRIP_TAC ---->
   vASM_SIMP_TAC[vFINITE_UNIONS; vFORALL_IN_GSPEC; vFINITE_IMAGE; vSIMPLE_IMAGE] ---->
@@ -731,7 +731,7 @@ let vFINITE_CARD_LE_UNIONS = prove
   vASM_REWRITE_TAC[vGSYM vSIMPLE_IMAGE; vLE_MULT_RCANCEL] ---->
   vMATCH_MP_TAC vCARD_UNIONS_LE ----> vASM_REWRITE_TAC[vHAS_SIZE]);;
 
-let vPOWERSET_CLAUSES = prove
+let vPOWERSET_CLAUSES = try Cache.lookup_thm "POWERSET_CLAUSES" with _ ->  prove
  ((parse_term "{s | s SUBSET {}} = {{}} /\\\n   (!a:A t. {s | s SUBSET (a INSERT t)} =\n            {s | s SUBSET t} UNION IMAGE (\\s. a INSERT s) {s | s SUBSET t})"),
   vREWRITE_TAC[vSUBSET_INSERT_DELETE; vSUBSET_EMPTY; vSING_GSPEC] ---->
   vMAP_EVERY vX_GEN_TAC [(parse_term "a:A"); (parse_term "t:A->bool")] ---->
@@ -745,7 +745,7 @@ let vPOWERSET_CLAUSES = prove
   vSTRIP_TAC ----> vDISJ2_TAC ----> vEXISTS_TAC (parse_term "s DELETE (a:A)") ---->
   vASM vSET_TAC[]);;
 
-let vFINITE_IMAGE_INFINITE = prove
+let vFINITE_IMAGE_INFINITE = try Cache.lookup_thm "FINITE_IMAGE_INFINITE" with _ ->  prove
  ((parse_term "!f:A->B s.\n        INFINITE s /\\ FINITE(IMAGE f s)\n        ==> ?a. a IN s /\\ INFINITE {x | x IN s /\\ f x = f a}"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vIMP_CONJ_ALT] ----> vDISCH_TAC ---->
   vGEN_REWRITE_TAC vI [vGSYM vCONTRAPOS_THM] ---->
@@ -755,7 +755,7 @@ let vFINITE_IMAGE_INFINITE = prove
   vSUBST1_TAC ++--> [vREWRITE_TAC[vUNIONS_GSPEC] ----> vSET_TAC[]; vALL_TAC] ---->
   vASM_SIMP_TAC[vFINITE_UNIONS; vSIMPLE_IMAGE; vFINITE_IMAGE; vFORALL_IN_IMAGE]);;
 
-let vFINITE_RESTRICTED_POWERSET = prove
+let vFINITE_RESTRICTED_POWERSET = try Cache.lookup_thm "FINITE_RESTRICTED_POWERSET" with _ ->  prove
  ((parse_term "!(s:A->bool) n.\n        FINITE {t | t SUBSET s /\\ t HAS_SIZE n} <=>\n        FINITE s \\/ n = 0"),
   vREPEAT vGEN_TAC ----> vASM_CASES_TAC (parse_term "n = 0") ----> vASM_REWRITE_TAC[] ++-->
    [vREWRITE_TAC[vHAS_SIZE_0; vSET_RULE (parse_term "t SUBSET s /\\ t = {} <=> t = {}")] ---->
@@ -777,7 +777,7 @@ let vFINITE_RESTRICTED_POWERSET = prove
         vASM_REWRITE_TAC[vSING_SUBSET; vFINITE_SING; vCARD_SING] ---->
         vASM_SIMP_TAC[vLE_1]]]]);;
 
-let vFINITE_RESTRICTED_FUNSPACE = prove
+let vFINITE_RESTRICTED_FUNSPACE = try Cache.lookup_thm "FINITE_RESTRICTED_FUNSPACE" with _ ->  prove
  ((parse_term "!s:A->bool t:B->bool k.\n        FINITE s /\\ FINITE t\n        ==> FINITE {f | IMAGE f s SUBSET t /\\ {x | ~(f x = k x)} SUBSET s}"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vFINITE_SUBSET ---->
   vEXISTS_TAC
@@ -800,41 +800,41 @@ let vFINITE_RESTRICTED_FUNSPACE = prove
 (* Set of numbers is infinite.                                               *)
 (* ------------------------------------------------------------------------- *)
 
-let vNUMSEG_CLAUSES_LT = prove
+let vNUMSEG_CLAUSES_LT = try Cache.lookup_thm "NUMSEG_CLAUSES_LT" with _ ->  prove
  ((parse_term "{i | i < 0} = {} /\\\n   (!k. {i | i < SUC k} = k INSERT {i | i < k})"),
   vREWRITE_TAC[vLT] ----> vSET_TAC[]);;
 
-let vHAS_SIZE_NUMSEG_LT = prove
+let vHAS_SIZE_NUMSEG_LT = try Cache.lookup_thm "HAS_SIZE_NUMSEG_LT" with _ ->  prove
  ((parse_term "!n. {m | m < n} HAS_SIZE n"),
   vREWRITE_TAC[vHAS_SIZE] ----> vINDUCT_TAC ---->
   vASM_SIMP_TAC[vNUMSEG_CLAUSES_LT; vFINITE_EMPTY; vCARD_CLAUSES; vFINITE_INSERT;
                vIN_ELIM_THM; vLT_REFL]);;
 
-let vCARD_NUMSEG_LT = prove
+let vCARD_NUMSEG_LT = try Cache.lookup_thm "CARD_NUMSEG_LT" with _ ->  prove
  ((parse_term "!n. CARD {m | m < n} = n"),
   vREWRITE_TAC[vREWRITE_RULE[vHAS_SIZE] vHAS_SIZE_NUMSEG_LT]);;
 
-let vFINITE_NUMSEG_LT = prove
+let vFINITE_NUMSEG_LT = try Cache.lookup_thm "FINITE_NUMSEG_LT" with _ ->  prove
  ((parse_term "!n:num. FINITE {m | m < n}"),
   vREWRITE_TAC[vREWRITE_RULE[vHAS_SIZE] vHAS_SIZE_NUMSEG_LT]);;
 
-let vNUMSEG_CLAUSES_LE = prove
+let vNUMSEG_CLAUSES_LE = try Cache.lookup_thm "NUMSEG_CLAUSES_LE" with _ ->  prove
  ((parse_term "{i | i <= 0} = {0} /\\\n   (!k. {i | i <= SUC k} = SUC k INSERT {i | i <= k})"),
   vREWRITE_TAC[vLE] ----> vSET_TAC[]);;
 
-let vHAS_SIZE_NUMSEG_LE = prove
+let vHAS_SIZE_NUMSEG_LE = try Cache.lookup_thm "HAS_SIZE_NUMSEG_LE" with _ ->  prove
  ((parse_term "!n. {m | m <= n} HAS_SIZE (n + 1)"),
   vREWRITE_TAC[vGSYM vLT_SUC_LE; vHAS_SIZE_NUMSEG_LT; vADD1]);;
 
-let vFINITE_NUMSEG_LE = prove
+let vFINITE_NUMSEG_LE = try Cache.lookup_thm "FINITE_NUMSEG_LE" with _ ->  prove
  ((parse_term "!n. FINITE {m | m <= n}"),
   vREWRITE_TAC[vREWRITE_RULE[vHAS_SIZE] vHAS_SIZE_NUMSEG_LE]);;
 
-let vCARD_NUMSEG_LE = prove
+let vCARD_NUMSEG_LE = try Cache.lookup_thm "CARD_NUMSEG_LE" with _ ->  prove
  ((parse_term "!n. CARD {m | m <= n} = n + 1"),
   vREWRITE_TAC[vREWRITE_RULE[vHAS_SIZE] vHAS_SIZE_NUMSEG_LE]);;
 
-let num_FINITE = prove
+let num_FINITE = try Cache.lookup_thm "num_FINITE" with _ ->  prove
  ((parse_term "!s:num->bool. FINITE s <=> ?a. !x. x IN s ==> x <= a"),
   vGEN_TAC ----> vEQ_TAC ++-->
    [vSPEC_TAC((parse_term "s:num->bool"),(parse_term "s:num->bool")) ---->
@@ -844,16 +844,16 @@ let num_FINITE = prove
     vEXISTS_TAC (parse_term "{m:num | m <= n}") ----> vREWRITE_TAC[vFINITE_NUMSEG_LE] ---->
     vASM_SIMP_TAC[vSUBSET; vIN_ELIM_THM]]);;
 
-let num_FINITE_AVOID = prove
+let num_FINITE_AVOID = try Cache.lookup_thm "num_FINITE_AVOID" with _ ->  prove
  ((parse_term "!s:num->bool. FINITE(s) ==> ?a. ~(a IN s)"),
   vMESON_TAC[num_FINITE; vLT; vNOT_LT]);;
 
-let num_INFINITE_EQ = prove
+let num_INFINITE_EQ = try Cache.lookup_thm "num_INFINITE_EQ" with _ ->  prove
  ((parse_term "!s:num->bool. INFINITE s <=> !N. ?n. N <= n /\\ n IN s"),
   vGEN_TAC ----> vREWRITE_TAC[vINFINITE; num_FINITE] ---->
   vMESON_TAC[vNOT_LE; vLT_IMP_LE; vLE_SUC_LT]);;
 
-let num_INFINITE = prove
+let num_INFINITE = try Cache.lookup_thm "num_INFINITE" with _ ->  prove
  ((parse_term "INFINITE(:num)"),
   vREWRITE_TAC[vINFINITE] ----> vMESON_TAC[num_FINITE_AVOID; vIN_UNIV]);;
 
@@ -861,7 +861,7 @@ let num_INFINITE = prove
 (* Set of strings is infinite.                                               *)
 (* ------------------------------------------------------------------------- *)
 
-let string_INFINITE = prove
+let string_INFINITE = try Cache.lookup_thm "string_INFINITE" with _ ->  prove
  ((parse_term "INFINITE(:string)"),
   vMP_TAC num_INFINITE ----> vREWRITE_TAC[vINFINITE; vCONTRAPOS_THM] ---->
   vDISCH_THEN(vMP_TAC -| vISPEC (parse_term "LENGTH:string->num") -| vMATCH_MP vFINITE_IMAGE) ---->
@@ -872,7 +872,7 @@ let string_INFINITE = prove
 (* Non-trivial intervals of reals are infinite.                              *)
 (* ------------------------------------------------------------------------- *)
 
-let vFINITE_REAL_INTERVAL = prove
+let vFINITE_REAL_INTERVAL = try Cache.lookup_thm "FINITE_REAL_INTERVAL" with _ ->  prove
  ((parse_term "(!a. ~FINITE {x:real | a < x}) /\\\n   (!a. ~FINITE {x:real | a <= x}) /\\\n   (!b. ~FINITE {x:real | x < b}) /\\\n   (!b. ~FINITE {x:real | x <= b}) /\\\n   (!a b. FINITE {x:real | a < x /\\ x < b} <=> b <= a) /\\\n   (!a b. FINITE {x:real | a <= x /\\ x < b} <=> b <= a) /\\\n   (!a b. FINITE {x:real | a < x /\\ x <= b} <=> b <= a) /\\\n   (!a b. FINITE {x:real | a <= x /\\ x <= b} <=> b <= a)"),
   vSUBGOAL_THEN (parse_term "!a b. FINITE {x:real | a < x /\\ x < b} <=> b <= a")
   vASSUME_TAC ++-->
@@ -920,7 +920,7 @@ let vFINITE_REAL_INTERVAL = prove
   vASM_CASES_TAC (parse_term "b:real <= a") ---->
   vASM_REWRITE_TAC[vEMPTY_GSPEC; vFINITE_EMPTY]);;
 
-let real_INFINITE = prove
+let real_INFINITE = try Cache.lookup_thm "real_INFINITE" with _ ->  prove
  ((parse_term "INFINITE(:real)"),
   vREWRITE_TAC[vINFINITE] ---->
   vDISCH_THEN(vMP_TAC -| vSPEC (parse_term "{x:real | &0 <= x}") -|
@@ -931,7 +931,7 @@ let real_INFINITE = prove
 (* Indexing of finite sets and enumeration of subsets of N in order.         *)
 (* ------------------------------------------------------------------------- *)
 
-let vHAS_SIZE_INDEX = prove
+let vHAS_SIZE_INDEX = try Cache.lookup_thm "HAS_SIZE_INDEX" with _ ->  prove
  ((parse_term "!s n. s HAS_SIZE n\n         ==> ?f:num->A. (!m. m < n ==> f(m) IN s) /\\\n                        (!x. x IN s ==> ?!m. m < n /\\ (f m = x))"),
   vONCE_REWRITE_TAC[vSWAP_FORALL_THM] ----> vINDUCT_TAC ---->
   vSIMP_TAC[vHAS_SIZE_0; vHAS_SIZE_SUC; vLT; vNOT_IN_EMPTY] ---->
@@ -951,7 +951,7 @@ let vHAS_SIZE_INDEX = prove
   vASM_CASES_TAC (parse_term "a:A = x") ----> vASM_SIMP_TAC[] ---->
   vASM_MESON_TAC[vLT_REFL; vIN_DELETE]);;
 
-let vINFINITE_ENUMERATE = prove
+let vINFINITE_ENUMERATE = try Cache.lookup_thm "INFINITE_ENUMERATE" with _ ->  prove
  ((parse_term "!s:num->bool.\n       INFINITE s\n       ==> ?r:num->num. (!m n. m < n ==> r(m) < r(n)) /\\\n                        IMAGE r (:num) = s"),
   vREPEAT vSTRIP_TAC ---->
   vSUBGOAL_THEN (parse_term "!n:num. ?x. n <= x /\\ x IN s") vMP_TAC ++-->
@@ -984,7 +984,7 @@ let vINFINITE_ENUMERATE = prove
     vEXISTS_TAC (parse_term "0") ----> vASM_REWRITE_TAC[vGSYM vLE_ANTISYM; vGSYM vNOT_LT] ---->
     vASM_MESON_TAC[vLE_0]]);;
 
-let vINFINITE_ENUMERATE_EQ = prove
+let vINFINITE_ENUMERATE_EQ = try Cache.lookup_thm "INFINITE_ENUMERATE_EQ" with _ ->  prove
  ((parse_term "!s:num->bool.\n     INFINITE s <=> ?r. (!m n:num. m < n ==> r m < r n) /\\ IMAGE r (:num) = s"),
   vGEN_TAC ----> vEQ_TAC ----> vREWRITE_TAC[vINFINITE_ENUMERATE] ---->
   vDISCH_THEN(vX_CHOOSE_THEN (parse_term "r:num->num") (vSTRIP_ASSUME_TAC -| vGSYM)) ---->
@@ -992,7 +992,7 @@ let vINFINITE_ENUMERATE_EQ = prove
   vREWRITE_TAC[num_INFINITE; vIN_UNIV] ---->
   vMATCH_MP_TAC vWLOG_LT ----> vASM_MESON_TAC[vLT_REFL]);;
 
-let vINFINITE_ENUMERATE_SUBSET = prove
+let vINFINITE_ENUMERATE_SUBSET = try Cache.lookup_thm "INFINITE_ENUMERATE_SUBSET" with _ ->  prove
  ((parse_term "!s. INFINITE s <=>\n       ?f:num->A. (!x. f x IN s) /\\ (!x y. f x = f y ==> x = y)"),
   vGEN_TAC ----> vEQ_TAC ----> vSTRIP_TAC ++-->
    [vSUBGOAL_THEN (parse_term "?f:num->A. !n. f n IN s /\\ !m. m < n ==> ~(f m = f n)")
@@ -1020,7 +1020,7 @@ let set_of_list = new_recursive_definition list_RECURSION
 let list_of_set = new_definition
   (parse_term "list_of_set s = @l. (set_of_list l = s) /\\ (LENGTH l = CARD s)");;
 
-let vLIST_OF_SET_PROPERTIES = prove
+let vLIST_OF_SET_PROPERTIES = try Cache.lookup_thm "LIST_OF_SET_PROPERTIES" with _ ->  prove
  ((parse_term "!s:A->bool. FINITE(s)\n               ==> (set_of_list(list_of_set s) = s) /\\\n                   (LENGTH(list_of_set s) = CARD s)"),
   vREWRITE_TAC[list_of_set] ---->
   vCONV_TAC(vBINDER_CONV(vRAND_CONV vSELECT_CONV)) ---->
@@ -1032,15 +1032,15 @@ let vLIST_OF_SET_PROPERTIES = prove
      [vMATCH_MP (vCONJUNCT2 vCARD_CLAUSES) th]) ---->
     vASM_REWRITE_TAC[]]);;
 
-let vSET_OF_LIST_OF_SET = prove
+let vSET_OF_LIST_OF_SET = try Cache.lookup_thm "SET_OF_LIST_OF_SET" with _ ->  prove
  ((parse_term "!s. FINITE(s) ==> (set_of_list(list_of_set s) = s)"),
   vMESON_TAC[vLIST_OF_SET_PROPERTIES]);;
 
-let vLENGTH_LIST_OF_SET = prove
+let vLENGTH_LIST_OF_SET = try Cache.lookup_thm "LENGTH_LIST_OF_SET" with _ ->  prove
  ((parse_term "!s. FINITE(s) ==> (LENGTH(list_of_set s) = CARD s)"),
   vMESON_TAC[vLIST_OF_SET_PROPERTIES]);;
 
-let vMEM_LIST_OF_SET = prove
+let vMEM_LIST_OF_SET = try Cache.lookup_thm "MEM_LIST_OF_SET" with _ ->  prove
  ((parse_term "!s:A->bool. FINITE(s) ==> !x. MEM x (list_of_set s) <=> x IN s"),
   vGEN_TAC ----> vDISCH_THEN(vMP_TAC -| vMATCH_MP vSET_OF_LIST_OF_SET) ---->
   vDISCH_THEN(fun th -> vGEN_REWRITE_TAC (vBINDER_CONV -| funpow 2 vRAND_CONV)
@@ -1049,36 +1049,36 @@ let vMEM_LIST_OF_SET = prove
   vLIST_INDUCT_TAC ----> vREWRITE_TAC[vMEM; set_of_list; vNOT_IN_EMPTY] ---->
   vASM_REWRITE_TAC[vIN_INSERT]);;
 
-let vFINITE_SET_OF_LIST = prove
+let vFINITE_SET_OF_LIST = try Cache.lookup_thm "FINITE_SET_OF_LIST" with _ ->  prove
  ((parse_term "!l. FINITE(set_of_list l)"),
   vLIST_INDUCT_TAC ----> vASM_SIMP_TAC[set_of_list; vFINITE_RULES]);;
 
-let vIN_SET_OF_LIST = prove
+let vIN_SET_OF_LIST = try Cache.lookup_thm "IN_SET_OF_LIST" with _ ->  prove
  ((parse_term "!x l. x IN (set_of_list l) <=> MEM x l"),
   vGEN_TAC ----> vLIST_INDUCT_TAC ---->
   vREWRITE_TAC[vIN_INSERT; vNOT_IN_EMPTY; vMEM; set_of_list] ---->
   vASM_MESON_TAC[]);;
 
-let vSET_OF_LIST_APPEND = prove
+let vSET_OF_LIST_APPEND = try Cache.lookup_thm "SET_OF_LIST_APPEND" with _ ->  prove
  ((parse_term "!l1 l2. set_of_list(APPEND l1 l2) = set_of_list(l1) UNION set_of_list(l2)"),
   vREWRITE_TAC[vEXTENSION; vIN_SET_OF_LIST; vIN_UNION; vMEM_APPEND]);;
 
-let vSET_OF_LIST_MAP = prove
+let vSET_OF_LIST_MAP = try Cache.lookup_thm "SET_OF_LIST_MAP" with _ ->  prove
  ((parse_term "!f l. set_of_list(MAP f l) = IMAGE f (set_of_list l)"),
   vGEN_TAC ----> vLIST_INDUCT_TAC ---->
   vASM_REWRITE_TAC[set_of_list; vMAP; vIMAGE_CLAUSES]);;
 
-let vSET_OF_LIST_EQ_EMPTY = prove
+let vSET_OF_LIST_EQ_EMPTY = try Cache.lookup_thm "SET_OF_LIST_EQ_EMPTY" with _ ->  prove
  ((parse_term "!l. set_of_list l = {} <=> l = []"),
   vLIST_INDUCT_TAC ---->
   vREWRITE_TAC[set_of_list; vNOT_CONS_NIL; vNOT_INSERT_EMPTY]);;
 
-let vLIST_OF_SET_EMPTY = prove
+let vLIST_OF_SET_EMPTY = try Cache.lookup_thm "LIST_OF_SET_EMPTY" with _ ->  prove
  ((parse_term "list_of_set {} = []"),
   vREWRITE_TAC[vGSYM vLENGTH_EQ_NIL] ---->
   vSIMP_TAC[vLENGTH_LIST_OF_SET; vFINITE_EMPTY; vCARD_CLAUSES]);;
 
-let vLIST_OF_SET_SING = prove
+let vLIST_OF_SET_SING = try Cache.lookup_thm "LIST_OF_SET_SING" with _ ->  prove
  ((parse_term "!a:A. list_of_set {a} = [a]"),
   vGEN_TAC ----> vREWRITE_TAC[list_of_set] ---->
   vMATCH_MP_TAC vSELECT_UNIQUE ---->
@@ -1117,47 +1117,47 @@ let mk_fset l = mk_setenum(l,type_of(hd l));;
 let pairwise = new_definition
   (parse_term "pairwise r s <=> !x y. x IN s /\\ y IN s /\\ ~(x = y) ==> r x y");;
 
-let vPAIRWISE_EMPTY = prove
+let vPAIRWISE_EMPTY = try Cache.lookup_thm "PAIRWISE_EMPTY" with _ ->  prove
  ((parse_term "!r. pairwise r {} <=> T"),
   vREWRITE_TAC[pairwise; vNOT_IN_EMPTY] ----> vMESON_TAC[]);;
 
-let vPAIRWISE_SING = prove
+let vPAIRWISE_SING = try Cache.lookup_thm "PAIRWISE_SING" with _ ->  prove
  ((parse_term "!r x. pairwise r {x} <=> T"),
   vREWRITE_TAC[pairwise; vIN_SING] ----> vMESON_TAC[]);;
 
-let vPAIRWISE_IMP = prove
+let vPAIRWISE_IMP = try Cache.lookup_thm "PAIRWISE_IMP" with _ ->  prove
  ((parse_term "!P Q s:A->bool.\n        pairwise P s /\\\n        (!x y. x IN s /\\ y IN s /\\ P x y /\\ ~(x = y) ==> Q x y)\n        ==> pairwise Q s"),
   vREWRITE_TAC[pairwise] ----> vSET_TAC[]);;
 
-let vPAIRWISE_MONO = prove
+let vPAIRWISE_MONO = try Cache.lookup_thm "PAIRWISE_MONO" with _ ->  prove
  ((parse_term "!r s t. pairwise r s /\\ t SUBSET s ==> pairwise r t"),
   vREWRITE_TAC[pairwise] ----> vSET_TAC[]);;
 
-let vPAIRWISE_AND = prove
+let vPAIRWISE_AND = try Cache.lookup_thm "PAIRWISE_AND" with _ ->  prove
  ((parse_term "!R R' s. pairwise R s /\\ pairwise R' s <=>\n            pairwise (\\x y. R x y /\\ R' x y) s"),
   vREWRITE_TAC[pairwise] ----> vSET_TAC[]);;
 
-let vPAIRWISE_INSERT = prove
+let vPAIRWISE_INSERT = try Cache.lookup_thm "PAIRWISE_INSERT" with _ ->  prove
  ((parse_term "!r x s.\n        pairwise r (x INSERT s) <=>\n        (!y. y IN s /\\ ~(y = x) ==> r x y /\\ r y x) /\\\n        pairwise r s"),
   vREWRITE_TAC[pairwise; vIN_INSERT] ----> vMESON_TAC[]);;
 
-let vPAIRWISE_INSERT_SYMMETRIC = prove
+let vPAIRWISE_INSERT_SYMMETRIC = try Cache.lookup_thm "PAIRWISE_INSERT_SYMMETRIC" with _ ->  prove
  ((parse_term "!r (x:A) s.\n        (!y. y IN s ==> (r x y <=> r y x))\n        ==> (pairwise r (x INSERT s) <=>\n             (!y. y IN s /\\ ~(y = x) ==> r x y) /\\ pairwise r s)"),
   vREWRITE_TAC[vPAIRWISE_INSERT] ----> vMESON_TAC[]);;
 
-let vPAIRWISE_IMAGE = prove
+let vPAIRWISE_IMAGE = try Cache.lookup_thm "PAIRWISE_IMAGE" with _ ->  prove
  ((parse_term "!r f. pairwise r (IMAGE f s) <=>\n         pairwise (\\x y. ~(f x = f y) ==> r (f x) (f y)) s"),
   vREWRITE_TAC[pairwise; vIN_IMAGE] ----> vMESON_TAC[]);;
 
-let vPAIRWISE_UNION = prove
+let vPAIRWISE_UNION = try Cache.lookup_thm "PAIRWISE_UNION" with _ ->  prove
  ((parse_term "!R s t. pairwise R (s UNION t) <=>\n           pairwise R s /\\ pairwise R t /\\\n           (!x y. x IN s DIFF t /\\ y IN t DIFF s ==> R x y /\\ R y x)"),
   vREWRITE_TAC[pairwise] ----> vSET_TAC[]);;
 
-let vPAIRWISE_CHAIN_UNIONS = prove
+let vPAIRWISE_CHAIN_UNIONS = try Cache.lookup_thm "PAIRWISE_CHAIN_UNIONS" with _ ->  prove
  ((parse_term "!R:A->A->bool c.\n        (!s. s IN c ==> pairwise R s) /\\\n        (!s t. s IN c /\\ t IN c ==> s SUBSET t \\/ t SUBSET s)\n        ==> pairwise R (UNIONS c)"),
   vREWRITE_TAC[pairwise] ----> vSET_TAC[]);;
 
-let vDIFF_UNIONS_PAIRWISE_DISJOINT = prove
+let vDIFF_UNIONS_PAIRWISE_DISJOINT = try Cache.lookup_thm "DIFF_UNIONS_PAIRWISE_DISJOINT" with _ ->  prove
  ((parse_term "!s t:(A->bool)->bool.\n        pairwise DISJOINT s /\\ t SUBSET s\n        ==> UNIONS s DIFF UNIONS t = UNIONS(s DIFF t)"),
   vREPEAT vSTRIP_TAC ---->
   vMATCH_MP_TAC(vSET_RULE (parse_term "t UNION u = s /\\ DISJOINT t u ==> s DIFF t = u")) ---->
@@ -1169,7 +1169,7 @@ let vDIFF_UNIONS_PAIRWISE_DISJOINT = prove
     vFIRST_X_ASSUM vMATCH_MP_TAC ---->
     vREPEAT(vCONJ_TAC ++--> [vASM vSET_TAC[]; vALL_TAC]) ----> vASM_MESON_TAC[]]);;
 
-let vINTER_UNIONS_PAIRWISE_DISJOINT = prove
+let vINTER_UNIONS_PAIRWISE_DISJOINT = try Cache.lookup_thm "INTER_UNIONS_PAIRWISE_DISJOINT" with _ ->  prove
  ((parse_term "!s t:(A->bool)->bool.\n        pairwise DISJOINT (s UNION t)\n        ==> UNIONS s INTER UNIONS t = UNIONS(s INTER t)"),
   vREPEAT vGEN_TAC ---->
   vREWRITE_TAC[vINTER_UNIONS; vSIMPLE_IMAGE; vUNIONS_IMAGE] ---->
@@ -1182,7 +1182,7 @@ let vINTER_UNIONS_PAIRWISE_DISJOINT = prove
   vASM_CASES_TAC (parse_term "u:A->bool = v") ----> vASM_REWRITE_TAC[] ++-->
    [vASM_MESON_TAC[]; vASM vSET_TAC[]]);;
 
-let vPSUBSET_UNIONS_PAIRWISE_DISJOINT = prove
+let vPSUBSET_UNIONS_PAIRWISE_DISJOINT = try Cache.lookup_thm "PSUBSET_UNIONS_PAIRWISE_DISJOINT" with _ ->  prove
  ((parse_term "!u v:(A->bool)->bool.\n        pairwise DISJOINT v /\\ u PSUBSET (v DELETE {})\n        ==> UNIONS u PSUBSET UNIONS v"),
   vREPEAT vSTRIP_TAC ---->
   vMATCH_MP_TAC(vSET_RULE (parse_term "u SUBSET v /\\ ~(v DIFF u = {}) ==> u PSUBSET v")) ---->
@@ -1207,39 +1207,39 @@ let vUNION_OF = new_definition
 let vINTERSECTION_OF = new_definition
  (parse_term "P INTERSECTION_OF Q =\n   \\s:A->bool. ?u. P u /\\ (!c. c IN u ==> Q c) /\\ INTERS u = s");;
 
-let vUNION_OF_INC = prove
+let vUNION_OF_INC = try Cache.lookup_thm "UNION_OF_INC" with _ ->  prove
  ((parse_term "!P Q s:A->bool. P {s} /\\ Q s ==> (P UNION_OF Q) s"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vUNION_OF] ---->
   vEXISTS_TAC (parse_term "{s:A->bool}") ----> vASM_SIMP_TAC[vUNIONS_1; vIN_SING]);;
 
-let vINTERSECTION_OF_INC = prove
+let vINTERSECTION_OF_INC = try Cache.lookup_thm "INTERSECTION_OF_INC" with _ ->  prove
  ((parse_term "!P Q s:A->bool. P {s} /\\ Q s ==> (P INTERSECTION_OF Q) s"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vINTERSECTION_OF] ---->
   vEXISTS_TAC (parse_term "{s:A->bool}") ----> vASM_SIMP_TAC[vINTERS_1; vIN_SING]);;
 
-let vUNION_OF_MONO = prove
+let vUNION_OF_MONO = try Cache.lookup_thm "UNION_OF_MONO" with _ ->  prove
  ((parse_term "!P Q Q' s:A->bool.\n        (P UNION_OF Q) s /\\ (!x. Q x ==> Q' x) ==> (P UNION_OF Q') s"),
   vREWRITE_TAC[vUNION_OF] ----> vMESON_TAC[]);;
 
-let vINTERSECTION_OF_MONO = prove
+let vINTERSECTION_OF_MONO = try Cache.lookup_thm "INTERSECTION_OF_MONO" with _ ->  prove
  ((parse_term "!P Q Q' s:A->bool.\n        (P INTERSECTION_OF Q) s /\\ (!x. Q x ==> Q' x)\n        ==> (P INTERSECTION_OF Q') s"),
   vREWRITE_TAC[vINTERSECTION_OF] ----> vMESON_TAC[]);;
 
-let vFORALL_UNION_OF = prove
+let vFORALL_UNION_OF = try Cache.lookup_thm "FORALL_UNION_OF" with _ ->  prove
  ((parse_term "(!s. (P UNION_OF Q) s ==> R s) <=>\n   (!t. P t /\\ (!c. c IN t ==> Q c) ==> R(UNIONS t))"),
   vREWRITE_TAC[vUNION_OF] ----> vMESON_TAC[]);;
 
-let vFORALL_INTERSECTION_OF = prove
+let vFORALL_INTERSECTION_OF = try Cache.lookup_thm "FORALL_INTERSECTION_OF" with _ ->  prove
  ((parse_term "(!s. (P INTERSECTION_OF Q) s ==> R s) <=>\n   (!t. P t /\\ (!c. c IN t ==> Q c) ==> R(INTERS t))"),
   vREWRITE_TAC[vINTERSECTION_OF] ----> vMESON_TAC[]);;
 
-let vUNION_OF_EMPTY = prove
+let vUNION_OF_EMPTY = try Cache.lookup_thm "UNION_OF_EMPTY" with _ ->  prove
  ((parse_term "!P Q:(A->bool)->bool. P {} ==> (P UNION_OF Q) {}"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vUNION_OF] ---->
   vEXISTS_TAC (parse_term "{}:(A->bool)->bool") ---->
   vASM_REWRITE_TAC[vUNIONS_0; vNOT_IN_EMPTY]);;
 
-let vINTERSECTION_OF_EMPTY = prove
+let vINTERSECTION_OF_EMPTY = try Cache.lookup_thm "INTERSECTION_OF_EMPTY" with _ ->  prove
  ((parse_term "!P Q:(A->bool)->bool. P {} ==> (P INTERSECTION_OF Q) UNIV"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vINTERSECTION_OF] ---->
   vEXISTS_TAC (parse_term "{}:(A->bool)->bool") ---->
@@ -1252,7 +1252,7 @@ let vINTERSECTION_OF_EMPTY = prove
 let vARBITRARY = new_definition
  (parse_term "ARBITRARY (s:(A->bool)->bool) <=> T");;
 
-let vARBITRARY_UNION_OF_ALT = prove
+let vARBITRARY_UNION_OF_ALT = try Cache.lookup_thm "ARBITRARY_UNION_OF_ALT" with _ ->  prove
  ((parse_term "!B s:A->bool.\n        (ARBITRARY UNION_OF B) s <=>\n        !x. x IN s ==>  ?u. u IN B /\\ x IN u /\\ u SUBSET s"),
   vGEN_TAC ----> vREWRITE_TAC[vFORALL_AND_THM; vTAUT
    (parse_term "(p <=> q) <=> (p ==> q) /\\ (q ==> p)")] ---->
@@ -1262,23 +1262,23 @@ let vARBITRARY_UNION_OF_ALT = prove
   vREWRITE_TAC[vARBITRARY; vUNION_OF] ---->
   vEXISTS_TAC (parse_term "{u:A->bool | u IN B /\\ u SUBSET s}") ----> vASM vSET_TAC[]);;
 
-let vARBITRARY_UNION_OF_EMPTY = prove
+let vARBITRARY_UNION_OF_EMPTY = try Cache.lookup_thm "ARBITRARY_UNION_OF_EMPTY" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool. (ARBITRARY UNION_OF P) {}"),
   vSIMP_TAC[vUNION_OF_EMPTY; vARBITRARY]);;
 
-let vARBITRARY_INTERSECTION_OF_EMPTY = prove
+let vARBITRARY_INTERSECTION_OF_EMPTY = try Cache.lookup_thm "ARBITRARY_INTERSECTION_OF_EMPTY" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool. (ARBITRARY INTERSECTION_OF P) UNIV"),
   vSIMP_TAC[vINTERSECTION_OF_EMPTY; vARBITRARY]);;
 
-let vARBITRARY_UNION_OF_INC = prove
+let vARBITRARY_UNION_OF_INC = try Cache.lookup_thm "ARBITRARY_UNION_OF_INC" with _ ->  prove
  ((parse_term "!P s:A->bool. P s ==> (ARBITRARY UNION_OF P) s"),
   vSIMP_TAC[vUNION_OF_INC; vARBITRARY]);;
 
-let vARBITRARY_INTERSECTION_OF_INC = prove
+let vARBITRARY_INTERSECTION_OF_INC = try Cache.lookup_thm "ARBITRARY_INTERSECTION_OF_INC" with _ ->  prove
  ((parse_term "!P s:A->bool. P s ==> (ARBITRARY INTERSECTION_OF P) s"),
   vSIMP_TAC[vINTERSECTION_OF_INC; vARBITRARY]);;
 
-let vARBITRARY_UNION_OF_COMPLEMENT = prove
+let vARBITRARY_UNION_OF_COMPLEMENT = try Cache.lookup_thm "ARBITRARY_UNION_OF_COMPLEMENT" with _ ->  prove
  ((parse_term "!P s. (ARBITRARY UNION_OF P) s <=>\n         (ARBITRARY INTERSECTION_OF (\\s. P((:A) DIFF s))) ((:A) DIFF s)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vUNION_OF; vINTERSECTION_OF] ---->
   vEQ_TAC ---->
@@ -1289,12 +1289,12 @@ let vARBITRARY_UNION_OF_COMPLEMENT = prove
   vREWRITE_TAC[vSET_RULE (parse_term "{f y | y IN IMAGE g s} = IMAGE (\\x. f(g x)) s")] ---->
   vASM_REWRITE_TAC[vIMAGE_ID; vCOMPL_COMPL]);;
 
-let vARBITRARY_INTERSECTION_OF_COMPLEMENT = prove
+let vARBITRARY_INTERSECTION_OF_COMPLEMENT = try Cache.lookup_thm "ARBITRARY_INTERSECTION_OF_COMPLEMENT" with _ ->  prove
  ((parse_term "!P s. (ARBITRARY INTERSECTION_OF P) s <=>\n         (ARBITRARY UNION_OF (\\s. P((:A) DIFF s))) ((:A) DIFF s)"),
   vREWRITE_TAC[vARBITRARY_UNION_OF_COMPLEMENT] ---->
   vREWRITE_TAC[vETA_AX; vCOMPL_COMPL]);;
 
-let vARBITRARY_UNION_OF_IDEMPOT = prove
+let vARBITRARY_UNION_OF_IDEMPOT = try Cache.lookup_thm "ARBITRARY_UNION_OF_IDEMPOT" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        ARBITRARY UNION_OF ARBITRARY UNION_OF P = ARBITRARY UNION_OF P"),
   vGEN_TAC ----> vREWRITE_TAC[vFUN_EQ_THM] ----> vX_GEN_TAC (parse_term "s:A->bool") ---->
   vEQ_TAC ----> vREWRITE_TAC[vARBITRARY_UNION_OF_INC] ---->
@@ -1312,40 +1312,40 @@ let vARBITRARY_UNION_OF_IDEMPOT = prove
   vCONJ_TAC ++--> [vASM vSET_TAC[]; vREWRITE_TAC[vUNIONS_IMAGE]] ---->
   vREWRITE_TAC[vEXISTS_IN_GSPEC] ----> vASM vSET_TAC[]);;
 
-let vARBITRARY_INTERSECTION_OF_IDEMPOT = prove
+let vARBITRARY_INTERSECTION_OF_IDEMPOT = try Cache.lookup_thm "ARBITRARY_INTERSECTION_OF_IDEMPOT" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        ARBITRARY INTERSECTION_OF ARBITRARY INTERSECTION_OF P =\n        ARBITRARY INTERSECTION_OF P"),
   vREWRITE_TAC[vCOMPL_COMPL; vETA_AX; vREWRITE_RULE[vGSYM vFUN_EQ_THM; vETA_AX]
               vARBITRARY_INTERSECTION_OF_COMPLEMENT] ---->
   vREWRITE_TAC[vARBITRARY_UNION_OF_IDEMPOT]);;
 
-let vARBITRARY_UNION_OF_UNIONS = prove
+let vARBITRARY_UNION_OF_UNIONS = try Cache.lookup_thm "ARBITRARY_UNION_OF_UNIONS" with _ ->  prove
  ((parse_term "!P u:(A->bool)->bool.\n        (!s. s IN u ==> (ARBITRARY UNION_OF P) s)\n        ==> (ARBITRARY UNION_OF P) (UNIONS u)"),
   vREPEAT vSTRIP_TAC ----> vONCE_REWRITE_TAC[vGSYM vARBITRARY_UNION_OF_IDEMPOT] ---->
   vONCE_REWRITE_TAC[vUNION_OF] ----> vREWRITE_TAC[] ---->
   vEXISTS_TAC (parse_term "u:(A->bool)->bool") ----> vASM_REWRITE_TAC[vARBITRARY]);;
 
-let vARBITRARY_UNION_OF_UNION = prove
+let vARBITRARY_UNION_OF_UNION = try Cache.lookup_thm "ARBITRARY_UNION_OF_UNION" with _ ->  prove
  ((parse_term "!P s t. (ARBITRARY UNION_OF P) s /\\ (ARBITRARY UNION_OF P) t\n           ==> (ARBITRARY UNION_OF P) (s UNION t)"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vGSYM vUNIONS_2] ---->
   vMATCH_MP_TAC vARBITRARY_UNION_OF_UNIONS ---->
   vASM_REWRITE_TAC[vARBITRARY; vFORALL_IN_INSERT] ---->
   vREWRITE_TAC[vARBITRARY; vNOT_IN_EMPTY]);;
 
-let vARBITRARY_INTERSECTION_OF_INTERS = prove
+let vARBITRARY_INTERSECTION_OF_INTERS = try Cache.lookup_thm "ARBITRARY_INTERSECTION_OF_INTERS" with _ ->  prove
  ((parse_term "!P u:(A->bool)->bool.\n        (!s. s IN u ==> (ARBITRARY INTERSECTION_OF P) s)\n        ==> (ARBITRARY INTERSECTION_OF P) (INTERS u)"),
   vREPEAT vSTRIP_TAC ---->
   vONCE_REWRITE_TAC[vGSYM vARBITRARY_INTERSECTION_OF_IDEMPOT] ---->
   vONCE_REWRITE_TAC[vINTERSECTION_OF] ----> vREWRITE_TAC[] ---->
   vEXISTS_TAC (parse_term "u:(A->bool)->bool") ----> vASM_REWRITE_TAC[vARBITRARY]);;
 
-let vARBITRARY_INTERSECTION_OF_INTER = prove
+let vARBITRARY_INTERSECTION_OF_INTER = try Cache.lookup_thm "ARBITRARY_INTERSECTION_OF_INTER" with _ ->  prove
  ((parse_term "!P s t. (ARBITRARY INTERSECTION_OF P) s /\\ (ARBITRARY INTERSECTION_OF P) t\n           ==> (ARBITRARY INTERSECTION_OF P) (s INTER t)"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vGSYM vINTERS_2] ---->
   vMATCH_MP_TAC vARBITRARY_INTERSECTION_OF_INTERS ---->
   vASM_REWRITE_TAC[vARBITRARY; vFORALL_IN_INSERT] ---->
   vREWRITE_TAC[vARBITRARY; vNOT_IN_EMPTY]);;
 
-let vARBITRARY_UNION_OF_INTER_EQ = prove
+let vARBITRARY_UNION_OF_INTER_EQ = try Cache.lookup_thm "ARBITRARY_UNION_OF_INTER_EQ" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        (!s t. (ARBITRARY UNION_OF P) s /\\ (ARBITRARY UNION_OF P) t\n               ==> (ARBITRARY UNION_OF P) (s INTER t)) <=>\n        (!s t. P s /\\ P t ==> (ARBITRARY UNION_OF P) (s INTER t))"),
   vGEN_TAC ---->
   vEQ_TAC ++--> [vMESON_TAC[vARBITRARY_UNION_OF_INC]; vDISCH_TAC] ---->
@@ -1358,12 +1358,12 @@ let vARBITRARY_UNION_OF_INTER_EQ = prove
     vASM_SIMP_TAC[vSIMPLE_IMAGE; vARBITRARY; vFORALL_IN_IMAGE] ---->
     vREPEAT vSTRIP_TAC));;
 
-let vARBITRARY_UNION_OF_INTER = prove
+let vARBITRARY_UNION_OF_INTER = try Cache.lookup_thm "ARBITRARY_UNION_OF_INTER" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        (!s t. P s /\\ P t ==> P(s INTER t))\n        ==> (!s t. (ARBITRARY UNION_OF P) s /\\ (ARBITRARY UNION_OF P) t\n                   ==> (ARBITRARY UNION_OF P) (s INTER t))"),
   vREWRITE_TAC[vARBITRARY_UNION_OF_INTER_EQ] ---->
   vMESON_TAC[vARBITRARY_UNION_OF_INC]);;
 
-let vARBITRARY_INTERSECTION_OF_UNION_EQ = prove
+let vARBITRARY_INTERSECTION_OF_UNION_EQ = try Cache.lookup_thm "ARBITRARY_INTERSECTION_OF_UNION_EQ" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        (!s t. (ARBITRARY INTERSECTION_OF P) s /\\\n               (ARBITRARY INTERSECTION_OF P) t\n               ==> (ARBITRARY INTERSECTION_OF P) (s UNION t)) <=>\n        (!s t. P s /\\ P t ==> (ARBITRARY INTERSECTION_OF P) (s UNION t))"),
   vONCE_REWRITE_TAC[vARBITRARY_INTERSECTION_OF_COMPLEMENT] ---->
   vREWRITE_TAC[vSET_RULE
@@ -1375,28 +1375,28 @@ let vARBITRARY_INTERSECTION_OF_UNION_EQ = prove
   vREWRITE_TAC[vMESON[vCOMPL_COMPL] (parse_term "(!s. P(UNIV DIFF s)) <=> (!s. P s)")] ---->
   vREWRITE_TAC[vCOMPL_COMPL]);;
 
-let vARBITRARY_INTERSECTION_OF_UNION = prove
+let vARBITRARY_INTERSECTION_OF_UNION = try Cache.lookup_thm "ARBITRARY_INTERSECTION_OF_UNION" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        (!s t. P s /\\ P t ==> P(s UNION t))\n        ==> (!s t. (ARBITRARY INTERSECTION_OF P) s /\\\n                   (ARBITRARY INTERSECTION_OF P) t\n                   ==> (ARBITRARY INTERSECTION_OF P) (s UNION t))"),
   vREWRITE_TAC[vARBITRARY_INTERSECTION_OF_UNION_EQ] ---->
   vMESON_TAC[vARBITRARY_INTERSECTION_OF_INC]);;
 
-let vFINITE_UNION_OF_EMPTY = prove
+let vFINITE_UNION_OF_EMPTY = try Cache.lookup_thm "FINITE_UNION_OF_EMPTY" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool. (FINITE UNION_OF P) {}"),
   vSIMP_TAC[vUNION_OF_EMPTY; vFINITE_EMPTY]);;
 
-let vFINITE_INTERSECTION_OF_EMPTY = prove
+let vFINITE_INTERSECTION_OF_EMPTY = try Cache.lookup_thm "FINITE_INTERSECTION_OF_EMPTY" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool. (FINITE INTERSECTION_OF P) UNIV"),
   vSIMP_TAC[vINTERSECTION_OF_EMPTY; vFINITE_EMPTY]);;
 
-let vFINITE_UNION_OF_INC = prove
+let vFINITE_UNION_OF_INC = try Cache.lookup_thm "FINITE_UNION_OF_INC" with _ ->  prove
  ((parse_term "!P s:A->bool. P s ==> (FINITE UNION_OF P) s"),
   vSIMP_TAC[vUNION_OF_INC; vFINITE_SING]);;
 
-let vFINITE_INTERSECTION_OF_INC = prove
+let vFINITE_INTERSECTION_OF_INC = try Cache.lookup_thm "FINITE_INTERSECTION_OF_INC" with _ ->  prove
  ((parse_term "!P s:A->bool. P s ==> (FINITE INTERSECTION_OF P) s"),
   vSIMP_TAC[vINTERSECTION_OF_INC; vFINITE_SING]);;
 
-let vFINITE_UNION_OF_COMPLEMENT = prove
+let vFINITE_UNION_OF_COMPLEMENT = try Cache.lookup_thm "FINITE_UNION_OF_COMPLEMENT" with _ ->  prove
  ((parse_term "!P s. (FINITE UNION_OF P) s <=>\n         (FINITE INTERSECTION_OF (\\s. P((:A) DIFF s))) ((:A) DIFF s)"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[vUNION_OF; vINTERSECTION_OF] ---->
   vEQ_TAC ---->
@@ -1407,12 +1407,12 @@ let vFINITE_UNION_OF_COMPLEMENT = prove
   vREWRITE_TAC[vSET_RULE (parse_term "{f y | y IN IMAGE g s} = IMAGE (\\x. f(g x)) s")] ---->
   vASM_REWRITE_TAC[vIMAGE_ID; vCOMPL_COMPL]);;
 
-let vFINITE_INTERSECTION_OF_COMPLEMENT = prove
+let vFINITE_INTERSECTION_OF_COMPLEMENT = try Cache.lookup_thm "FINITE_INTERSECTION_OF_COMPLEMENT" with _ ->  prove
  ((parse_term "!P s. (FINITE INTERSECTION_OF P) s <=>\n         (FINITE UNION_OF (\\s. P((:A) DIFF s))) ((:A) DIFF s)"),
   vREWRITE_TAC[vFINITE_UNION_OF_COMPLEMENT] ---->
   vREWRITE_TAC[vETA_AX; vCOMPL_COMPL]);;
 
-let vFINITE_UNION_OF_IDEMPOT = prove
+let vFINITE_UNION_OF_IDEMPOT = try Cache.lookup_thm "FINITE_UNION_OF_IDEMPOT" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        FINITE UNION_OF FINITE UNION_OF P = FINITE UNION_OF P"),
   vGEN_TAC ----> vREWRITE_TAC[vFUN_EQ_THM] ----> vX_GEN_TAC (parse_term "s:A->bool") ---->
   vEQ_TAC ----> vREWRITE_TAC[vFINITE_UNION_OF_INC] ---->
@@ -1430,40 +1430,40 @@ let vFINITE_UNION_OF_IDEMPOT = prove
   vCONJ_TAC ++--> [vASM vSET_TAC[]; vREWRITE_TAC[vUNIONS_IMAGE]] ---->
   vREWRITE_TAC[vEXISTS_IN_GSPEC] ----> vASM vSET_TAC[]);;
 
-let vFINITE_INTERSECTION_OF_IDEMPOT = prove
+let vFINITE_INTERSECTION_OF_IDEMPOT = try Cache.lookup_thm "FINITE_INTERSECTION_OF_IDEMPOT" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        FINITE INTERSECTION_OF FINITE INTERSECTION_OF P =\n        FINITE INTERSECTION_OF P"),
   vREWRITE_TAC[vCOMPL_COMPL; vETA_AX; vREWRITE_RULE[vGSYM vFUN_EQ_THM; vETA_AX]
               vFINITE_INTERSECTION_OF_COMPLEMENT] ---->
   vREWRITE_TAC[vFINITE_UNION_OF_IDEMPOT]);;
 
-let vFINITE_UNION_OF_UNIONS = prove
+let vFINITE_UNION_OF_UNIONS = try Cache.lookup_thm "FINITE_UNION_OF_UNIONS" with _ ->  prove
  ((parse_term "!P u:(A->bool)->bool.\n        FINITE u /\\ (!s. s IN u ==> (FINITE UNION_OF P) s)\n        ==> (FINITE UNION_OF P) (UNIONS u)"),
   vREPEAT vSTRIP_TAC ----> vONCE_REWRITE_TAC[vGSYM vFINITE_UNION_OF_IDEMPOT] ---->
   vONCE_REWRITE_TAC[vUNION_OF] ----> vREWRITE_TAC[] ---->
   vEXISTS_TAC (parse_term "u:(A->bool)->bool") ----> vASM_REWRITE_TAC[]);;
 
-let vFINITE_UNION_OF_UNION = prove
+let vFINITE_UNION_OF_UNION = try Cache.lookup_thm "FINITE_UNION_OF_UNION" with _ ->  prove
  ((parse_term "!P s t. (FINITE UNION_OF P) s /\\ (FINITE UNION_OF P) t\n           ==> (FINITE UNION_OF P) (s UNION t)"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vGSYM vUNIONS_2] ---->
   vMATCH_MP_TAC vFINITE_UNION_OF_UNIONS ---->
   vASM_REWRITE_TAC[vFINITE_INSERT; vFORALL_IN_INSERT] ---->
   vREWRITE_TAC[vFINITE_EMPTY; vNOT_IN_EMPTY]);;
 
-let vFINITE_INTERSECTION_OF_INTERS = prove
+let vFINITE_INTERSECTION_OF_INTERS = try Cache.lookup_thm "FINITE_INTERSECTION_OF_INTERS" with _ ->  prove
  ((parse_term "!P u:(A->bool)->bool.\n        FINITE u /\\ (!s. s IN u ==> (FINITE INTERSECTION_OF P) s)\n        ==> (FINITE INTERSECTION_OF P) (INTERS u)"),
   vREPEAT vSTRIP_TAC ---->
   vONCE_REWRITE_TAC[vGSYM vFINITE_INTERSECTION_OF_IDEMPOT] ---->
   vONCE_REWRITE_TAC[vINTERSECTION_OF] ----> vREWRITE_TAC[] ---->
   vEXISTS_TAC (parse_term "u:(A->bool)->bool") ----> vASM_REWRITE_TAC[]);;
 
-let vFINITE_INTERSECTION_OF_INTER = prove
+let vFINITE_INTERSECTION_OF_INTER = try Cache.lookup_thm "FINITE_INTERSECTION_OF_INTER" with _ ->  prove
  ((parse_term "!P s t. (FINITE INTERSECTION_OF P) s /\\ (FINITE INTERSECTION_OF P) t\n           ==> (FINITE INTERSECTION_OF P) (s INTER t)"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vGSYM vINTERS_2] ---->
   vMATCH_MP_TAC vFINITE_INTERSECTION_OF_INTERS ---->
   vASM_REWRITE_TAC[vFINITE_INSERT; vFORALL_IN_INSERT] ---->
   vREWRITE_TAC[vFINITE_EMPTY; vNOT_IN_EMPTY]);;
 
-let vFINITE_UNION_OF_INTER_EQ = prove
+let vFINITE_UNION_OF_INTER_EQ = try Cache.lookup_thm "FINITE_UNION_OF_INTER_EQ" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        (!s t. (FINITE UNION_OF P) s /\\ (FINITE UNION_OF P) t\n                   ==> (FINITE UNION_OF P) (s INTER t)) <=>\n        (!s t. P s /\\ P t ==> (FINITE UNION_OF P) (s INTER t))"),
   vGEN_TAC ---->
   vEQ_TAC ++--> [vMESON_TAC[vFINITE_UNION_OF_INC]; vDISCH_TAC] ---->
@@ -1476,12 +1476,12 @@ let vFINITE_UNION_OF_INTER_EQ = prove
     vASM_SIMP_TAC[vSIMPLE_IMAGE; vFINITE_IMAGE; vFORALL_IN_IMAGE] ---->
     vREPEAT vSTRIP_TAC));;
 
-let vFINITE_UNION_OF_INTER = prove
+let vFINITE_UNION_OF_INTER = try Cache.lookup_thm "FINITE_UNION_OF_INTER" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        (!s t. P s /\\ P t ==> P(s INTER t))\n        ==> (!s t. (FINITE UNION_OF P) s /\\ (FINITE UNION_OF P) t\n                   ==> (FINITE UNION_OF P) (s INTER t))"),
   vREWRITE_TAC[vFINITE_UNION_OF_INTER_EQ] ---->
   vMESON_TAC[vFINITE_UNION_OF_INC]);;
 
-let vFINITE_INTERSECTION_OF_UNION_EQ = prove
+let vFINITE_INTERSECTION_OF_UNION_EQ = try Cache.lookup_thm "FINITE_INTERSECTION_OF_UNION_EQ" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        (!s t. (FINITE INTERSECTION_OF P) s /\\\n               (FINITE INTERSECTION_OF P) t\n               ==> (FINITE INTERSECTION_OF P) (s UNION t)) <=>\n        (!s t. P s /\\ P t ==> (FINITE INTERSECTION_OF P) (s UNION t))"),
   vONCE_REWRITE_TAC[vFINITE_INTERSECTION_OF_COMPLEMENT] ---->
   vREWRITE_TAC[vSET_RULE
@@ -1493,7 +1493,7 @@ let vFINITE_INTERSECTION_OF_UNION_EQ = prove
   vREWRITE_TAC[vMESON[vCOMPL_COMPL] (parse_term "(!s. P(UNIV DIFF s)) <=> (!s. P s)")] ---->
   vREWRITE_TAC[vCOMPL_COMPL]);;
 
-let vFINITE_INTERSECTION_OF_UNION = prove
+let vFINITE_INTERSECTION_OF_UNION = try Cache.lookup_thm "FINITE_INTERSECTION_OF_UNION" with _ ->  prove
  ((parse_term "!P:(A->bool)->bool.\n        (!s t. P s /\\ P t ==> P(s UNION t))\n        ==> (!s t. (FINITE INTERSECTION_OF P) s /\\\n                   (FINITE INTERSECTION_OF P) t\n                   ==> (FINITE INTERSECTION_OF P) (s UNION t))"),
   vREWRITE_TAC[vFINITE_INTERSECTION_OF_UNION_EQ] ---->
   vMESON_TAC[vFINITE_INTERSECTION_OF_INC]);;
@@ -1502,13 +1502,13 @@ let vFINITE_INTERSECTION_OF_UNION = prove
 (* Some additional properties of "set_of_list".                              *)
 (* ------------------------------------------------------------------------- *)
 
-let vCARD_SET_OF_LIST_LE = prove
+let vCARD_SET_OF_LIST_LE = try Cache.lookup_thm "CARD_SET_OF_LIST_LE" with _ ->  prove
  ((parse_term "!l. CARD(set_of_list l) <= LENGTH l"),
   vLIST_INDUCT_TAC ---->
   vSIMP_TAC[vLENGTH; set_of_list; vCARD_CLAUSES; vFINITE_SET_OF_LIST] ---->
   vASM_ARITH_TAC);;
 
-let vHAS_SIZE_SET_OF_LIST = prove
+let vHAS_SIZE_SET_OF_LIST = try Cache.lookup_thm "HAS_SIZE_SET_OF_LIST" with _ ->  prove
  ((parse_term "!l. (set_of_list l) HAS_SIZE (LENGTH l) <=> PAIRWISE (\\x y. ~(x = y)) l"),
   vREWRITE_TAC[vHAS_SIZE; vFINITE_SET_OF_LIST] ----> vLIST_INDUCT_TAC ---->
   vASM_SIMP_TAC[vCARD_CLAUSES; vLENGTH; set_of_list; vPAIRWISE; vALL;
@@ -1520,7 +1520,7 @@ let vHAS_SIZE_SET_OF_LIST = prove
 (* Classic result on function of finite set into itself.                     *)
 (* ------------------------------------------------------------------------- *)
 
-let vSURJECTIVE_IFF_INJECTIVE_GEN = prove
+let vSURJECTIVE_IFF_INJECTIVE_GEN = try Cache.lookup_thm "SURJECTIVE_IFF_INJECTIVE_GEN" with _ ->  prove
  ((parse_term "!s t f:A->B.\n        FINITE s /\\ FINITE t /\\ (CARD s = CARD t) /\\ (IMAGE f s) SUBSET t\n        ==> ((!y. y IN t ==> ?x. x IN s /\\ (f x = y)) <=>\n             (!x y. x IN s /\\ y IN s /\\ (f x = f y) ==> (x = y)))"),
   vREPEAT vSTRIP_TAC ----> vEQ_TAC ----> vREPEAT vSTRIP_TAC ++-->
    [vASM_CASES_TAC (parse_term "x:A = y") ----> vASM_REWRITE_TAC[] ---->
@@ -1537,11 +1537,11 @@ let vSURJECTIVE_IFF_INJECTIVE_GEN = prove
      [vALL_TAC; vASM_MESON_TAC[vEXTENSION; vIN_IMAGE]] ---->
     vASM_MESON_TAC[vCARD_SUBSET_EQ; vCARD_IMAGE_INJ]]);;
 
-let vSURJECTIVE_IFF_INJECTIVE = prove
+let vSURJECTIVE_IFF_INJECTIVE = try Cache.lookup_thm "SURJECTIVE_IFF_INJECTIVE" with _ ->  prove
  ((parse_term "!s f:A->A.\n        FINITE s /\\ (IMAGE f s) SUBSET s\n        ==> ((!y. y IN s ==> ?x. x IN s /\\ (f x = y)) <=>\n             (!x y. x IN s /\\ y IN s /\\ (f x = f y) ==> (x = y)))"),
   vSIMP_TAC[vSURJECTIVE_IFF_INJECTIVE_GEN]);;
 
-let vIMAGE_IMP_INJECTIVE_GEN = prove
+let vIMAGE_IMP_INJECTIVE_GEN = try Cache.lookup_thm "IMAGE_IMP_INJECTIVE_GEN" with _ ->  prove
  ((parse_term "!s t f:A->B.\n        FINITE s /\\ (CARD s = CARD t) /\\ (IMAGE f s = t)\n        ==> !x y. x IN s /\\ y IN s /\\ (f x = f y) ==> (x = y)"),
   vREPEAT vGEN_TAC ----> vDISCH_THEN(vASSUME_TAC -| vGSYM) ---->
   vMP_TAC(vISPECL [(parse_term "s:A->bool"); (parse_term "t:B->bool"); (parse_term "f:A->B")]
@@ -1549,11 +1549,11 @@ let vIMAGE_IMP_INJECTIVE_GEN = prove
   vASM_SIMP_TAC[vSUBSET_REFL; vFINITE_IMAGE] ---->
   vASM_MESON_TAC[vEXTENSION; vIN_IMAGE]);;
 
-let vIMAGE_IMP_INJECTIVE = prove
+let vIMAGE_IMP_INJECTIVE = try Cache.lookup_thm "IMAGE_IMP_INJECTIVE" with _ ->  prove
  ((parse_term "!s f. FINITE s /\\ (IMAGE f s = s)\n       ==> !x y. x IN s /\\ y IN s /\\ (f x = f y) ==> (x = y)"),
   vMESON_TAC[vIMAGE_IMP_INJECTIVE_GEN]);;
 
-let vHAS_SIZE_IMAGE_INJ_RESTRICT = prove
+let vHAS_SIZE_IMAGE_INJ_RESTRICT = try Cache.lookup_thm "HAS_SIZE_IMAGE_INJ_RESTRICT" with _ ->  prove
  ((parse_term "!(f:A->B) s t P n.\n      FINITE s /\\ FINITE t /\\ CARD s = CARD t /\\\n      IMAGE f s SUBSET t /\\\n      (!x y. x IN s /\\ y IN s /\\ f x = f y ==> x = y) /\\\n      {x | x IN s /\\ P(f x)} HAS_SIZE n\n      ==> {x | x IN t /\\ P x} HAS_SIZE n"),
   vREPEAT vSTRIP_TAC ---->
   vSUBGOAL_THEN
@@ -1569,7 +1569,7 @@ let vHAS_SIZE_IMAGE_INJ_RESTRICT = prove
 (* Converse relation between cardinality and injection.                      *)
 (* ------------------------------------------------------------------------- *)
 
-let vCARD_LE_INJ = prove
+let vCARD_LE_INJ = try Cache.lookup_thm "CARD_LE_INJ" with _ ->  prove
  ((parse_term "!s t. FINITE s /\\ FINITE t /\\ CARD s <= CARD t\n   ==> ?f:A->B. (IMAGE f s) SUBSET t /\\\n                !x y. x IN s /\\ y IN s /\\ (f x = f y) ==> (x = y)"),
   vREWRITE_TAC[vIMP_CONJ] ----> vREWRITE_TAC[vRIGHT_FORALL_IMP_THM] ---->
   vMATCH_MP_TAC vFINITE_INDUCT_STRONG ---->
@@ -1592,11 +1592,11 @@ let vCARD_LE_INJ = prove
 (* Occasionally handy rewrites.                                              *)
 (* ------------------------------------------------------------------------- *)
 
-let vFORALL_IN_CLAUSES = prove
+let vFORALL_IN_CLAUSES = try Cache.lookup_thm "FORALL_IN_CLAUSES" with _ ->  prove
  ((parse_term "(!P. (!x. x IN {} ==> P x) <=> T) /\\\n   (!P a s. (!x. x IN (a INSERT s) ==> P x) <=> P a /\\ (!x. x IN s ==> P x))"),
   vREWRITE_TAC[vIN_INSERT; vNOT_IN_EMPTY] ----> vMESON_TAC[]);;
 
-let vEXISTS_IN_CLAUSES = prove
+let vEXISTS_IN_CLAUSES = try Cache.lookup_thm "EXISTS_IN_CLAUSES" with _ ->  prove
  ((parse_term "(!P. (?x. x IN {} /\\ P x) <=> F) /\\\n   (!P a s. (?x. x IN (a INSERT s) /\\ P x) <=> P a \\/ (?x. x IN s /\\ P x))"),
   vREWRITE_TAC[vIN_INSERT; vNOT_IN_EMPTY] ----> vMESON_TAC[]);;
 
@@ -1604,19 +1604,19 @@ let vEXISTS_IN_CLAUSES = prove
 (* Injectivity and surjectivity of image and preimage under a function.      *)
 (* ------------------------------------------------------------------------- *)
 
-let vINJECTIVE_ON_IMAGE = prove
+let vINJECTIVE_ON_IMAGE = try Cache.lookup_thm "INJECTIVE_ON_IMAGE" with _ ->  prove
  ((parse_term "!f:A->B u.\n    (!s t. s SUBSET u /\\ t SUBSET u /\\ IMAGE f s = IMAGE f t ==> s = t) <=>\n    (!x y. x IN u /\\ y IN u /\\ f x = f y ==> x = y)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ++--> [vDISCH_TAC; vSET_TAC[]] ---->
   vMAP_EVERY vX_GEN_TAC [(parse_term "x:A"); (parse_term "y:A")] ----> vSTRIP_TAC ---->
   vFIRST_X_ASSUM(vMP_TAC -| vSPECL [(parse_term "{x:A}"); (parse_term "{y:A}")]) ---->
   vASM_REWRITE_TAC[vSING_SUBSET; vIMAGE_CLAUSES] ----> vSET_TAC[]);;
 
-let vINJECTIVE_IMAGE = prove
+let vINJECTIVE_IMAGE = try Cache.lookup_thm "INJECTIVE_IMAGE" with _ ->  prove
  ((parse_term "!f:A->B.\n    (!s t. IMAGE f s = IMAGE f t ==> s = t) <=> (!x y. f x = f y ==> x = y)"),
   vGEN_TAC ----> vMP_TAC(vISPECL [(parse_term "f:A->B"); (parse_term "(:A)")] vINJECTIVE_ON_IMAGE) ---->
   vREWRITE_TAC[vIN_UNIV; vSUBSET_UNIV]);;
 
-let vSURJECTIVE_ON_IMAGE = prove
+let vSURJECTIVE_ON_IMAGE = try Cache.lookup_thm "SURJECTIVE_ON_IMAGE" with _ ->  prove
  ((parse_term "!f:A->B u v.\n        (!t. t SUBSET v ==> ?s. s SUBSET u /\\ IMAGE f s = t) <=>\n        (!y. y IN v ==> ?x. x IN u /\\ f x = y)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ++-->
    [vDISCH_TAC ----> vX_GEN_TAC (parse_term "y:B") ----> vDISCH_TAC ---->
@@ -1624,19 +1624,19 @@ let vSURJECTIVE_ON_IMAGE = prove
     vDISCH_TAC ----> vX_GEN_TAC (parse_term "t:B->bool") ----> vDISCH_TAC ---->
     vEXISTS_TAC (parse_term "{x | x IN u /\\ (f:A->B) x IN t}") ----> vASM vSET_TAC[]]);;
 
-let vSURJECTIVE_IMAGE = prove
+let vSURJECTIVE_IMAGE = try Cache.lookup_thm "SURJECTIVE_IMAGE" with _ ->  prove
  ((parse_term "!f:A->B. (!t. ?s. IMAGE f s = t) <=> (!y. ?x. f x = y)"),
   vGEN_TAC ---->
   vMP_TAC(vISPECL [(parse_term "f:A->B"); (parse_term "(:A)"); (parse_term "(:B)")] vSURJECTIVE_ON_IMAGE) ---->
   vREWRITE_TAC[vIN_UNIV; vSUBSET_UNIV]);;
 
-let vINJECTIVE_ON_PREIMAGE = prove
+let vINJECTIVE_ON_PREIMAGE = try Cache.lookup_thm "INJECTIVE_ON_PREIMAGE" with _ ->  prove
  ((parse_term "!f:A->B s u.\n        (!t t'. t SUBSET u /\\ t' SUBSET u /\\\n                {x | x IN s /\\ f x IN t} = {x | x IN s /\\ f x IN t'}\n                ==> t = t') <=>\n        u SUBSET IMAGE f s"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ++--> [vALL_TAC; vASM vSET_TAC[]] ---->
   vREWRITE_TAC[vSUBSET] ----> vX_GEN_TAC (parse_term "y:B") ---->
   vFIRST_X_ASSUM(vMP_TAC -| vSPECL [(parse_term "{y:B}"); (parse_term "{}:B->bool")]) ----> vASM vSET_TAC[]);;
 
-let vSURJECTIVE_ON_PREIMAGE = prove
+let vSURJECTIVE_ON_PREIMAGE = try Cache.lookup_thm "SURJECTIVE_ON_PREIMAGE" with _ ->  prove
  ((parse_term "!f:A->B s u.\n        (!k. k SUBSET s\n             ==> ?t. t SUBSET u /\\ {x | x IN s /\\ f x IN t} = k) <=>\n        IMAGE f s SUBSET u /\\\n        (!x y. x IN s /\\ y IN s /\\ f x = f y ==> x = y)"),
   vREPEAT vSTRIP_TAC ----> vEQ_TAC ----> vDISCH_TAC ++-->
    [vCONJ_TAC ++-->
@@ -1647,14 +1647,14 @@ let vSURJECTIVE_ON_PREIMAGE = prove
     vX_GEN_TAC (parse_term "k:A->bool") ----> vSTRIP_TAC ---->
     vEXISTS_TAC (parse_term "IMAGE (f:A->B) k") ----> vASM vSET_TAC[]]);;
 
-let vINJECTIVE_PREIMAGE = prove
+let vINJECTIVE_PREIMAGE = try Cache.lookup_thm "INJECTIVE_PREIMAGE" with _ ->  prove
  ((parse_term "!f:A->B.\n        (!t t'. {x | f x IN t} = {x | f x IN t'} ==> t = t') <=>\n        IMAGE f UNIV = UNIV"),
   vREPEAT vGEN_TAC ---->
   vMP_TAC(vISPECL [(parse_term "f:A->B"); (parse_term "(:A)"); (parse_term "(:B)")]
         vINJECTIVE_ON_PREIMAGE) ---->
   vREWRITE_TAC[vIN_UNIV; vSUBSET_UNIV] ----> vSET_TAC[]);;
 
-let vSURJECTIVE_PREIMAGE = prove
+let vSURJECTIVE_PREIMAGE = try Cache.lookup_thm "SURJECTIVE_PREIMAGE" with _ ->  prove
  ((parse_term "!f:A->B. (!k. ?t. {x | f x IN t} = k) <=> (!x y. f x = f y ==> x = y)"),
   vREPEAT vGEN_TAC ---->
   vMP_TAC(vISPECL [(parse_term "f:A->B"); (parse_term "(:A)"); (parse_term "(:B)")]
@@ -1665,7 +1665,7 @@ let vSURJECTIVE_PREIMAGE = prove
 (* Existence of bijections between two finite sets of same size.             *)
 (* ------------------------------------------------------------------------- *)
 
-let vCARD_EQ_BIJECTION = prove
+let vCARD_EQ_BIJECTION = try Cache.lookup_thm "CARD_EQ_BIJECTION" with _ ->  prove
  ((parse_term "!s t. FINITE s /\\ FINITE t /\\ CARD s = CARD t\n   ==> ?f:A->B. (!x. x IN s ==> f(x) IN t) /\\\n                (!y. y IN t ==> ?x. x IN s /\\ f x = y) /\\\n                !x y. x IN s /\\ y IN s /\\ (f x = f y) ==> (x = y)"),
   vMP_TAC vCARD_LE_INJ ----> vREPEAT(vMATCH_MP_TAC vMONO_FORALL ----> vGEN_TAC) ---->
   vDISCH_THEN(fun th -> vSTRIP_TAC ----> vMP_TAC th) ---->
@@ -1673,14 +1673,14 @@ let vCARD_EQ_BIJECTION = prove
   vASM_SIMP_TAC[vSURJECTIVE_IFF_INJECTIVE_GEN] ---->
   vMESON_TAC[vSUBSET; vIN_IMAGE]);;
 
-let vCARD_EQ_BIJECTIONS = prove
+let vCARD_EQ_BIJECTIONS = try Cache.lookup_thm "CARD_EQ_BIJECTIONS" with _ ->  prove
  ((parse_term "!s t. FINITE s /\\ FINITE t /\\ CARD s = CARD t\n   ==> ?f:A->B g. (!x. x IN s ==> f(x) IN t /\\ g(f x) = x) /\\\n                  (!y. y IN t ==> g(y) IN s /\\ f(g y) = y)"),
   vREPEAT vGEN_TAC ----> vDISCH_THEN(vMP_TAC -| vMATCH_MP vCARD_EQ_BIJECTION) ---->
   vMATCH_MP_TAC vMONO_EXISTS ----> vREWRITE_TAC[vSURJECTIVE_ON_RIGHT_INVERSE] ---->
   vGEN_TAC ----> vREWRITE_TAC[vLEFT_AND_EXISTS_THM; vRIGHT_AND_EXISTS_THM] ---->
   vMATCH_MP_TAC vMONO_EXISTS ----> vMESON_TAC[]);;
 
-let vCARD_EQ_BIJECTIONS_SPECIAL = prove
+let vCARD_EQ_BIJECTIONS_SPECIAL = try Cache.lookup_thm "CARD_EQ_BIJECTIONS_SPECIAL" with _ ->  prove
  ((parse_term "!s t (a:A) (b:B).\n         FINITE s /\\ FINITE t /\\ CARD s = CARD t /\\ a IN s /\\ b IN t\n         ==> ?f g. f a = b /\\ g b = a /\\\n                   (!x. x IN s ==> f x IN t /\\ g (f x) = x) /\\\n                   (!y. y IN t ==> g y IN s /\\ f (g y) = y)"),
   vREPEAT vSTRIP_TAC ---->
   vMP_TAC(vISPECL [(parse_term "s DELETE (a:A)"); (parse_term "t DELETE (b:B)")]
@@ -1691,13 +1691,13 @@ let vCARD_EQ_BIJECTIONS_SPECIAL = prove
   vEXISTS_TAC (parse_term "\\y. if y = b then a else (g:B->A) y") ---->
   vASM_MESON_TAC[]);;
 
-let vBIJECTIONS_HAS_SIZE = prove
+let vBIJECTIONS_HAS_SIZE = try Cache.lookup_thm "BIJECTIONS_HAS_SIZE" with _ ->  prove
  ((parse_term "!s t f:A->B g.\n        (!x. x IN s ==> f(x) IN t /\\ g(f x) = x) /\\\n        (!y. y IN t ==> g(y) IN s /\\ f(g y) = y) /\\\n        s HAS_SIZE n\n        ==> t HAS_SIZE n"),
   vREPEAT vSTRIP_TAC ----> vSUBGOAL_THEN (parse_term "t = IMAGE (f:A->B) s") vSUBST_ALL_TAC ++-->
    [vASM vSET_TAC[];
     vMATCH_MP_TAC vHAS_SIZE_IMAGE_INJ ----> vASM_MESON_TAC[]]);;
 
-let vBIJECTIONS_HAS_SIZE_EQ = prove
+let vBIJECTIONS_HAS_SIZE_EQ = try Cache.lookup_thm "BIJECTIONS_HAS_SIZE_EQ" with _ ->  prove
  ((parse_term "!s t f:A->B g.\n        (!x. x IN s ==> f(x) IN t /\\ g(f x) = x) /\\\n        (!y. y IN t ==> g(y) IN s /\\ f(g y) = y)\n        ==> !n. s HAS_SIZE n <=> t HAS_SIZE n"),
   vREPEAT vSTRIP_TAC ----> vEQ_TAC ---->
   vMATCH_MP_TAC(vONCE_REWRITE_RULE
@@ -1706,7 +1706,7 @@ let vBIJECTIONS_HAS_SIZE_EQ = prove
     vMAP_EVERY vEXISTS_TAC [(parse_term "g:B->A"); (parse_term "f:A->B")]] ---->
   vASM_MESON_TAC[]);;
 
-let vBIJECTIONS_CARD_EQ = prove
+let vBIJECTIONS_CARD_EQ = try Cache.lookup_thm "BIJECTIONS_CARD_EQ" with _ ->  prove
  ((parse_term "!s t f:A->B g.\n        (FINITE s \\/ FINITE t) /\\\n        (!x. x IN s ==> f(x) IN t /\\ g(f x) = x) /\\\n        (!y. y IN t ==> g(y) IN s /\\ f(g y) = y)\n        ==> CARD s = CARD t"),
   vREPEAT vGEN_TAC ----> vDISCH_THEN(vCONJUNCTS_THEN2
    vMP_TAC (vMP_TAC -| vMATCH_MP vBIJECTIONS_HAS_SIZE_EQ)) ---->
@@ -1716,7 +1716,7 @@ let vBIJECTIONS_CARD_EQ = prove
 (* Transitive relation with finitely many predecessors is wellfounded.       *)
 (* ------------------------------------------------------------------------- *)
 
-let vWF_FINITE = prove
+let vWF_FINITE = try Cache.lookup_thm "WF_FINITE" with _ ->  prove
  ((parse_term "!(<<). (!x. ~(x << x)) /\\ (!x y z. x << y /\\ y << z ==> x << z) /\\\n          (!x:A. FINITE {y | y << x})\n          ==> WF(<<)"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[vWF_DCHAIN] ---->
   vDISCH_THEN(vX_CHOOSE_THEN (parse_term "s:num->A") vSTRIP_ASSUME_TAC) ---->
@@ -1732,7 +1732,7 @@ let vWF_FINITE = prove
   vREWRITE_TAC[vSUBSET; vFORALL_IN_IMAGE; vIN_UNIV; vIN_INSERT] ---->
   vINDUCT_TAC ----> vREWRITE_TAC[vIN_ELIM_THM] ----> vASM_MESON_TAC[vLT_0]);;
 
-let vWF_PSUBSET = prove
+let vWF_PSUBSET = try Cache.lookup_thm "WF_PSUBSET" with _ ->  prove
  ((parse_term "!s:A->bool. FINITE s ==> WF (\\t1 t2. t1 PSUBSET t2 /\\ t2 SUBSET s)"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vWF_FINITE ----> vSIMP_TAC[vCONJ_ASSOC] ---->
   vCONJ_TAC ++--> [vSET_TAC[]; vX_GEN_TAC (parse_term "t:A->bool")] ---->
@@ -1758,13 +1758,13 @@ let ge_c = new_definition
 let gt_c = new_definition
  (parse_term "s >_c t <=> t <_c s");;
 
-let vLE_C = prove
+let vLE_C = try Cache.lookup_thm "LE_C" with _ ->  prove
  ((parse_term "!s t. s <=_c t <=> ?g. !x. x IN s ==> ?y. y IN t /\\ (g y = x)"),
   vREWRITE_TAC[le_c; vINJECTIVE_ON_LEFT_INVERSE; vSURJECTIVE_ON_RIGHT_INVERSE;
               vRIGHT_IMP_EXISTS_THM; vSKOLEM_THM; vRIGHT_AND_EXISTS_THM] ---->
   vMESON_TAC[]);;
 
-let vGE_C = prove
+let vGE_C = try Cache.lookup_thm "GE_C" with _ ->  prove
  ((parse_term "!s t. s >=_c t <=> ?f. !y. y IN t ==> ?x. x IN s /\\ (y = f x)"),
   vREWRITE_TAC[ge_c; vLE_C] ----> vMESON_TAC[]);;
 
@@ -1778,17 +1778,17 @@ let vCOUNTABLE = new_definition
 let sup = new_definition
   (parse_term "sup s = @a:real. (!x. x IN s ==> x <= a) /\\\n                    !b. (!x. x IN s ==> x <= b) ==> a <= b");;
 
-let vSUP_EQ = prove
+let vSUP_EQ = try Cache.lookup_thm "SUP_EQ" with _ ->  prove
  ((parse_term "!s t. (!b. (!x. x IN s ==> x <= b) <=> (!x. x IN t ==> x <= b))\n         ==> sup s = sup t"),
   vSIMP_TAC[sup]);;
 
-let vSUP = prove
+let vSUP = try Cache.lookup_thm "SUP" with _ ->  prove
  ((parse_term "!s. ~(s = {}) /\\ (?b. !x. x IN s ==> x <= b)\n       ==> (!x. x IN s ==> x <= sup s) /\\\n           !b. (!x. x IN s ==> x <= b) ==> sup s <= b"),
   vREWRITE_TAC[sup] ----> vCONV_TAC(vONCE_DEPTH_CONV vSELECT_CONV) ---->
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vREAL_COMPLETE ---->
   vASM_MESON_TAC[vMEMBER_NOT_EMPTY]);;
 
-let vSUP_FINITE_LEMMA = prove
+let vSUP_FINITE_LEMMA = try Cache.lookup_thm "SUP_FINITE_LEMMA" with _ ->  prove
  ((parse_term "!s. FINITE s /\\ ~(s = {}) ==> ?b:real. b IN s /\\ !x. x IN s ==> x <= b"),
   vREWRITE_TAC[vIMP_CONJ] ---->
   vMATCH_MP_TAC vFINITE_INDUCT_STRONG ---->
@@ -1796,43 +1796,43 @@ let vSUP_FINITE_LEMMA = prove
   vREWRITE_TAC[vGSYM vMEMBER_NOT_EMPTY] ---->
   vMESON_TAC[vREAL_LE_TOTAL; vREAL_LE_TRANS]);;
 
-let vSUP_FINITE = prove
+let vSUP_FINITE = try Cache.lookup_thm "SUP_FINITE" with _ ->  prove
  ((parse_term "!s. FINITE s /\\ ~(s = {}) ==> (sup s) IN s /\\ !x. x IN s ==> x <= sup s"),
   vGEN_TAC ----> vDISCH_TAC ---->
   vFIRST_ASSUM(vMP_TAC -| vMATCH_MP vSUP_FINITE_LEMMA) ---->
   vASM_MESON_TAC[vREAL_LE_ANTISYM; vREAL_LE_TOTAL; vSUP]);;
 
-let vREAL_LE_SUP_FINITE = prove
+let vREAL_LE_SUP_FINITE = try Cache.lookup_thm "REAL_LE_SUP_FINITE" with _ ->  prove
  ((parse_term "!s a. FINITE s /\\ ~(s = {}) ==> (a <= sup s <=> ?x. x IN s /\\ a <= x)"),
   vMESON_TAC[vSUP_FINITE; vREAL_LE_TRANS]);;
 
-let vREAL_SUP_LE_FINITE = prove
+let vREAL_SUP_LE_FINITE = try Cache.lookup_thm "REAL_SUP_LE_FINITE" with _ ->  prove
  ((parse_term "!s a. FINITE s /\\ ~(s = {}) ==> (sup s <= a <=> !x. x IN s ==> x <= a)"),
   vMESON_TAC[vSUP_FINITE; vREAL_LE_TRANS]);;
 
-let vREAL_LT_SUP_FINITE = prove
+let vREAL_LT_SUP_FINITE = try Cache.lookup_thm "REAL_LT_SUP_FINITE" with _ ->  prove
  ((parse_term "!s a. FINITE s /\\ ~(s = {}) ==> (a < sup s <=> ?x. x IN s /\\ a < x)"),
   vMESON_TAC[vSUP_FINITE; vREAL_LTE_TRANS]);;
 
-let vREAL_SUP_LT_FINITE = prove
+let vREAL_SUP_LT_FINITE = try Cache.lookup_thm "REAL_SUP_LT_FINITE" with _ ->  prove
  ((parse_term "!s a. FINITE s /\\ ~(s = {}) ==> (sup s < a <=> !x. x IN s ==> x < a)"),
   vMESON_TAC[vSUP_FINITE; vREAL_LET_TRANS]);;
 
-let vREAL_SUP_UNIQUE = prove
+let vREAL_SUP_UNIQUE = try Cache.lookup_thm "REAL_SUP_UNIQUE" with _ ->  prove
  ((parse_term "!s b. (!x. x IN s ==> x <= b) /\\\n         (!b'. b' < b ==> ?x. x IN s /\\ b' < x)\n         ==> sup s = b"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[sup] ----> vMATCH_MP_TAC vSELECT_UNIQUE ---->
   vASM_MESON_TAC[vREAL_NOT_LE; vREAL_LE_ANTISYM]);;
 
-let vREAL_SUP_LE = prove
+let vREAL_SUP_LE = try Cache.lookup_thm "REAL_SUP_LE" with _ ->  prove
  ((parse_term "!b. ~(s = {}) /\\ (!x. x IN s ==> x <= b) ==> sup s <= b"),
   vMESON_TAC[vSUP]);;
 
-let vREAL_SUP_LE_SUBSET = prove
+let vREAL_SUP_LE_SUBSET = try Cache.lookup_thm "REAL_SUP_LE_SUBSET" with _ ->  prove
  ((parse_term "!s t. ~(s = {}) /\\ s SUBSET t /\\ (?b. !x. x IN t ==> x <= b)\n         ==> sup s <= sup t"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vREAL_SUP_LE ---->
   vMP_TAC(vSPEC (parse_term "t:real->bool") vSUP) ----> vASM vSET_TAC[]);;
 
-let vREAL_SUP_BOUNDS = prove
+let vREAL_SUP_BOUNDS = try Cache.lookup_thm "REAL_SUP_BOUNDS" with _ ->  prove
  ((parse_term "!s a b. ~(s = {}) /\\ (!x. x IN s ==> a <= x /\\ x <= b)\n           ==> a <= sup s /\\ sup s <= b"),
   vREPEAT vGEN_TAC ----> vSTRIP_TAC ---->
   vMP_TAC(vSPEC (parse_term "s:real->bool") vSUP) ----> vANTS_TAC ++-->
@@ -1840,22 +1840,22 @@ let vREAL_SUP_BOUNDS = prove
   vFIRST_X_ASSUM(vMP_TAC -| vGEN_REWRITE_RULE vI [vGSYM vMEMBER_NOT_EMPTY]) ---->
   vASM_MESON_TAC[vREAL_LE_TRANS]);;
 
-let vREAL_ABS_SUP_LE = prove
+let vREAL_ABS_SUP_LE = try Cache.lookup_thm "REAL_ABS_SUP_LE" with _ ->  prove
  ((parse_term "!s a. ~(s = {}) /\\ (!x. x IN s ==> abs(x) <= a) ==> abs(sup s) <= a"),
   vREWRITE_TAC[vGSYM vREAL_BOUNDS_LE; vREAL_SUP_BOUNDS]);;
 
-let vREAL_SUP_ASCLOSE = prove
+let vREAL_SUP_ASCLOSE = try Cache.lookup_thm "REAL_SUP_ASCLOSE" with _ ->  prove
  ((parse_term "!s l e. ~(s = {}) /\\ (!x. x IN s ==> abs(x - l) <= e)\n           ==> abs(sup s - l) <= e"),
   vSIMP_TAC[vREAL_ARITH (parse_term "abs(x - l):real <= e <=> l - e <= x /\\ x <= l + e")] ---->
   vREWRITE_TAC[vREAL_SUP_BOUNDS]);;
 
-let vSUP_UNIQUE_FINITE = prove
+let vSUP_UNIQUE_FINITE = try Cache.lookup_thm "SUP_UNIQUE_FINITE" with _ ->  prove
  ((parse_term "!s. FINITE s /\\ ~(s = {})\n       ==> (sup s = a <=> a IN s /\\ !y. y IN s ==> y <= a)"),
    vASM_SIMP_TAC[vGSYM vREAL_LE_ANTISYM; vREAL_LE_SUP_FINITE; vREAL_SUP_LE_FINITE;
                vNOT_INSERT_EMPTY; vFINITE_INSERT; vFINITE_EMPTY] ---->
    vMESON_TAC[vREAL_LE_REFL; vREAL_LE_TRANS; vREAL_LE_ANTISYM]);;
 
-let vSUP_INSERT_FINITE = prove
+let vSUP_INSERT_FINITE = try Cache.lookup_thm "SUP_INSERT_FINITE" with _ ->  prove
  ((parse_term "!x s. FINITE s ==> sup(x INSERT s) = if s = {} then x else max x (sup s)"),
   vREPEAT vSTRIP_TAC ----> vCOND_CASES_TAC ---->
   vASM_SIMP_TAC[vSUP_UNIQUE_FINITE;  vFINITE_INSERT; vFINITE_EMPTY;
@@ -1865,41 +1865,41 @@ let vSUP_INSERT_FINITE = prove
   vASM_SIMP_TAC[vSUP_FINITE; vIN_INSERT; vREAL_LE_REFL] ---->
   vASM_MESON_TAC[vSUP_FINITE; vREAL_LE_TOTAL; vREAL_LE_TRANS]);;
 
-let vSUP_SING = prove
+let vSUP_SING = try Cache.lookup_thm "SUP_SING" with _ ->  prove
  ((parse_term "!a. sup {a} = a"),
   vSIMP_TAC[vSUP_INSERT_FINITE; vFINITE_EMPTY]);;
 
-let vSUP_INSERT_INSERT = prove
+let vSUP_INSERT_INSERT = try Cache.lookup_thm "SUP_INSERT_INSERT" with _ ->  prove
  ((parse_term "!a b s. sup (b INSERT a INSERT s) = sup (max a b INSERT s)"),
   vREPEAT vGEN_TAC ----> vMATCH_MP_TAC vSUP_EQ ---->
   vX_GEN_TAC (parse_term "c:real") ----> vREWRITE_TAC[vFORALL_IN_INSERT] ---->
   vASM_CASES_TAC (parse_term "!x:real. x IN s ==> x <= c") ----> vASM_REWRITE_TAC[] ---->
   vREAL_ARITH_TAC);;
 
-let vREAL_LE_SUP = prove
+let vREAL_LE_SUP = try Cache.lookup_thm "REAL_LE_SUP" with _ ->  prove
  ((parse_term "!s a b y. y IN s /\\ a <= y /\\ (!x. x IN s ==> x <= b) ==> a <= sup s"),
   vMESON_TAC[vSUP; vMEMBER_NOT_EMPTY; vREAL_LE_TRANS]);;
 
-let vREAL_SUP_LE_EQ = prove
+let vREAL_SUP_LE_EQ = try Cache.lookup_thm "REAL_SUP_LE_EQ" with _ ->  prove
  ((parse_term "!s y. ~(s = {}) /\\ (?b. !x. x IN s ==> x <= b)\n         ==> (sup s <= y <=> !x. x IN s ==> x <= y)"),
   vMESON_TAC[vSUP; vREAL_LE_TRANS]);;
 
-let vSUP_UNIQUE = prove
+let vSUP_UNIQUE = try Cache.lookup_thm "SUP_UNIQUE" with _ ->  prove
  ((parse_term "!s b. (!c. (!x. x IN s ==> x <= c) <=> b <= c) ==> sup s = b"),
   vREPEAT vSTRIP_TAC ----> vGEN_REWRITE_TAC vRAND_CONV [vGSYM vSUP_SING] ---->
   vMATCH_MP_TAC vSUP_EQ ----> vASM vSET_TAC[]);;
 
-let vSUP_UNION = prove
+let vSUP_UNION = try Cache.lookup_thm "SUP_UNION" with _ ->  prove
  ((parse_term "!s t. ~(s = {}) /\\ ~(t = {}) /\\\n         (?b. !x. x IN s ==> x <= b) /\\ (?c. !x. x IN t ==> x <= c)\n         ==> sup(s UNION t) = max (sup s) (sup t)"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vSUP_UNIQUE ---->
   vREWRITE_TAC[vFORALL_IN_UNION; vREAL_MAX_LE] ---->
   vASM_MESON_TAC[vSUP; vREAL_LE_TRANS]);;
 
-let vELEMENT_LE_SUP = prove
+let vELEMENT_LE_SUP = try Cache.lookup_thm "ELEMENT_LE_SUP" with _ ->  prove
  ((parse_term "!s a. (?b. !x. x IN s ==> x <= b) /\\ a IN s ==> a <= sup s"),
   vMESON_TAC[vREAL_LE_SUP; vREAL_LE_REFL]);;
 
-let vSUP_APPROACH = prove
+let vSUP_APPROACH = try Cache.lookup_thm "SUP_APPROACH" with _ ->  prove
  ((parse_term "!s c. ~(s = {}) /\\ (?b. !x. x IN s ==> x <= b) /\\ c < sup s\n         ==> ?x. x IN s /\\ c < x"),
   vINTRO_TAC "!s c; npty bound lt" ---->
   vREFUTE_THEN (vLABEL_TAC "hp" -|
@@ -1909,7 +1909,7 @@ let vSUP_APPROACH = prove
   vINTRO_TAC "_ sup" ----> vREMOVE_THEN "sup" vMATCH_MP_TAC ---->
   vASM_MESON_TAC[]);;
 
-let vREAL_MAX_SUP = prove
+let vREAL_MAX_SUP = try Cache.lookup_thm "REAL_MAX_SUP" with _ ->  prove
  ((parse_term "!x y. max x y = sup {x,y}"),
   vSIMP_TAC[vGSYM vREAL_LE_ANTISYM; vREAL_SUP_LE_FINITE; vREAL_LE_SUP_FINITE;
            vFINITE_RULES; vNOT_INSERT_EMPTY; vREAL_MAX_LE; vREAL_LE_MAX] ---->
@@ -1918,11 +1918,11 @@ let vREAL_MAX_SUP = prove
 let inf = new_definition
   (parse_term "inf s = @a:real. (!x. x IN s ==> a <= x) /\\\n                    !b. (!x. x IN s ==> b <= x) ==> b <= a");;
 
-let vINF_EQ = prove
+let vINF_EQ = try Cache.lookup_thm "INF_EQ" with _ ->  prove
  ((parse_term "!s t. (!a. (!x. x IN s ==> a <= x) <=> (!x. x IN t ==> a <= x))\n         ==> inf s = inf t"),
   vSIMP_TAC[inf]);;
 
-let vINF = prove
+let vINF = try Cache.lookup_thm "INF" with _ ->  prove
  ((parse_term "!s. ~(s = {}) /\\ (?b. !x. x IN s ==> b <= x)\n       ==> (!x. x IN s ==> inf s <= x) /\\\n           !b. (!x. x IN s ==> b <= x) ==> b <= inf s"),
   vGEN_TAC ----> vSTRIP_TAC ----> vREWRITE_TAC[inf] ---->
   vCONV_TAC(vONCE_DEPTH_CONV vSELECT_CONV) ---->
@@ -1934,7 +1934,7 @@ let vINF = prove
   vREWRITE_TAC[vGSYM vMEMBER_NOT_EMPTY; vIN_IMAGE] ---->
   vASM_MESON_TAC[vREAL_NEG_NEG; vMEMBER_NOT_EMPTY; vREAL_LE_NEG2]);;
 
-let vINF_FINITE_LEMMA = prove
+let vINF_FINITE_LEMMA = try Cache.lookup_thm "INF_FINITE_LEMMA" with _ ->  prove
  ((parse_term "!s. FINITE s /\\ ~(s = {}) ==> ?b:real. b IN s /\\ !x. x IN s ==> b <= x"),
   vREWRITE_TAC[vIMP_CONJ] ---->
   vMATCH_MP_TAC vFINITE_INDUCT_STRONG ---->
@@ -1942,43 +1942,43 @@ let vINF_FINITE_LEMMA = prove
   vREWRITE_TAC[vGSYM vMEMBER_NOT_EMPTY] ---->
   vMESON_TAC[vREAL_LE_TOTAL; vREAL_LE_TRANS]);;
 
-let vINF_FINITE = prove
+let vINF_FINITE = try Cache.lookup_thm "INF_FINITE" with _ ->  prove
  ((parse_term "!s. FINITE s /\\ ~(s = {}) ==> (inf s) IN s /\\ !x. x IN s ==> inf s <= x"),
   vGEN_TAC ----> vDISCH_TAC ---->
   vFIRST_ASSUM(vMP_TAC -| vMATCH_MP vINF_FINITE_LEMMA) ---->
   vASM_MESON_TAC[vREAL_LE_ANTISYM; vREAL_LE_TOTAL; vINF]);;
 
-let vREAL_LE_INF_FINITE = prove
+let vREAL_LE_INF_FINITE = try Cache.lookup_thm "REAL_LE_INF_FINITE" with _ ->  prove
 ((parse_term "!s a. FINITE s /\\ ~(s = {}) ==> (a <= inf s <=> !x. x IN s ==> a <= x)"),
   vMESON_TAC[vINF_FINITE; vREAL_LE_TRANS]);;
 
-let vREAL_INF_LE_FINITE = prove
+let vREAL_INF_LE_FINITE = try Cache.lookup_thm "REAL_INF_LE_FINITE" with _ ->  prove
  ((parse_term "!s a. FINITE s /\\ ~(s = {}) ==> (inf s <= a <=> ?x. x IN s /\\ x <= a)"),
   vMESON_TAC[vINF_FINITE; vREAL_LE_TRANS]);;
 
-let vREAL_LT_INF_FINITE = prove
+let vREAL_LT_INF_FINITE = try Cache.lookup_thm "REAL_LT_INF_FINITE" with _ ->  prove
  ((parse_term "!s a. FINITE s /\\ ~(s = {}) ==> (a < inf s <=> !x. x IN s ==> a < x)"),
   vMESON_TAC[vINF_FINITE; vREAL_LTE_TRANS]);;
 
-let vREAL_INF_LT_FINITE = prove
+let vREAL_INF_LT_FINITE = try Cache.lookup_thm "REAL_INF_LT_FINITE" with _ ->  prove
  ((parse_term "!s a. FINITE s /\\ ~(s = {}) ==> (inf s < a <=> ?x. x IN s /\\ x < a)"),
   vMESON_TAC[vINF_FINITE; vREAL_LET_TRANS]);;
 
-let vREAL_INF_UNIQUE = prove
+let vREAL_INF_UNIQUE = try Cache.lookup_thm "REAL_INF_UNIQUE" with _ ->  prove
  ((parse_term "!s b. (!x. x IN s ==> b <= x) /\\\n         (!b'. b < b' ==> ?x. x IN s /\\ x < b')\n         ==> inf s = b"),
   vREPEAT vSTRIP_TAC ----> vREWRITE_TAC[inf] ----> vMATCH_MP_TAC vSELECT_UNIQUE ---->
   vASM_MESON_TAC[vREAL_NOT_LE; vREAL_LE_ANTISYM]);;
 
-let vREAL_LE_INF = prove
+let vREAL_LE_INF = try Cache.lookup_thm "REAL_LE_INF" with _ ->  prove
  ((parse_term "!b. ~(s = {}) /\\ (!x. x IN s ==> b <= x) ==> b <= inf s"),
   vMESON_TAC[vINF]);;
 
-let vREAL_LE_INF_SUBSET = prove
+let vREAL_LE_INF_SUBSET = try Cache.lookup_thm "REAL_LE_INF_SUBSET" with _ ->  prove
  ((parse_term "!s t. ~(t = {}) /\\ t SUBSET s /\\ (?b. !x. x IN s ==> b <= x)\n         ==> inf s <= inf t"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vREAL_LE_INF ---->
   vMP_TAC(vSPEC (parse_term "s:real->bool") vINF) ----> vASM vSET_TAC[]);;
 
-let vREAL_INF_BOUNDS = prove
+let vREAL_INF_BOUNDS = try Cache.lookup_thm "REAL_INF_BOUNDS" with _ ->  prove
  ((parse_term "!s a b. ~(s = {}) /\\ (!x. x IN s ==> a <= x /\\ x <= b)\n           ==> a <= inf s /\\ inf s <= b"),
   vREPEAT vGEN_TAC ----> vSTRIP_TAC ---->
   vMP_TAC(vSPEC (parse_term "s:real->bool") vINF) ----> vANTS_TAC ++-->
@@ -1986,22 +1986,22 @@ let vREAL_INF_BOUNDS = prove
   vFIRST_X_ASSUM(vMP_TAC -| vGEN_REWRITE_RULE vI [vGSYM vMEMBER_NOT_EMPTY]) ---->
   vASM_MESON_TAC[vREAL_LE_TRANS]);;
 
-let vREAL_ABS_INF_LE = prove
+let vREAL_ABS_INF_LE = try Cache.lookup_thm "REAL_ABS_INF_LE" with _ ->  prove
  ((parse_term "!s a. ~(s = {}) /\\ (!x. x IN s ==> abs(x) <= a) ==> abs(inf s) <= a"),
   vREWRITE_TAC[vGSYM vREAL_BOUNDS_LE; vREAL_INF_BOUNDS]);;
 
-let vREAL_INF_ASCLOSE = prove
+let vREAL_INF_ASCLOSE = try Cache.lookup_thm "REAL_INF_ASCLOSE" with _ ->  prove
  ((parse_term "!s l e. ~(s = {}) /\\ (!x. x IN s ==> abs(x - l) <= e)\n           ==> abs(inf s - l) <= e"),
   vSIMP_TAC[vREAL_ARITH (parse_term "abs(x - l):real <= e <=> l - e <= x /\\ x <= l + e")] ---->
   vREWRITE_TAC[vREAL_INF_BOUNDS]);;
 
-let vINF_UNIQUE_FINITE = prove
+let vINF_UNIQUE_FINITE = try Cache.lookup_thm "INF_UNIQUE_FINITE" with _ ->  prove
  ((parse_term "!s. FINITE s /\\ ~(s = {})\n       ==> (inf s = a <=> a IN s /\\ !y. y IN s ==> a <= y)"),
    vASM_SIMP_TAC[vGSYM vREAL_LE_ANTISYM; vREAL_LE_INF_FINITE; vREAL_INF_LE_FINITE;
                vNOT_INSERT_EMPTY; vFINITE_INSERT; vFINITE_EMPTY] ---->
    vMESON_TAC[vREAL_LE_REFL; vREAL_LE_TRANS; vREAL_LE_ANTISYM]);;
 
-let vINF_INSERT_FINITE = prove
+let vINF_INSERT_FINITE = try Cache.lookup_thm "INF_INSERT_FINITE" with _ ->  prove
  ((parse_term "!x s. FINITE s ==> inf(x INSERT s) = if s = {} then x else min x (inf s)"),
   vREPEAT vSTRIP_TAC ----> vCOND_CASES_TAC ---->
   vASM_SIMP_TAC[vINF_UNIQUE_FINITE;  vFINITE_INSERT; vFINITE_EMPTY;
@@ -2011,18 +2011,18 @@ let vINF_INSERT_FINITE = prove
   vASM_SIMP_TAC[vINF_FINITE; vIN_INSERT; vREAL_LE_REFL] ---->
   vASM_MESON_TAC[vINF_FINITE; vREAL_LE_TOTAL; vREAL_LE_TRANS]);;
 
-let vINF_SING = prove
+let vINF_SING = try Cache.lookup_thm "INF_SING" with _ ->  prove
  ((parse_term "!a. inf {a} = a"),
   vSIMP_TAC[vINF_INSERT_FINITE; vFINITE_EMPTY]);;
 
-let vINF_INSERT_INSERT = prove
+let vINF_INSERT_INSERT = try Cache.lookup_thm "INF_INSERT_INSERT" with _ ->  prove
  ((parse_term "!a b s. inf (b INSERT a INSERT s) = inf (min a b INSERT s)"),
   vREPEAT vGEN_TAC ----> vMATCH_MP_TAC vINF_EQ ---->
   vX_GEN_TAC (parse_term "c:real") ----> vREWRITE_TAC[vFORALL_IN_INSERT] ---->
   vASM_CASES_TAC (parse_term "!x:real. x IN s ==> c <= x") ----> vASM_REWRITE_TAC[] ---->
   vREAL_ARITH_TAC);;
 
-let vREAL_SUP_EQ_INF = prove
+let vREAL_SUP_EQ_INF = try Cache.lookup_thm "REAL_SUP_EQ_INF" with _ ->  prove
  ((parse_term "!s. ~(s = {}) /\\ (?B. !x. x IN s ==> abs(x) <= B)\n       ==> (sup s = inf s <=> ?a. s = {a})"),
   vREPEAT vSTRIP_TAC ----> vEQ_TAC ++-->
    [vDISCH_TAC ----> vEXISTS_TAC (parse_term "sup s") ----> vMATCH_MP_TAC
@@ -2032,30 +2032,30 @@ let vREAL_SUP_EQ_INF = prove
     vSTRIP_TAC ---->
     vASM_SIMP_TAC[vSUP_INSERT_FINITE; vINF_INSERT_FINITE; vFINITE_EMPTY]]);;
 
-let vREAL_INF_LE = prove
+let vREAL_INF_LE = try Cache.lookup_thm "REAL_INF_LE" with _ ->  prove
  ((parse_term "!s a b y. y IN s /\\ y <= b /\\ (!x. x IN s ==> a <= x) ==> inf s <= b"),
   vMESON_TAC[vINF; vMEMBER_NOT_EMPTY; vREAL_LE_TRANS]);;
 
-let vREAL_LE_INF_EQ = prove
+let vREAL_LE_INF_EQ = try Cache.lookup_thm "REAL_LE_INF_EQ" with _ ->  prove
  ((parse_term "!s y. ~(s = {}) /\\ (?b. !x. x IN s ==> b <= x)\n         ==> (y <= inf s <=> !x. x IN s ==> y <= x)"),
   vMESON_TAC[vINF; vREAL_LE_TRANS]);;
 
-let vINF_UNIQUE = prove
+let vINF_UNIQUE = try Cache.lookup_thm "INF_UNIQUE" with _ ->  prove
  ((parse_term "!s b. (!c. (!x. x IN s ==> c <= x) <=> c <= b) ==> inf s = b"),
   vREPEAT vSTRIP_TAC ----> vGEN_REWRITE_TAC vRAND_CONV [vGSYM vINF_SING] ---->
   vMATCH_MP_TAC vINF_EQ ----> vASM vSET_TAC[]);;
 
-let vINF_UNION = prove
+let vINF_UNION = try Cache.lookup_thm "INF_UNION" with _ ->  prove
  ((parse_term "!s t. ~(s = {}) /\\ ~(t = {}) /\\\n         (?b. !x. x IN s ==> b <= x) /\\ (?c. !x. x IN t ==> c <= x)\n         ==> inf(s UNION t) = min (inf s) (inf t)"),
   vREPEAT vSTRIP_TAC ----> vMATCH_MP_TAC vINF_UNIQUE ---->
   vREWRITE_TAC[vFORALL_IN_UNION; vREAL_LE_MIN] ---->
   vASM_MESON_TAC[vINF; vREAL_LE_TRANS]);;
 
-let vINF_LE_ELEMENT = prove
+let vINF_LE_ELEMENT = try Cache.lookup_thm "INF_LE_ELEMENT" with _ ->  prove
  ((parse_term "!s a. (?b. !x. x IN s ==> b <= x) /\\ a IN s ==> inf s <= a"),
   vMESON_TAC[vREAL_INF_LE; vREAL_LE_REFL]);;
 
-let vINF_APPROACH = prove
+let vINF_APPROACH = try Cache.lookup_thm "INF_APPROACH" with _ ->  prove
  ((parse_term "!s c. ~(s = {}) /\\ (?b. !x. x IN s ==> b <= x) /\\ inf s < c\n         ==> ?x. x IN s /\\ x < c"),
   vINTRO_TAC "!s c; npty bound lt" ---->
   vREFUTE_THEN (vLABEL_TAC "hp" -|
@@ -2065,7 +2065,7 @@ let vINF_APPROACH = prove
   vINTRO_TAC "_ inf" ----> vREMOVE_THEN "inf" vMATCH_MP_TAC ---->
   vASM_MESON_TAC[]);;
 
-let vREAL_MIN_INF = prove
+let vREAL_MIN_INF = try Cache.lookup_thm "REAL_MIN_INF" with _ ->  prove
  ((parse_term "!x y. min x y = inf {x,y}"),
   vSIMP_TAC[vGSYM vREAL_LE_ANTISYM; vREAL_INF_LE_FINITE; vREAL_LE_INF_FINITE;
            vFINITE_RULES; vNOT_INSERT_EMPTY; vREAL_MIN_LE; vREAL_LE_MIN] ---->
@@ -2084,15 +2084,15 @@ let has_inf = new_definition
 let has_sup = new_definition
   (parse_term "s has_sup b <=> (!c. (!x:real. x IN s ==> x <= c) <=> b <= c)");;
 
-let vHAS_INF_LBOUND = prove
+let vHAS_INF_LBOUND = try Cache.lookup_thm "HAS_INF_LBOUND" with _ ->  prove
  ((parse_term "!s b x. s has_inf b /\\ x IN s ==> b <= x"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[has_inf] ----> vMESON_TAC[vREAL_LE_REFL]);;
 
-let vHAS_SUP_UBOUND = prove
+let vHAS_SUP_UBOUND = try Cache.lookup_thm "HAS_SUP_UBOUND" with _ ->  prove
  ((parse_term "!s b x. s has_sup b /\\ x IN s ==> x <= b"),
   vREPEAT vGEN_TAC ----> vREWRITE_TAC[has_sup] ----> vMESON_TAC[vREAL_LE_REFL]);;
 
-let vHAS_INF_INF = prove
+let vHAS_INF_INF = try Cache.lookup_thm "HAS_INF_INF" with _ ->  prove
  ((parse_term "!s l. s has_inf l <=>\n         ~(s = {}) /\\\n         (?b. !x. x IN s ==> b <= x) /\\\n         inf s = l"),
   vGEN_TAC ----> vGEN_TAC ----> vREWRITE_TAC[has_inf] ---->
   vEQ_TAC ----> vSTRIP_TAC ++-->
@@ -2110,7 +2110,7 @@ let vHAS_INF_INF = prove
    vASM_REWRITE_TAC[] ----> vREPEAT vSTRIP_TAC ---->
    vTRANS_TAC vREAL_LE_TRANS (parse_term "l:real") ----> vASM_SIMP_TAC[]]);;
 
-let vHAS_SUP_SUP = prove
+let vHAS_SUP_SUP = try Cache.lookup_thm "HAS_SUP_SUP" with _ ->  prove
  ((parse_term "!s l. s has_sup l <=>\n         ~(s = {}) /\\\n         (?b. !x. x IN s ==> x <= b) /\\\n         sup s = l"),
   vGEN_TAC ----> vGEN_TAC ----> vREWRITE_TAC[has_sup] ---->
   vEQ_TAC ----> vSTRIP_TAC ++-->
@@ -2129,23 +2129,23 @@ let vHAS_SUP_SUP = prove
    vASM_REWRITE_TAC[] ----> vREPEAT vSTRIP_TAC ---->
    vTRANS_TAC vREAL_LE_TRANS (parse_term "l:real") ----> vASM_SIMP_TAC[]]);;
 
-let vINF_EXISTS = prove
+let vINF_EXISTS = try Cache.lookup_thm "INF_EXISTS" with _ ->  prove
  ((parse_term "!s. (?l. s has_inf l) <=> ~(s = {}) /\\ (?b. !x. x IN s ==> b <= x)"),
   vMESON_TAC[vHAS_INF_INF]);;
 
-let vSUP_EXISTS = prove
+let vSUP_EXISTS = try Cache.lookup_thm "SUP_EXISTS" with _ ->  prove
  ((parse_term "!s. (?l. s has_sup l) <=> ~(s = {}) /\\ (?b. !x. x IN s ==> x <= b)"),
   vMESON_TAC[vHAS_SUP_SUP]);;
 
-let vHAS_INF_APPROACH = prove
+let vHAS_INF_APPROACH = try Cache.lookup_thm "HAS_INF_APPROACH" with _ ->  prove
  ((parse_term "!s l c. s has_inf l /\\ l < c ==> ?x. x IN s /\\ x < c"),
   vREWRITE_TAC[vHAS_INF_INF] ----> vMESON_TAC[vINF_APPROACH]);;
 
-let vHAS_SUP_APPROACH = prove
+let vHAS_SUP_APPROACH = try Cache.lookup_thm "HAS_SUP_APPROACH" with _ ->  prove
  ((parse_term "!s l c. s has_sup l /\\ c < l ==> ?x. x IN s /\\ c < x"),
   vREWRITE_TAC[vHAS_SUP_SUP] ----> vMESON_TAC[vSUP_APPROACH]);;
 
-let vHAS_INF = prove
+let vHAS_INF = try Cache.lookup_thm "HAS_INF" with _ ->  prove
  ((parse_term "!s l. s has_inf l <=>\n         ~(s = {}) /\\\n         (!x. x IN s ==> l <= x) /\\\n         (!c. l < c ==> ?x. x IN s /\\ x < c)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ++-->
   [vINTRO_TAC "hp" ----> vCONJ_TAC ++-->
@@ -2163,7 +2163,7 @@ let vHAS_INF = prove
    vINTRO_TAC "hp; !x; x" ----> vTRANS_TAC vREAL_LE_TRANS (parse_term "l:real") ---->
    vASM_SIMP_TAC[]]);;
 
-let vHAS_SUP = prove
+let vHAS_SUP = try Cache.lookup_thm "HAS_SUP" with _ ->  prove
  ((parse_term "!s l. s has_sup l <=>\n         ~(s = {}) /\\\n         (!x. x IN s ==> x <= l) /\\\n         (!c. c < l ==> ?x. x IN s /\\ c < x)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ++-->
   [vINTRO_TAC "hp" ----> vCONJ_TAC ++-->
@@ -2181,7 +2181,7 @@ let vHAS_SUP = prove
    vINTRO_TAC "hp; !x; x" ----> vTRANS_TAC vREAL_LE_TRANS (parse_term "l:real") ---->
    vASM_SIMP_TAC[]]);;
 
-let vHAS_INF_LE = prove
+let vHAS_INF_LE = try Cache.lookup_thm "HAS_INF_LE" with _ ->  prove
  ((parse_term "!s t l m. s has_inf l /\\ t has_inf m /\\\n             (!y. y IN t ==> ?x. x IN s /\\ x <= y)\n             ==> l <= m"),
   vINTRO_TAC "!s t l m; l m le" ---->
   vHYP_TAC "l: s l1 l2" (vREWRITE_RULE[vHAS_INF]) ---->
@@ -2196,7 +2196,7 @@ let vHAS_INF_LE = prove
   vHYP_TAC "l1: +" (vSPEC (parse_term "y:real")) ----> vASM_REWRITE_TAC[] ---->
   vASM_REAL_ARITH_TAC);;
 
-let vHAS_SUP_LE = prove
+let vHAS_SUP_LE = try Cache.lookup_thm "HAS_SUP_LE" with _ ->  prove
  ((parse_term "!s t l m. s has_sup l /\\ t has_sup m /\\\n             (!y. y IN t ==> ?x. x IN s /\\ y <= x)\n             ==> m <= l"),
   vINTRO_TAC "!s t l m; l m le" ---->
   vHYP_TAC "l: s l1 l2" (vREWRITE_RULE[vHAS_SUP]) ---->
