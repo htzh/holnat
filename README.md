@@ -98,7 +98,7 @@ utop # Hol.Basics.variables (snd (Hol.Fusion.dest_thm t2));;
    [Hol.Fusion.Tyvar "?20807"; Hol.Fusion.Tyapp ("bool", [])]))]
 
 (* now we instantiate the type variables to the same instance and try again *)
-utop # let typ = parse_type "A";;
+utop # let typ = Hol.Parser.parse_type "A";;
 val typ : Hol.Fusion.hol_type = Hol.Fusion.Tyvar "A"
 
 utop # Hol.Fusion.(vINST_TYPE [typ, mk_vartype "?78408"] t1 = vINST_TYPE [typ, mk_vartype "?20807"] t2);;
