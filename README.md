@@ -16,7 +16,7 @@ To use the ```help``` command one needs to copy over the [```Help/```](https://g
 
 ### Performance and theorem caching
 
-Theorems don't need to be proved over and over again. We implemented a cache lookup mechanism of theorems contained in ```database.ml```. For natively compiled executables loading all the modules in ```hol``` takes a little over one second with this optimization:
+Theorems don't need to be proved over and over again. We implemented a cache lookup mechanism for theorems contained in ```database.ml```. For natively compiled executables loading all the modules in ```hol``` takes a little over one second with this optimization:
 
 ```
 holnat % time bin/query.exe
@@ -33,9 +33,9 @@ Number of theorems in cache: 0
 ./query.exe  9.95s user 0.03s system 99% cpu 9.979 total
 ```
 
-While startup time of 1 sec is still noticeable it is significantly less painful than 10 seconds! Timings are done on an Apple M1 MacBook Air. This obviates the need for checkpointing and the cached db is only about 1.4MB. To use this feature, after building for the first time one needs to start ```dune utop```, and execute ```Hol.Cache.save_thm_db ();;```. This will a binary copy of the theorems to a file named ```db```.
+While startup time of 1 sec is still noticeable it is significantly less painful than 10 seconds! Timings are done on an Apple M1 MacBook Air. This obviates the need for checkpointing and the cached db is only about 1.4MB. To use this feature, after building for the first time one needs to start ```dune utop```, and execute ```Hol.Cache.save_thm_db ();;```. This will save a binary copy of the theorems to a file named ```db```.
 
-### Difference from original HOL Light
+### Difference from the original HOL Light
 
 We don't change OCaml lexing conventions so we do not need preprocessors to compile. However this means we can not have capitalized value names, nor can we have letters in operators.
 We prefix all-cap value names with the letter ```v```. The composition operator is now ```-|``` instead of ```o```. See ```bin/pp.ml``` for details.
@@ -44,13 +44,15 @@ We also do not use quotation. Quoted literals have all been converted to strings
 
 Due to the decoupling from ```Camlp5``` and special lexing rules, we now can run with any reasonable version of OCaml.
 
-Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` module. Note this naming convention may cause problem in utop if ```Hol.Fusion``` is opened, as it has an internal module with the same ```Hol``` name. We may change the names in the future.
+Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` module. Note this naming convention may cause problems in utop if ```Hol.Fusion``` is opened, as it has an internal module with the same ```Hol``` name. We may change the names in the future.
 
 We also comply with stricter OCaml linting rules. For example, unused variables and non-exhaustive matching are all errors that we fixed.
 
 ### TODOs
 
-It should be possible to add quotation to ```utop``` so that we can enter quoted terms directly. However we don't envision using ```utop``` for interaction in the future. Instead
+It should be possible to add quotation so that we can enter quoted terms directly. I need to learn more about ```ppxlib``` on how this can be done. 
+
+```utop``` still loads bytecode so is much slower (even though caching improved the loading time here significantly as well). We don't envision using ```utop``` for interaction in the future. Instead
 the natively compiled library can be linked into a server and a browser UI can be used for interaction. This way we can benefit from the performance gain of native compilation.
 
 ### Notes on caching theorems
