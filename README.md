@@ -22,7 +22,7 @@ Theorems don't need to be proved over and over again. We implemented a cache loo
 holnat % time bin/query.exe
 Number of theorems in database: 2916
 Number of theorems in cache: 2916
-bin/query.exe  1.24s user 0.02s system 99% cpu 1.262 total
+bin/query.exe  1.22s user 0.03s system 97% cpu 1.273 total
 ```
 
 Without the cached database it takes 8 times as long:

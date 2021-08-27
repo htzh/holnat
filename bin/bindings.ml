@@ -4,8 +4,13 @@ let print_tree_flag = ref false
 
 let gen_sed_flag = ref false
 
+let find_tactics_flag = ref false
+
 let arg_list =
-  Arg.align [("-pt", Arg.Set print_tree_flag, " Printtyp"); ("-s", Arg.Set gen_sed_flag, " Generate sed script")]
+  Arg.align
+    [ ("-pt", Arg.Set print_tree_flag, " Printtyp")
+    ; ("-s", Arg.Set gen_sed_flag, " Generate sed script")
+    ; ("-t", Arg.Set find_tactics_flag, " Search for tactics") ]
 
 let arg_usage = "bindings FILE.cmt : list top level bindings of interest"
 
@@ -53,13 +58,17 @@ let gen_sed loc typ f =
 let exp_ident exp = match exp.exp_desc with Texp_ident (path, _, _) -> Path.name path | _ -> ""
 
 let value_binding {vb_pat; vb_expr; _} =
-  match (vb_pat.pat_desc, vb_expr.exp_desc) with
-  | Tpat_var (ident, loc), Texp_apply (fexpr, _arg_bindings) ->
+  match vb_pat.pat_desc with
+  | Tpat_var (ident, loc) ->
       let name = Ident.name ident in
       let typ = format_type vb_pat.pat_type in
-      let fun_name = exp_ident fexpr in
-      if !gen_sed_flag then gen_sed loc typ fun_name
-      else Format.printf "%s (%s), type: %s, fun: %s\n" name (format_location loc.loc) typ fun_name
+      if !gen_sed_flag then
+        match vb_expr.exp_desc with
+        | Texp_apply (fexpr, _arg_bindings) ->
+            let fun_name = exp_ident fexpr in
+            gen_sed loc typ fun_name
+        | _ -> ()
+      else Format.printf "%s (%s), type: %s\n" name (format_location loc.loc) typ
   | _ -> ()
 
 let structure_item {str_desc; _} =

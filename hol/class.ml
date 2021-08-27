@@ -39,12 +39,12 @@ let vETA_CONV =
         else fail()
     with Failure _ -> failwith "ETA_CONV";;
 
-let vEQ_EXT = prove
+let vEQ_EXT = try Cache.lookup_thm "EQ_EXT" with _ ->  prove
  ((parse_term "!(f:A->B) g. (!x. f x = g x) ==> f = g"),
   vREPEAT vGEN_TAC ----> vDISCH_THEN(vMP_TAC -| vABS (parse_term "x:A") -| vSPEC (parse_term "x:A")) ---->
   vREWRITE_TAC[vETA_AX]);;
 
-let vFUN_EQ_THM = prove
+let vFUN_EQ_THM = try Cache.lookup_thm "FUN_EQ_THM" with _ ->  prove
  ((parse_term "!(f:A->B) g. f = g <=> (!x. f x = g x)"),
   vREPEAT vGEN_TAC ----> vEQ_TAC ++-->
    [vDISCH_THEN vSUBST1_TAC ----> vGEN_TAC ----> vREFL_TAC;
@@ -69,7 +69,7 @@ let vSELECT_AX = new_axiom
 (* Useful for compatibility. (The old EXISTS_DEF.)                           *)
 (* ------------------------------------------------------------------------- *)
 
-let vEXISTS_THM = prove
+let vEXISTS_THM = try Cache.lookup_thm "EXISTS_THM" with _ ->  prove
  ((parse_term "(?) = \\P:A->bool. P ((@) P)"),
   vMATCH_MP_TAC vEQ_EXT ----> vBETA_TAC ----> vX_GEN_TAC (parse_term "P:A->bool") ---->
   vGEN_REWRITE_TAC (vLAND_CONV -| vRAND_CONV) [vGSYM vETA_AX] ---->
@@ -111,12 +111,12 @@ let vSELECT_CONV =
 (* Some basic theorems.                                                      *)
 (* ------------------------------------------------------------------------- *)
 
-let vSELECT_REFL = prove
+let vSELECT_REFL = try Cache.lookup_thm "SELECT_REFL" with _ ->  prove
  ((parse_term "!x:A. (@y. y = x) = x"),
   vGEN_TAC ----> vCONV_TAC vSELECT_CONV ---->
   vEXISTS_TAC (parse_term "x:A") ----> vREFL_TAC);;
 
-let vSELECT_UNIQUE = prove
+let vSELECT_UNIQUE = try Cache.lookup_thm "SELECT_UNIQUE" with _ ->  prove
  ((parse_term "!P x. (!y:A. P y = (y = x)) ==> ((@) P = x)"),
   vREPEAT vSTRIP_TAC ---->
   vGEN_REWRITE_TAC (vLAND_CONV -| vRAND_CONV) [vGSYM vETA_AX] ---->
@@ -149,7 +149,7 @@ let new_type_definition tyname (absname,repname) th =
 (* the original Diaconescu proof as presented in Beeson's book.              *)
 (* ------------------------------------------------------------------------- *)
 
-let vEXCLUDED_MIDDLE = prove
+let vEXCLUDED_MIDDLE = try Cache.lookup_thm "EXCLUDED_MIDDLE" with _ ->  prove
  ((parse_term "!t. t \\/ ~t"),
   vGEN_TAC ----> vSUBGOAL_THEN
    (parse_term "(((@x. (x <=> F) \\/ t) <=> F) \\/ t) /\\ (((@x. (x <=> T) \\/ t) <=> T) \\/ t)")
@@ -163,7 +163,7 @@ let vEXCLUDED_MIDDLE = prove
     vPURE_ONCE_ASM_REWRITE_TAC[] ---->
     vASM_REWRITE_TAC[vITAUT (parse_term "p \\/ T <=> T")]]);;
 
-let vBOOL_CASES_AX = prove
+let vBOOL_CASES_AX = try Cache.lookup_thm "BOOL_CASES_AX" with _ ->  prove
  ((parse_term "!t. (t <=> T) \\/ (t <=> F)"),
   vGEN_TAC ----> vDISJ_CASES_TAC(vSPEC (parse_term "t:bool") vEXCLUDED_MIDDLE) ---->
   vASM_REWRITE_TAC[]);;
@@ -242,23 +242,23 @@ let vREFUTE_THEN =
 (* Infinite de Morgan laws.                                                  *)
 (* ------------------------------------------------------------------------- *)
 
-let vNOT_EXISTS_THM = prove
+let vNOT_EXISTS_THM = try Cache.lookup_thm "NOT_EXISTS_THM" with _ ->  prove
  ((parse_term "!P. ~(?x:A. P x) <=> (!x. ~(P x))"),
   vGEN_TAC ----> vEQ_TAC ----> vDISCH_TAC ++-->
    [vGEN_TAC ----> vDISCH_TAC ----> vUNDISCH_TAC (parse_term "~(?x:A. P x)") ---->
     vREWRITE_TAC[] ----> vEXISTS_TAC (parse_term "x:A") ----> vPOP_ASSUM vACCEPT_TAC;
     vDISCH_THEN(vCHOOSE_THEN vMP_TAC) ----> vASM_REWRITE_TAC[]]);;
 
-let vEXISTS_NOT_THM = prove
+let vEXISTS_NOT_THM = try Cache.lookup_thm "EXISTS_NOT_THM" with _ ->  prove
  ((parse_term "!P. (?x:A. ~(P x)) <=> ~(!x. P x)"),
   vONCE_REWRITE_TAC[vTAUT (parse_term "(a <=> ~b) <=> (~a <=> b)")] ---->
   vREWRITE_TAC[vNOT_EXISTS_THM]);;
 
-let vNOT_FORALL_THM = prove
+let vNOT_FORALL_THM = try Cache.lookup_thm "NOT_FORALL_THM" with _ ->  prove
  ((parse_term "!P. ~(!x. P x) <=> (?x:A. ~(P x))"),
   vMATCH_ACCEPT_TAC(vGSYM vEXISTS_NOT_THM));;
 
-let vFORALL_NOT_THM = prove
+let vFORALL_NOT_THM = try Cache.lookup_thm "FORALL_NOT_THM" with _ ->  prove
  ((parse_term "!P. (!x. ~(P x)) <=> ~(?x:A. P x)"),
   vMATCH_ACCEPT_TAC(vGSYM vNOT_EXISTS_THM));;
 
@@ -266,12 +266,12 @@ let vFORALL_NOT_THM = prove
 (* Expand quantification over Booleans.                                      *)
 (* ------------------------------------------------------------------------- *)
 
-let vFORALL_BOOL_THM = prove
+let vFORALL_BOOL_THM = try Cache.lookup_thm "FORALL_BOOL_THM" with _ ->  prove
   ((parse_term "(!b. P b) <=> P T /\\ P F"),
    vEQ_TAC ----> vDISCH_TAC ----> vASM_REWRITE_TAC[] ---->
    vGEN_TAC ----> vBOOL_CASES_TAC (parse_term "b:bool") ----> vASM_REWRITE_TAC[]);;
 
-let vEXISTS_BOOL_THM = prove
+let vEXISTS_BOOL_THM = try Cache.lookup_thm "EXISTS_BOOL_THM" with _ ->  prove
  ((parse_term "(?b. P b) <=> P T \\/ P F"),
   vMATCH_MP_TAC(vTAUT (parse_term "(~p <=> ~q) ==> (p <=> q)")) ---->
   vREWRITE_TAC[vDE_MORGAN_THM; vNOT_EXISTS_THM; vFORALL_BOOL_THM]);;
@@ -280,21 +280,21 @@ let vEXISTS_BOOL_THM = prove
 (* Universal quantifier and disjunction                                      *)
 (* ------------------------------------------------------------------------- *)
 
-let vLEFT_FORALL_OR_THM = prove
+let vLEFT_FORALL_OR_THM = try Cache.lookup_thm "LEFT_FORALL_OR_THM" with _ ->  prove
  ((parse_term "!P Q. (!x:A. P x \\/ Q) <=> (!x. P x) \\/ Q"),
   vREPEAT vGEN_TAC ----> vONCE_REWRITE_TAC[vTAUT (parse_term "(a <=> b) <=> (~a <=> ~b)")] ---->
   vREWRITE_TAC[vNOT_FORALL_THM; vDE_MORGAN_THM; vLEFT_EXISTS_AND_THM]);;
 
-let vRIGHT_FORALL_OR_THM = prove
+let vRIGHT_FORALL_OR_THM = try Cache.lookup_thm "RIGHT_FORALL_OR_THM" with _ ->  prove
  ((parse_term "!P Q. (!x:A. P \\/ Q x) <=> P \\/ (!x. Q x)"),
   vREPEAT vGEN_TAC ----> vONCE_REWRITE_TAC[vTAUT (parse_term "(a <=> b) <=> (~a <=> ~b)")] ---->
   vREWRITE_TAC[vNOT_FORALL_THM; vDE_MORGAN_THM; vRIGHT_EXISTS_AND_THM]);;
 
-let vLEFT_OR_FORALL_THM = prove
+let vLEFT_OR_FORALL_THM = try Cache.lookup_thm "LEFT_OR_FORALL_THM" with _ ->  prove
  ((parse_term "!P Q. (!x:A. P x) \\/ Q <=> (!x. P x \\/ Q)"),
   vMATCH_ACCEPT_TAC(vGSYM vLEFT_FORALL_OR_THM));;
 
-let vRIGHT_OR_FORALL_THM = prove
+let vRIGHT_OR_FORALL_THM = try Cache.lookup_thm "RIGHT_OR_FORALL_THM" with _ ->  prove
  ((parse_term "!P Q. P \\/ (!x:A. Q x) <=> (!x. P \\/ Q x)"),
   vMATCH_ACCEPT_TAC(vGSYM vRIGHT_FORALL_OR_THM));;
 
@@ -302,21 +302,21 @@ let vRIGHT_OR_FORALL_THM = prove
 (* Implication and quantifiers.                                              *)
 (* ------------------------------------------------------------------------- *)
 
-let vLEFT_IMP_FORALL_THM = prove
+let vLEFT_IMP_FORALL_THM = try Cache.lookup_thm "LEFT_IMP_FORALL_THM" with _ ->  prove
  ((parse_term "!P Q. ((!x:A. P x) ==> Q) <=> (?x. P x ==> Q)"),
   vREPEAT vGEN_TAC ----> vONCE_REWRITE_TAC[vTAUT (parse_term "(a <=> b) <=> (~a <=> ~b)")] ---->
   vREWRITE_TAC[vNOT_EXISTS_THM; vNOT_IMP; vLEFT_AND_FORALL_THM]);;
 
-let vLEFT_EXISTS_IMP_THM = prove
+let vLEFT_EXISTS_IMP_THM = try Cache.lookup_thm "LEFT_EXISTS_IMP_THM" with _ ->  prove
  ((parse_term "!P Q. (?x. P x ==> Q) <=> ((!x:A. P x) ==> Q)"),
   vMATCH_ACCEPT_TAC(vGSYM vLEFT_IMP_FORALL_THM));;
 
-let vRIGHT_IMP_EXISTS_THM = prove
+let vRIGHT_IMP_EXISTS_THM = try Cache.lookup_thm "RIGHT_IMP_EXISTS_THM" with _ ->  prove
  ((parse_term "!P Q. (P ==> ?x:A. Q x) <=> (?x:A. P ==> Q x)"),
   vREPEAT vGEN_TAC ----> vONCE_REWRITE_TAC[vTAUT (parse_term "(a <=> b) <=> (~a <=> ~b)")] ---->
   vREWRITE_TAC[vNOT_EXISTS_THM; vNOT_IMP; vRIGHT_AND_FORALL_THM]);;
 
-let vRIGHT_EXISTS_IMP_THM = prove
+let vRIGHT_EXISTS_IMP_THM = try Cache.lookup_thm "RIGHT_EXISTS_IMP_THM" with _ ->  prove
  ((parse_term "!P Q. (?x:A. P ==> Q x) <=> (P ==> ?x:A. Q x)"),
   vMATCH_ACCEPT_TAC(vGSYM vRIGHT_IMP_EXISTS_THM));;
 
@@ -327,7 +327,7 @@ let vRIGHT_EXISTS_IMP_THM = prove
 let vCOND_DEF = new_definition
   (parse_term "COND = \\t t1 t2. @x:A. ((t <=> T) ==> (x = t1)) /\\\n                          ((t <=> F) ==> (x = t2))");;
 
-let vCOND_CLAUSES = prove
+let vCOND_CLAUSES = try Cache.lookup_thm "COND_CLAUSES" with _ ->  prove
  ((parse_term "!(t1:A) t2. ((if T then t1 else t2) = t1) /\\\n               ((if F then t1 else t2) = t2)"),
   vREWRITE_TAC[vCOND_DEF]);;
 
@@ -349,28 +349,28 @@ let dest_cond tm =
 
 extend_basic_rewrites [vCOND_CLAUSES];;
 
-let vCOND_EXPAND = prove
+let vCOND_EXPAND = try Cache.lookup_thm "COND_EXPAND" with _ ->  prove
  ((parse_term "!b t1 t2. (if b then t1 else t2) <=> (~b \\/ t1) /\\ (b \\/ t2)"),
   vREPEAT vGEN_TAC ----> vBOOL_CASES_TAC (parse_term "b:bool") ---->
   vREWRITE_TAC[]);;
 
-let vCOND_ID = prove
+let vCOND_ID = try Cache.lookup_thm "COND_ID" with _ ->  prove
  ((parse_term "!b (t:A). (if b then t else t) = t"),
   vREPEAT vGEN_TAC ----> vBOOL_CASES_TAC (parse_term "b:bool") ----> vREWRITE_TAC[]);;
 
-let vCOND_RAND = prove
+let vCOND_RAND = try Cache.lookup_thm "COND_RAND" with _ ->  prove
  ((parse_term "!b (f:A->B) x y. f (if b then x else y) = (if b then f x else f y)"),
   vREPEAT vGEN_TAC ----> vBOOL_CASES_TAC (parse_term "b:bool") ----> vREWRITE_TAC[]);;
 
-let vCOND_RATOR = prove
+let vCOND_RATOR = try Cache.lookup_thm "COND_RATOR" with _ ->  prove
  ((parse_term "!b (f:A->B) g x. (if b then f else g)(x) = (if b then f x else g x)"),
   vREPEAT vGEN_TAC ----> vBOOL_CASES_TAC (parse_term "b:bool") ----> vREWRITE_TAC[]);;
 
-let vCOND_ABS = prove
+let vCOND_ABS = try Cache.lookup_thm "COND_ABS" with _ ->  prove
  ((parse_term "!b (f:A->B) g. (\\x. if b then f x else g x) = (if b then f else g)"),
   vREPEAT vGEN_TAC ----> vBOOL_CASES_TAC (parse_term "b:bool") ----> vREWRITE_TAC[vETA_AX]);;
 
-let vCOND_SWAP = prove
+let vCOND_SWAP = try Cache.lookup_thm "COND_SWAP" with _ ->  prove
  ((parse_term "!p x y:A. (if ~p then x else y) = (if p then y else x)"),
   vREPEAT vGEN_TAC ----> vBOOL_CASES_TAC (parse_term "p:bool") ----> vREWRITE_TAC[]);;
 
@@ -392,7 +392,7 @@ let vTAUT =
 (* Throw monotonicity in.                                                    *)
 (* ------------------------------------------------------------------------- *)
 
-let vMONO_COND = prove
+let vMONO_COND = try Cache.lookup_thm "MONO_COND" with _ ->  prove
  ((parse_term "(A ==> B) /\\ (C ==> D) ==> (if b then A else C) ==> (if b then B else D)"),
   vSTRIP_TAC ----> vBOOL_CASES_TAC (parse_term "b:bool") ---->
   vASM_REWRITE_TAC[]);;
@@ -403,7 +403,7 @@ monotonicity_theorems := vMONO_COND::(!monotonicity_theorems);;
 (* Tactic for splitting over an arbitrarily chosen conditional.              *)
 (* ------------------------------------------------------------------------- *)
 
-let vCOND_ELIM_THM = prove
+let vCOND_ELIM_THM = try Cache.lookup_thm "COND_ELIM_THM" with _ ->  prove
  ((parse_term "(P:A->bool) (if c then x else y) <=> (c ==> P x) /\\ (~c ==> P y)"),
   vBOOL_CASES_TAC (parse_term "c:bool") ----> vREWRITE_TAC[]);;
 
@@ -422,7 +422,7 @@ let (vCOND_CASES_TAC :tactic) =
 (* Skolemization.                                                            *)
 (* ------------------------------------------------------------------------- *)
 
-let vSKOLEM_THM = prove
+let vSKOLEM_THM = try Cache.lookup_thm "SKOLEM_THM" with _ ->  prove
  ((parse_term "!P. (!x:A. ?y:B. P x y) <=> (?y. !x. P x (y x))"),
   vREPEAT(vSTRIP_TAC |---> vEQ_TAC) ++-->
    [vEXISTS_TAC (parse_term "\\x:A. @y:B. P x y") ----> vGEN_TAC ---->
@@ -430,7 +430,7 @@ let vSKOLEM_THM = prove
     vEXISTS_TAC (parse_term "(y:A->B) x")] ---->
   vPOP_ASSUM vMATCH_ACCEPT_TAC);;
 
-let vSKOLEM_THM_GEN = prove
+let vSKOLEM_THM_GEN = try Cache.lookup_thm "SKOLEM_THM_GEN" with _ ->  prove
  ((parse_term "!P R. (!x. P x ==> ?y. R x y) <=> (?f. !x. P x ==> R x (f x))"),
   vREWRITE_TAC[vRIGHT_IMP_EXISTS_THM; vSKOLEM_THM]);;
 
@@ -438,7 +438,7 @@ let vSKOLEM_THM_GEN = prove
 (* NB: this one is true intutionistically and intensionally.                 *)
 (* ------------------------------------------------------------------------- *)
 
-let vUNIQUE_SKOLEM_ALT = prove
+let vUNIQUE_SKOLEM_ALT = try Cache.lookup_thm "UNIQUE_SKOLEM_ALT" with _ ->  prove
  ((parse_term "!P:A->B->bool. (!x. ?!y. P x y) <=> ?f. !x y. P x y <=> (f x = y)"),
   vGEN_TAC ----> vREWRITE_TAC[vEXISTS_UNIQUE_ALT; vSKOLEM_THM]);;
 
@@ -446,7 +446,7 @@ let vUNIQUE_SKOLEM_ALT = prove
 (* and this one intuitionistically and extensionally.                        *)
 (* ------------------------------------------------------------------------- *)
 
-let vUNIQUE_SKOLEM_THM = prove
+let vUNIQUE_SKOLEM_THM = try Cache.lookup_thm "UNIQUE_SKOLEM_THM" with _ ->  prove
  ((parse_term "!P. (!x:A. ?!y:B. P x y) <=> (?!f. !x. P x (f x))"),
   vGEN_TAC ----> vREWRITE_TAC[vEXISTS_UNIQUE_THM; vSKOLEM_THM; vFORALL_AND_THM] ---->
   vEQ_TAC ----> vDISCH_THEN(vCONJUNCTS_THEN vASSUME_TAC) ---->
@@ -479,12 +479,12 @@ let vCOND_EQ_CLAUSE = prove
 (* We can now treat "bool" as an enumerated type for some purposes.          *)
 (* ------------------------------------------------------------------------- *)
 
-let bool_INDUCT = prove
+let bool_INDUCT = try Cache.lookup_thm "bool_INDUCT" with _ ->  prove
  ((parse_term "!P. P F /\\ P T ==> !x. P x"),
   vREPEAT vSTRIP_TAC ----> vDISJ_CASES_TAC(vSPEC (parse_term "x:bool") vBOOL_CASES_AX) ---->
   vASM_REWRITE_TAC[]);;
 
-let bool_RECURSION = prove
+let bool_RECURSION = try Cache.lookup_thm "bool_RECURSION" with _ ->  prove
  ((parse_term "!a b:A. ?f. f F = a /\\ f T = b"),
   vREPEAT vGEN_TAC ----> vEXISTS_TAC (parse_term "\\x. if x then b:A else a") ---->
   vREWRITE_TAC[]);;
