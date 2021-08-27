@@ -5,13 +5,13 @@ be compiled into native executables.  See [```hol.ml```](https://github.com/jrh1
 
 ### Installation
 
-We use ```dune``` for compiling. After ```dune build```, one can do ```dune utop``` to check out the currently proved theorems. For example:
+We use ```dune``` for compiling. To speed up loading time we have implemented a theorem caching mechanism (see below). To enable this feature, after ```dune build```, execute ```bin/save_db.exe``` from command line. This will save a binary copy of the theorems to a file named ```db``` and makes following session (interactive or not) significantly faster to start.
 
+One can do ```dune utop``` to check out the currently proved theorems. For example:
 ```
 utop # Hol.Theorems.vEQ_REFL;;
 - : Hol.Fusion.thm = |- !x. x = x
 ```
-
 To use the ```help``` command one needs to copy over the [```Help/```](https://github.com/jrh13/hol-light/tree/master/Help) subfolder from [HOL Light](https://github.com/jrh13/hol-light).
 
 ### Performance and theorem caching
@@ -33,7 +33,7 @@ Number of theorems in cache: 0
 ./query.exe  9.95s user 0.03s system 99% cpu 9.979 total
 ```
 
-While startup time of 1 sec is still noticeable it is significantly less painful than 10 seconds! Timings are done on an Apple M1 MacBook Air. This obviates the need for checkpointing and the cached db is only about 1.4MB. To use this feature, after building for the first time one needs to start ```dune utop```, and execute ```Hol.Cache.save_thm_db ();;```. This will save a binary copy of the theorems to a file named ```db```.
+While startup time of 1 sec is still noticeable it is significantly less painful than 10 seconds! Timings are done on an Apple M1 MacBook Air. This obviates the need for checkpointing and the cached db is only about 1.4MB.
 
 ### Difference from the original HOL Light
 

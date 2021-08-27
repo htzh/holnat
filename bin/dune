@@ -14,6 +14,12 @@
  (promote (until-clean))
 )
 (executable
+ (name save_db)
+ (modules save_db)
+ (libraries hol)
+ (promote (until-clean))
+)
+(executable
  (name query)
  (modules query)
  (libraries hol)
