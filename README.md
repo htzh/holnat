@@ -5,7 +5,7 @@ be compiled into native executables.  See [```hol.ml```](https://github.com/jrh1
 
 ### Installation
 
-We use ```dune``` for compiling. To speed up loading time we have implemented a theorem caching mechanism (see below). To enable this feature, after ```dune build```, execute ```bin/save_db.exe``` from command line. This will save a binary copy of the theorems to a file named ```db``` and makes following session (interactive or not) significantly faster to start.
+We use ```dune``` for compiling. To speed up loading time we have implemented a theorem caching mechanism (see below). To enable this feature, after ```dune build```, execute ```bin/save_db.exe``` from command line. This will save a binary copy of the theorems to a file named ```db``` and makes following sessions (interactive or not) significantly faster to start.
 
 One can do ```dune utop``` to check out the currently proved theorems. For example:
 ```
@@ -91,16 +91,16 @@ utop # Hol.Basics.variables (snd (Hol.Fusion.dest_thm t1));;
 
 utop # Hol.Basics.variables (snd (Hol.Fusion.dest_thm t2));;
 - : Hol.Fusion.term list =
-[Hol.Fusion.Var ("t", Hol.Fusion.Tyapp ("list", [Hol.Fusion.Tyvar "?20807"]));
- Hol.Fusion.Var ("h", Hol.Fusion.Tyvar "?20807");
+[Hol.Fusion.Var ("t", Hol.Fusion.Tyapp ("list", [Hol.Fusion.Tyvar "?18157"]));
+ Hol.Fusion.Var ("h", Hol.Fusion.Tyvar "?18157");
  Hol.Fusion.Var ("P",
   Hol.Fusion.Tyapp ("fun",
-   [Hol.Fusion.Tyvar "?20807"; Hol.Fusion.Tyapp ("bool", [])]))]
+   [Hol.Fusion.Tyvar "?18157"; Hol.Fusion.Tyapp ("bool", [])]))]
 
 (* now we instantiate the type variables to the same instance and try again *)
 utop # let typ = Hol.Parser.parse_type "A";;
 val typ : Hol.Fusion.hol_type = Hol.Fusion.Tyvar "A"
 
-utop # Hol.Fusion.(vINST_TYPE [typ, mk_vartype "?78408"] t1 = vINST_TYPE [typ, mk_vartype "?20807"] t2);;
+utop # Hol.Fusion.(vINST_TYPE [typ, mk_vartype "?78408"] t1 = vINST_TYPE [typ, mk_vartype "?18157"] t2);;
 - : bool = true
 ```
