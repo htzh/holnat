@@ -40,6 +40,16 @@ While startup time of 1 sec is still noticeable it is significantly less painful
 We don't change OCaml lexing conventions so we do not need preprocessors to compile. However this means we can not have capitalized value names, nor can we have letters in operators.
 We prefix all-cap value names with the letter ```v```. The composition operator is now ```-|``` instead of ```o```. See ```bin/pp.ml``` for details.
 
+Due to the decoupling from ```Camlp5``` and special lexing rules, we now can run with any reasonable version of OCaml.
+
+Quotation is supported through ```ppxlib```. Currently it is not used in ```hol/*``` source code. ```dune utop``` enables it by default. One can also choose to use it by specifying preprocessing options in dune for executables.
+
+Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` module. Note this naming convention may cause problems in utop if ```Hol.Fusion``` is opened, as it has an internal module with the same ```Hol``` name. We may change the names in the future.
+
+We also comply with stricter OCaml linting rules. For example, unused variables and non-exhaustive matching are all errors that we fixed.
+
+### Quotation
+
 Quoted literals can be entered using ```[%q``` and ```]```. If the string literal contains characters that need to be escaped one could use OCaml's ```{|``` ```|}``` as quotation marks instead of manually escaping them. Be sure to ```open Hol.Parser``` first as the quoted literal needs to be processed with ```parse_term``` or ```parse_type``` (unless ending with ```:```).
 
 ```
@@ -50,12 +60,6 @@ val t : Hol.Fusion.term = `a /\ b => c`
 utop # let ty = [%q ":A" ];;
 val ty : Hol.Fusion.hol_type = `:A`
 ```
-
-Due to the decoupling from ```Camlp5``` and special lexing rules, we now can run with any reasonable version of OCaml.
-
-Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` module. Note this naming convention may cause problems in utop if ```Hol.Fusion``` is opened, as it has an internal module with the same ```Hol``` name. We may change the names in the future.
-
-We also comply with stricter OCaml linting rules. For example, unused variables and non-exhaustive matching are all errors that we fixed.
 
 ### TODOs
 
