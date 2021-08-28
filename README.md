@@ -40,14 +40,14 @@ While startup time of 1 sec is still noticeable it is significantly less painful
 We don't change OCaml lexing conventions so we do not need preprocessors to compile. However this means we can not have capitalized value names, nor can we have letters in operators.
 We prefix all-cap value names with the letter ```v```. The composition operator is now ```-|``` instead of ```o```. See ```bin/pp.ml``` for details.
 
-Quoted literals can be entered using ```[q%{|``` and ```|}]```. Be sure to ```open Hol.Parser``` first as the quoted literal needs to be processed with ```parse_term``` or ```parse_type``` (unless ending with ```:```).
+Quoted literals can be entered using ```[%q``` and ```]```. If the string literal contains characters that need to be escaped one could use OCaml's ```{|``` ```|}``` as quotation marks instead of manually escaping them. Be sure to ```open Hol.Parser``` first as the quoted literal needs to be processed with ```parse_term``` or ```parse_type``` (unless ending with ```:```).
 
 ```
 utop # open Hol.Parser;;
-utop # let t = [%q{|a /\ b
-                    => c|}];;
+utop # let t = [%q {|a /\ b
+                    => c|} ];;
 val t : Hol.Fusion.term = `a /\ b => c`
-utop # let ty = [%q {|:A|} ];;
+utop # let ty = [%q ":A" ];;
 val ty : Hol.Fusion.hol_type = `:A`
 ```
 
