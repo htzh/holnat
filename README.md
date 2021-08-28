@@ -54,12 +54,16 @@ Quoted literals can be entered using ```[%q``` and ```]```. If the string litera
 
 ```
 utop # open Hol.Parser;;
-utop # let t = [%q {|a /\ b
-                    => c|} ];;
-val t : Hol.Fusion.term = `a /\ b => c`
+utop # let t = [%q{|a /\ b
+                    ==> c|}];;
+val t : Hol.Fusion.term = `a /\ b ==> c`
 utop # let ty = [%q ":A" ];;
 val ty : Hol.Fusion.hol_type = `:A`
 ```
+
+To use quotation in modules, make sure ```dune``` has ```(preprocess (pps quotation))``` specified. See ```quotation/``` for an example.
+
+For OCaml 4.11.0 and above, the shorthand form ```{%q|``` ```|}``` can be used instead.
 
 ### TODOs
 
