@@ -91,7 +91,7 @@ end
 (* This is the implementation of those primitives.                           *)
 (* ------------------------------------------------------------------------- *)
 
-module Hol : Hol_kernel = struct
+module Hol_kernel : Hol_kernel = struct
 
   type hol_type = Tyvar of string
                 | Tyapp of string *  hol_type list
@@ -639,7 +639,7 @@ module Hol : Hol_kernel = struct
 
 end;;
 
-include Hol;;
+include Hol_kernel;;
 
 (* ------------------------------------------------------------------------- *)
 (* Stuff that didn't seem worth putting in.                                  *)

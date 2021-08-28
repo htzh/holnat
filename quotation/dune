@@ -9,7 +9,6 @@
  (name test)
  (modules test)
  (libraries hol)
- (preprocess
-  (pps quotation))
+ (preprocess (pps quotation))
  (promote (until-clean))
 )

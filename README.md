@@ -44,7 +44,7 @@ Due to the decoupling from ```Camlp5``` and special lexing rules, we now can run
 
 Quotation is supported through ```ppxlib```. Currently it is not used in ```hol/*``` source code. ```dune utop``` enables it by default. One can also choose to use it by specifying preprocessing options in dune for executables.
 
-Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` module. Note this naming convention may cause problems in utop if ```Hol.Fusion``` is opened, as it has an internal module with the same ```Hol``` name. We may change the names in the future.
+Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` library module. We have renamed the ```Hol``` module inside ```fusion.ml``` to ```Hol_kernel``` to both match its signature and avoid name collision if ```Hol.Fusion``` is opened.
 
 We also comply with stricter OCaml linting rules. For example, unused variables and non-exhaustive matching are all errors that we fixed.
 
