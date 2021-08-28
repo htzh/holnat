@@ -40,7 +40,16 @@ While startup time of 1 sec is still noticeable it is significantly less painful
 We don't change OCaml lexing conventions so we do not need preprocessors to compile. However this means we can not have capitalized value names, nor can we have letters in operators.
 We prefix all-cap value names with the letter ```v```. The composition operator is now ```-|``` instead of ```o```. See ```bin/pp.ml``` for details.
 
-We also do not use quotation. Quoted literals have all been converted to strings and instantiated with ```parse_term``` or ```parse_type``` (unless ending with ```:```).
+Quoted literals can be entered using ```[q%{|``` and ```|}]```. Be sure to ```open Hol.Parser``` first as the quoted literal needs to be processed with ```parse_term``` or ```parse_type``` (unless ending with ```:```).
+
+```
+utop # open Hol.Parser;;
+utop # let t = [%q{|a /\ b
+                    => c|}];;
+val t : Hol.Fusion.term = `a /\ b => c`
+utop # let ty = [%q {|:A|} ];;
+val ty : Hol.Fusion.hol_type = `:A`
+```
 
 Due to the decoupling from ```Camlp5``` and special lexing rules, we now can run with any reasonable version of OCaml.
 
@@ -50,9 +59,9 @@ We also comply with stricter OCaml linting rules. For example, unused variables 
 
 ### TODOs
 
-It should be possible to add quotation so that we can enter quoted terms directly. I need to learn more about ```ppxlib``` on how this can be done. 
+[x] It should be possible to add quotation so that we can enter quoted terms directly. I need to learn more about ```ppxlib``` on how this can be done. 
 
-```utop``` still loads bytecode so is much slower (even though caching improved the loading time here significantly as well). We don't envision using ```utop``` for interaction in the future. Instead
+[ ] ```utop``` still loads bytecode so is much slower (even though caching improved the loading time here significantly as well). We don't envision using ```utop``` for interaction in the future. Instead
 the natively compiled library can be linked into a server and a browser UI can be used for interaction. This way we can benefit from the performance gain of native compilation.
 
 ### Notes on caching theorems
