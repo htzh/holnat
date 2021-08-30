@@ -1,7 +1,6 @@
 _build/
-publish/
-assets/
 pre-cache/
+Library/
 cache.sh
 *.exe
 *.swp

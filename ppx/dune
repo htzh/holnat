@@ -1,6 +1,6 @@
 (library
- (name quotation)
- (modules ppx_q)
+ (name hol_ppx)
+ (modules ppx)
  (kind ppx_rewriter)
  (preprocess (pps ppxlib.metaquot))
  (libraries ppxlib)
@@ -9,6 +9,6 @@
  (name test)
  (modules test)
  (libraries hol)
- (preprocess (pps quotation))
+ (preprocess (pps hol_ppx))
  (promote (until-clean))
 )
