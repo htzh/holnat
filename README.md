@@ -44,13 +44,13 @@ Due to the decoupling from ```Camlp5``` and special lexing rules, we now can run
 
 Quotation is supported through ```ppxlib```. Currently it is not used in ```hol/*``` source code. ```dune utop``` enables it by default. One can also choose to use it by specifying preprocessing options in dune for executables.
 
-Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` library module. We have renamed the ```Hol``` module inside ```fusion.ml``` to ```Hol_kernel``` to both match its signature and avoid name collision if ```Hol.Fusion``` is opened.
+Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` library module. One can ```open Hol.All``` to simulate the environment from loading the ```hol.ml``` script. We have renamed the ```Hol``` module inside ```fusion.ml``` to ```Hol_kernel``` to both match its signature and avoid name collision if ```Hol.Fusion``` is opened.
 
 We also comply with stricter OCaml linting rules. For example, unused variables and non-exhaustive matching are all errors that we fixed.
 
 ### Quotation
 
-Quoted literals can be entered using ```[%q``` and ```]```. If the string literal contains characters that need to be escaped one could use OCaml's ```{|``` ```|}``` as quotation marks instead of manually escaping them. Be sure to ```open Hol.Parser``` first as the quoted literal needs to be processed with ```parse_term``` or ```parse_type``` (unless ending with ```:```).
+Quoted literals can be entered using PPX extension ```[%q``` and ```]```. If the string literal contains characters that need to be escaped one could use OCaml's ```{|``` ```|}``` as quotation marks instead of manually escaping them. Be sure to ```open Hol.Parser``` first as the quoted literal needs to be processed with ```parse_term``` or ```parse_type``` (unless ending with ```:```).
 
 ```
 utop # open Hol.Parser;;
