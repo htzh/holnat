@@ -9,8 +9,9 @@ We use ```dune``` for compiling. To speed up loading time we have implemented a 
 
 One can do ```dune utop``` to check out the currently proved theorems. For example:
 ```
-utop # Hol.Theorems.vEQ_REFL;;
-- : Hol.Fusion.thm = |- !x. x = x
+utop # open Hol.All;;
+utop # vEQ_REFL;;
+- : thm = |- !x. x = x
 ```
 To use the ```help``` command one needs to copy over the [```Help/```](https://github.com/jrh13/hol-light/tree/master/Help) subfolder from [HOL Light](https://github.com/jrh13/hol-light).
 
@@ -101,12 +102,13 @@ Module loading order is determined at link time. The build system ```dune``` use
 Quoted literals can be entered using PPX extension ```[%q``` and ```]```. If the string literal contains characters that need to be escaped one could use OCaml's ```{|``` ```|}``` as quotation marks instead of manually escaping them. Be sure to ```open Hol.Parser``` first as the quoted literal needs to be processed with ```parse_term``` or ```parse_type``` (unless ending with ```:```).
 
 ```
-utop # open Hol.Parser;;
+utop # open Hol.All;;
 utop # let t = [%q{|a /\ b
                     ==> c|}];;
-val t : Hol.Fusion.term = `a /\ b ==> c`
+val t : term = `a /\ b ==> c`
+
 utop # let ty = [%q ":A" ];;
-val ty : Hol.Fusion.hol_type = `:A`
+val ty : hol_type = `:A`
 ```
 
 To use quotation in modules, make sure ```dune``` has ```(preprocess (pps quotation))``` specified. See ```quotation/``` for an example.
@@ -127,18 +129,19 @@ Let's say we load modules using cached theorems and save the database again, it 
 The reason for the difference is that when we run with cached theorems (instead of reproving them) we run into significantly fewer cases of "inventing type variables": those unresolved types from parsing HOL terms. So the two different runs encode these type variables with different numbers, resulting in different databases. Moreover the theorems are structurally equal only if we unify the type variables:
 
 ```
+(* assume we only did save_db once so that "db" contains the original form of theorems *)
+
+utop # open Hol.All;;
 utop # open Hol.Cache;;
-utop # let l1 = read_thms "db1";;
-utop # let l2 = read_thms "db2";;
+utop # let l1 = read_thms "db";;
+utop # let l2 = !theorems;;
 utop # let t1 = List.assoc "ALL" l1;;
 
-val t1 : Hol.Fusion.thm =
-|- (ALL P [] <=> T) /\ (ALL P (CONS h t) <=> P h /\ ALL P t)
+val t1 : thm = |- (ALL P [] <=> T) /\ (ALL P (CONS h t) <=> P h /\ ALL P t)
 
 utop # let t2 = List.assoc "ALL" l2;;
 
-val t2 : Hol.Fusion.thm =
-|- (ALL P [] <=> T) /\ (ALL P (CONS h t) <=> P h /\ ALL P t)
+val t2 : thm = |- (ALL P [] <=> T) /\ (ALL P (CONS h t) <=> P h /\ ALL P t)
 
 utop # t1 = t2;;
 
@@ -146,16 +149,16 @@ utop # t1 = t2;;
 
 (* now we turn off pretty printing to see the details *)
 
-utop # Hol.Basics.variables (snd (Hol.Fusion.dest_thm t1));;
-- : Hol.Fusion.term list =
+utop # variables (concl t1);;
+- : term list =
 [Hol.Fusion.Var ("t", Hol.Fusion.Tyapp ("list", [Hol.Fusion.Tyvar "?78408"]));
  Hol.Fusion.Var ("h", Hol.Fusion.Tyvar "?78408");
  Hol.Fusion.Var ("P",
   Hol.Fusion.Tyapp ("fun",
    [Hol.Fusion.Tyvar "?78408"; Hol.Fusion.Tyapp ("bool", [])]))]
 
-utop # Hol.Basics.variables (snd (Hol.Fusion.dest_thm t2));;
-- : Hol.Fusion.term list =
+utop # variables (concl t2);;
+- : term list =
 [Hol.Fusion.Var ("t", Hol.Fusion.Tyapp ("list", [Hol.Fusion.Tyvar "?18157"]));
  Hol.Fusion.Var ("h", Hol.Fusion.Tyvar "?18157");
  Hol.Fusion.Var ("P",
@@ -163,9 +166,10 @@ utop # Hol.Basics.variables (snd (Hol.Fusion.dest_thm t2));;
    [Hol.Fusion.Tyvar "?18157"; Hol.Fusion.Tyapp ("bool", [])]))]
 
 (* now we instantiate the type variables to the same instance and try again *)
-utop # let typ = Hol.Parser.parse_type "A";;
-val typ : Hol.Fusion.hol_type = Hol.Fusion.Tyvar "A"
 
-utop # Hol.Fusion.(vINST_TYPE [typ, mk_vartype "?78408"] t1 = vINST_TYPE [typ, mk_vartype "?18157"] t2);;
+utop # let typ = parse_type "A";;
+val typ : hol_type = Tyvar "A"
+
+utop # (vINST_TYPE [typ, mk_vartype "?78408"] t1 = vINST_TYPE [typ, mk_vartype "?18157"] t2);;
 - : bool = true
 ```
