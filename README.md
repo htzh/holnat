@@ -14,6 +14,43 @@ utop # Hol.Theorems.vEQ_REFL;;
 ```
 To use the ```help``` command one needs to copy over the [```Help/```](https://github.com/jrh13/hol-light/tree/master/Help) subfolder from [HOL Light](https://github.com/jrh13/hol-light).
 
+### Performance of native vs byte code
+
+We ran timing tests on ```Complex/grobner_examples.ml```. We generally see 5-6x in performance improvement when compiled with standard switches. The timing numbers are available under the [timings/](https://github.com/htzh/holnat/tree/master/timings) subfolder. The most time consuming example is for ```SHUR```, where we have 2.12s for native and 13.49s for ```utop```. Note the native version does not pretty print the theorems so the best way to see is through ```diff```:
+
+```
+1d0
+< utop # Toploop.use_file Format.std_formatter "Library/Complex/grobner_examples.ml";;
+...
+
+1069,1146c796
+< CPU time (user): 13.494951
+< val vSCHUR : thm =
+<   |- Cx (&22680) * (x1 pow 2 + x2 pow 2 + x3 pow 2 + x4 pow 2) pow 5 =
+<      Cx (&9) *
+<      ((Cx (&2) * x1) pow 10 +
+<       (Cx (&2) * x2) pow 10 +
+<       (Cx (&2) * x3) pow 10 +
+<       (Cx (&2) * x4) pow 10) +
+<      Cx (&180) *
+<      ((x1 + x2) pow 10 +
+<       (x1 - x2) pow 10 +
+<       (x1 + x3) pow 10 +
+<       (x1 - x3) pow 10 +
+<       (x1 + x4) pow 10 +
+<       (x1 - x4) pow 10 +
+<       (x2 + x3) pow 10 +
+<       (x2 - x3) pow 10 +
+<       (x2 + x4) pow 10 +
+<       (x2 - x4) pow 10 +
+<       (x3 + x4) pow 10 +
+<       (x3 - x4) pow 10) +
+<      ((Cx (&2) * x1 + x2 + x3) pow 10 +
+<       (Cx (&2) * x1 + x2 - x3) pow 10 +
+...
+---
+> CPU time (user): 2.115252
+```
 ### Performance and theorem caching
 
 Theorems don't need to be proved over and over again. We implemented a cache lookup mechanism for theorems contained in ```database.ml```. For natively compiled executables loading all the modules in ```hol``` takes a little over one second with this optimization:

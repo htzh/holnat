@@ -1,0 +1,7 @@
+(executable
+ (name grobner_examples)
+ (modules grobner_examples)
+ (preprocess (pps hol_ppx))
+ (libraries hol mathlib)
+ (promote (until-clean))
+) 
