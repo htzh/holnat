@@ -27,7 +27,7 @@ let a_expand ~ctxt name expr =
   let pv = Ast_builder.Default.pvar ~loc name in
   match expr.pexp_desc with
   | Pexp_apply ({pexp_desc= Pexp_ident {txt= Lident id; _}; _}, (_, arg) :: _) ->
-      if List.mem id ["prove"; "vARITH_RULE"] then
+      if List.mem id ["prove"; "vARITH_RULE"; "vREAL_ARITH"] then
         let tm =
           if id = "prove" then match arg with {pexp_desc= Pexp_tuple [tm; _]; _} -> tm | _ -> arg else arg
         in

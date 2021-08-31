@@ -1,6 +1,7 @@
 _build/
 pre-cache/
 Library/
+mathlib/
 cache.sh
 *.exe
 *.swp

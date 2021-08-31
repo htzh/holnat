@@ -59,16 +59,17 @@ let exp_ident exp = match exp.exp_desc with Texp_ident (path, _, _) -> Path.name
 
 let value_binding {vb_pat; vb_expr; _} =
   match vb_pat.pat_desc with
-  | Tpat_var (ident, loc) ->
+  | Tpat_var (ident, loc) -> (
       let name = Ident.name ident in
       let typ = format_type vb_pat.pat_type in
-      if !gen_sed_flag then
-        match vb_expr.exp_desc with
-        | Texp_apply (fexpr, _arg_bindings) ->
-            let fun_name = exp_ident fexpr in
-            gen_sed loc typ fun_name
-        | _ -> ()
-      else Format.printf "%s (%s), type: %s\n" name (format_location loc.loc) typ
+      match vb_expr.exp_desc with
+      | Texp_apply (fexpr, _arg_bindings) ->
+          let fun_name = exp_ident fexpr in
+          if !gen_sed_flag then gen_sed loc typ fun_name
+          else
+            Format.printf "%s (%s), type: %s, fun: %s, fun type: %s\n" name (format_location loc.loc) typ fun_name
+              (format_type fexpr.exp_type)
+      | _ -> if not !gen_sed_flag then Format.printf "%s (%s), type: %s\n" name (format_location loc.loc) typ )
   | _ -> ()
 
 let structure_item {str_desc; _} =

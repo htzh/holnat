@@ -48,6 +48,12 @@ Instead of ```#use``` scripts, we now have modules. HOL Light modules are locate
 
 We also comply with stricter OCaml linting rules. For example, unused variables and non-exhaustive matching are all errors that we fixed.
 
+### Module loading order
+
+HOL Light allows for overloading, which means the type of an HOL term like ````a+b```` is determined by preference for the type of the operator ```(+)``` at time of parsing. The overloading interface can be changed on the fly. This introduces an ordering constraint among modules, since often modules don't completely specify the overloading interface the parser should be using, instead relying on the state of the interface it is left in by some other modules. If modules load in the wrong order terms could be parsed incorrectly.
+
+Module loading order is determined at link time. The build system ```dune``` uses ```ocamldep``` to determine the dependency among modules. This dependency is only for definitions (values must be defined before usage) and does not reflect dependency created through mutation. To simulate the order created through ```#use``` in the proof scripts one can use ```include``` for modules. This tends reduces the utility of module namespace isolation but is the conservative thing to do if one is not clear about the state of the overloading interface.
+
 ### Quotation
 
 Quoted literals can be entered using PPX extension ```[%q``` and ```]```. If the string literal contains characters that need to be escaped one could use OCaml's ```{|``` ```|}``` as quotation marks instead of manually escaping them. Be sure to ```open Hol.Parser``` first as the quoted literal needs to be processed with ```parse_term``` or ```parse_type``` (unless ending with ```:```).
