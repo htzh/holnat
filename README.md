@@ -51,6 +51,11 @@ We ran timing tests on ```Complex/grobner_examples.ml```. We generally see 5-6x 
 ---
 > CPU time (user): 2.115252
 ```
+
+We also gave the "hideously slow" Simson's theorems a try, in native mode (we did not bother with the byte code version). The first one came in at just under 85s. The second one ran up to ```801 basis elements and 174174 critical pairs``` after close to an hour, at which point it caused a seg fault. There is a known OCaml bug for ARM64 where stack overflow is not detected. We may give this another go in the future when the bug fix is released in OCaml 13.x.
+
+Timings are done on an Apple M1 MacBook Air.
+
 ### Performance and theorem caching
 
 Theorems don't need to be proved over and over again. We implemented a cache lookup mechanism for theorems contained in ```database.ml```. For natively compiled executables loading all the modules in ```hol``` takes a little over one second with this optimization:
@@ -70,7 +75,7 @@ Number of theorems in cache: 0
 ./query.exe  9.95s user 0.03s system 99% cpu 9.979 total
 ```
 
-While startup time of 1 sec is still noticeable it is significantly less painful than 10 seconds! Timings are done on an Apple M1 MacBook Air. This obviates the need for checkpointing and the cached db is only about 1.4MB.
+While startup time of 1 sec is still noticeable it is significantly less painful than 10 seconds! This obviates the need for checkpointing and the cached db is only about 1.4MB.
 
 ### Difference from the original HOL Light
 
@@ -87,9 +92,9 @@ We also comply with stricter OCaml linting rules. For example, unused variables 
 
 ### Module loading order
 
-HOL Light allows for overloading, which means the type of an HOL term like ````a+b```` is determined by preference for the type of the operator ```(+)``` at time of parsing. The overloading interface can be changed on the fly. This introduces an ordering constraint among modules, since often modules don't completely specify the overloading interface the parser should be using, instead relying on the state of the interface it is left in by some other modules. If modules load in the wrong order terms could be parsed incorrectly.
+HOL Light allows for overloading, which means the type of an HOL term like ````a+b```` is determined by preference for the type of the operator ```(+)``` at the time of parsing. The overloading interface can be changed on the fly. This introduces an ordering constraint among modules, since often modules don't completely specify the overloading interface the parser should be using, instead relying on the state of the interface it is left in by some other modules. If modules load in the wrong order terms could be parsed incorrectly.
 
-Module loading order is determined at link time. The build system ```dune``` uses ```ocamldep``` to determine the dependency among modules. This dependency is only for definitions (values must be defined before usage) and does not reflect dependency created through mutation. To simulate the order created through ```#use``` in the proof scripts one can use ```include``` for modules. This tends reduces the utility of module namespace isolation but is the conservative thing to do if one is not clear about the state of the overloading interface.
+Module loading order is determined at link time. The build system ```dune``` uses ```ocamldep``` to determine the dependency among modules. This dependency is only for definitions (values must be defined before usage) and does not reflect dependency created through mutations. To simulate the order created through ```#use``` in the proof scripts one can use ```include``` for modules. This tends to reduce the utility of module namespace isolation but is the conservative thing to do if one is not clear about the state of the overloading interface.
 
 ### Quotation
 

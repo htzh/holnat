@@ -1,9 +1,10 @@
-(* ========================================================================= *)
-(* Examples of using the Grobner basis procedure.                            *)
-(* ========================================================================= *)
 open Hol.All
 open Mathlib.Complex_real
 ;;
+
+(* ========================================================================= *)
+(* Examples of using the Grobner basis procedure.                            *)
+(* ========================================================================= *)
 
 time vCOMPLEX_ARITH
   [%q {|!a b c.
@@ -537,9 +538,10 @@ let vGAUSS = time prove
 
 (**** These are all hideously slow. At least the first one works.
       I haven't had the patience to try the rest.
+****************)
 
-let SIMSON = time prove
- (`lengths_eq (O,a) (O,b) /\
+let vSIMSON1 = time prove
+ ([%q {|lengths_eq (O,a) (O,b) /\
    lengths_eq (O,a) (O,c) /\
    lengths_eq (d,O) (O,a) /\
    perpendicular (e,d) (b,c) /\
@@ -552,11 +554,11 @@ let SIMSON = time prove
    ~(lengths_eq (a,b) (a,a)) /\
    ~(lengths_eq (a,c) (a,a)) /\
    ~(lengths_eq (b,c) (a,a))
-   ==> collinear e f g`,
-  GEOM_TAC THEN CONV_TAC GROBNER_REAL_ARITH);;
+   ==> collinear e f g|} ],
+  vGEOM_TAC ----> vCONV_TAC vGROBNER_REAL_ARITH);;
 
-let SIMSON = time prove
- (`lengths_eq (O,a) (O,b) /\
+let vSIMSON2 = time prove
+ ([%q {|lengths_eq (O,a) (O,b) /\
    lengths_eq (O,a) (O,c) /\
    lengths_eq (d,O) (O,a) /\
    perpendicular (e,d) (b,c) /\
@@ -566,11 +568,11 @@ let SIMSON = time prove
    perpendicular (g,d) (a,b) /\
    collinear g a b /\
    ~(a = b) /\ ~(a = c) /\ ~(a = d) /\ ~(b = c) /\ ~(b = d) /\ ~(c = d)
-   ==> collinear e f g`,
-  GEOM_TAC THEN CONV_TAC GROBNER_REAL_ARITH);;
+   ==> collinear e f g|} ],
+  vGEOM_TAC ----> vCONV_TAC vGROBNER_REAL_ARITH);;
 
-let SIMSON = time prove
- (`lengths_eq (O,a) (O,b) /\
+let vSIMSON3 = time prove
+ ([%q {|lengths_eq (O,a) (O,b) /\
    lengths_eq (O,a) (O,c) /\
    lengths_eq (d,O) (O,a) /\
    perpendicular (e,d) (b,c) /\
@@ -586,7 +588,6 @@ let SIMSON = time prove
    ~(isotropic (a,d)) /\
    ~(isotropic (b,d)) /\
    ~(isotropic (c,d))
-   ==> collinear e f g`,
-  GEOM_TAC THEN CONV_TAC GROBNER_REAL_ARITH);;
+   ==> collinear e f g|} ],
+  vGEOM_TAC ----> vCONV_TAC vGROBNER_REAL_ARITH);;
 
-****************)
