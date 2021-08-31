@@ -1,0 +1,69 @@
+Warning: Benign redefinition
+CPU time (user): 0.002699
+|- !x y. x pow 2 = Cx (&2) /\ y pow 2 = Cx (&3) ==> (x * y) pow 2 = Cx (&6)
+CPU time (user): 0.005339
+|- !x a.
+       a pow 2 = Cx (&2) /\ x pow 2 + a * x + Cx (&1) = Cx (&0)
+       ==> x pow 4 + Cx (&1) = Cx (&0)
+CPU time (user): 0.011567
+|- !a x.
+       a pow 2 = Cx (&2) /\ x pow 2 + a * x + Cx (&1) = Cx (&0)
+       ==> x pow 4 + Cx (&1) = Cx (&0)
+CPU time (user): 0.012627
+|- ~(?a x y.
+         a pow 2 = Cx (&2) /\
+         x pow 2 + a * x + Cx (&1) = Cx (&0) /\
+         y * (x pow 4 + Cx (&1)) + Cx (&1) = Cx (&0))
+CPU time (user): 0.000672999999999
+|- !x. ?y. x pow 2 = y pow 3
+CPU time (user): 0.00253
+|- !x y z a b.
+       (a + b) * (x - y + z) - (a - b) * (x + y + z) =
+       Cx (&2) * (b * x + b * z - a * y)
+CPU time (user): 0.020229
+|- !a b. ~(a = b) ==> (?x y. y * x pow 2 = a /\ y * x pow 2 + x = b)
+CPU time (user): 0.296228
+|- !a b c x y.
+       a * x pow 2 + b * x + c = Cx (&0) /\
+       a * y pow 2 + b * y + c = Cx (&0) /\
+       ~(x = y)
+       ==> a * x * y = c /\ a * (x + y) + b = Cx (&0)
+CPU time (user): 0.169578
+|- ~(!a b c x y.
+         a * x pow 2 + b * x + c = Cx (&0) /\
+         a * y pow 2 + b * y + c = Cx (&0)
+         ==> a * x * y = c /\ a * (x + y) + b = Cx (&0))
+CPU time (user): 0.01038
+|- !y_1 y_2 y_3 y_4.
+       y_1 = Cx (&2) * y_3 /\ y_2 = Cx (&2) * y_4 /\ y_1 * y_3 = y_2 * y_4
+       ==> y_1 pow 2 = y_2 pow 2
+CPU time (user): 0.582282
+|- !a1 b1 c1 a2 b2 c2.
+       ~(a1 * b2 = a2 * b1)
+       ==> (?x y. a1 * x + b1 * y = c1 /\ a2 * x + b2 * y = c2)
+CPU time (user): 0.030081
+|- (?x y.
+        a * x pow 2 + b * x + c = Cx (&0) /\
+        a * y pow 2 + b * y + c = Cx (&0) /\
+        ~(x = y)) <=>
+   a = Cx (&0) /\ b = Cx (&0) /\ c = Cx (&0) \/
+   ~(a = Cx (&0)) /\ ~(b pow 2 = Cx (&4) * a * c)
+CPU time (user): 15.024494
+|- !a b c.
+       (?x y.
+            a * x pow 2 + b * x + c = Cx (&0) /\
+            a * y pow 2 + b * y + c = Cx (&0) /\
+            ~(x = y)) <=>
+       a = Cx (&0) /\ b = Cx (&0) /\ c = Cx (&0) \/
+       ~(a = Cx (&0)) /\ ~(b pow 2 = Cx (&4) * a * c)
+CPU time (user): 236.0479
+|- ~(!x1 y1 x2 y2 x3 y3 x0 y0 x0' y0'.
+         (x1 - x0) pow 2 + (y1 - y0) pow 2 =
+         (x2 - x0) pow 2 + (y2 - y0) pow 2 /\
+         (x2 - x0) pow 2 + (y2 - y0) pow 2 =
+         (x3 - x0) pow 2 + (y3 - y0) pow 2 /\
+         (x1 - x0') pow 2 + (y1 - y0') pow 2 =
+         (x2 - x0') pow 2 + (y2 - y0') pow 2 /\
+         (x2 - x0') pow 2 + (y2 - y0') pow 2 =
+         (x3 - x0') pow 2 + (y3 - y0') pow 2
+         ==> x0 = x0' /\ y0 = y0')

@@ -738,7 +738,7 @@ let (vCHEAT_TAC:tactic) =
 (* Intended for time-consuming rules; delays evaluation till it sees goal.   *)
 (* ------------------------------------------------------------------------- *)
 
-let vRECALL_ACCEPT_TAC r a g = vACCEPT_TAC(time r a) g;;
+let vRECALL_ACCEPT_TAC r a g = vACCEPT_TAC(r a) g;;
 
 (* ------------------------------------------------------------------------- *)
 (* Split off antecedent of antecedent as a subgoal.                          *)

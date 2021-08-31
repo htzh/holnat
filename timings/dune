@@ -5,3 +5,10 @@
  (libraries hol mathlib)
  (promote (until-clean))
 ) 
+(executable
+ (name quelim_examples)
+ (modules quelim_examples)
+ (preprocess (pps hol_ppx))
+ (libraries hol mathlib)
+ (promote (until-clean))
+)

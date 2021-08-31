@@ -52,7 +52,7 @@ We ran timing tests on ```Complex/grobner_examples.ml```. We generally see 5-6x 
 > CPU time (user): 2.115252
 ```
 
-We also gave the "hideously slow" Simson's theorems a try, in native mode (we did not bother with the byte code version). The first one came in at just under 85s. The second one ran up to ```801 basis elements and 174174 critical pairs``` after close to an hour, at which point it caused a seg fault. There is a known OCaml bug for ARM64 where stack overflow is not detected. We may give this another go in the future when the bug fix is released in OCaml 13.x.
+We also gave the "hideously slow" Simson's theorems a try, in native mode (we did not bother with the byte code version). The first one came in at just under 85s. The second one ran up to ```801 basis elements and 174174 critical pairs``` after close to an hour, at which point it caused a seg fault. There is a known OCaml bug for ARM64 where stack overflow is not detected. We may give this another go in the future when the bug fix is released in OCaml 13.x. The numbers for some "barely feasible" proofs in ```quelim_examples.ml``` can be found in [```quelim_examples_native.txt```](https://github.com/htzh/holnat/blob/master/timings/quelim_examples_native.txt). The last example, which now takes 236s, was considered to "take[s] too long ... and too much memory too".
 
 Timings are done on an Apple M1 MacBook Air.
 
