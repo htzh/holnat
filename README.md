@@ -9,7 +9,6 @@ We use ```dune``` for compiling. To speed up loading time we have implemented a 
 
 One can do ```dune utop``` to check out the currently proved theorems. For example:
 ```
-utop # open Hol.All;;
 utop # vEQ_REFL;;
 - : thm = |- !x. x = x
 ```
@@ -87,7 +86,7 @@ Due to the decoupling from ```Camlp5``` and special lexing rules, we now can run
 
 Quotation is supported through ```ppxlib```. Currently it is not used in ```hol/*``` source code. ```dune utop``` enables it by default. One can also choose to use it by specifying preprocessing options in dune for executables.
 
-Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` library module. One can ```open Hol.All``` to simulate the environment from loading the ```hol.ml``` script. We have renamed the ```Hol``` module inside ```fusion.ml``` to ```Hol_kernel``` to both match its signature and avoid name collision if ```Hol.Fusion``` is opened.
+Instead of ```#use``` scripts, we now have modules. HOL Light modules are located inside the ```Hol``` library module. One can ```open Hol.All``` to simulate the environment from loading the ```hol.ml``` script. This and ```#install_printer``` directives are now kept in ```.ocamlinit``` for interactive sessions. We have renamed the ```Hol``` module inside ```fusion.ml``` to ```Hol_kernel``` to both match its signature and avoid name collision if ```Hol.Fusion``` is opened.
 
 We also comply with stricter OCaml linting rules. For example, unused variables and non-exhaustive matching are all errors that we fixed.
 
@@ -102,7 +101,6 @@ Module loading order is determined at link time. The build system ```dune``` use
 Quoted literals can be entered using PPX extension ```[%q``` and ```]```. If the string literal contains characters that need to be escaped one could use OCaml's ```{|``` ```|}``` as quotation marks instead of manually escaping them. Be sure to ```open Hol.Parser``` first as the quoted literal needs to be processed with ```parse_term``` or ```parse_type``` (unless ending with ```:```).
 
 ```
-utop # open Hol.All;;
 utop # let t = [%q{|a /\ b
                     ==> c|}];;
 val t : term = `a /\ b ==> c`
@@ -131,7 +129,6 @@ The reason for the difference is that when we run with cached theorems (instead 
 ```
 (* assume we only did save_db once so that "db" contains the original form of theorems *)
 
-utop # open Hol.All;;
 utop # open Hol.Cache;;
 utop # let l1 = read_thms "db";;
 utop # let l2 = !theorems;;
@@ -168,7 +165,7 @@ utop # variables (concl t2);;
 (* now we instantiate the type variables to the same instance and try again *)
 
 utop # let typ = parse_type "A";;
-val typ : hol_type = Tyvar "A"
+val typ : hol_type = Hol.Fusion.Tyvar "A"
 
 utop # (vINST_TYPE [typ, mk_vartype "?78408"] t1 = vINST_TYPE [typ, mk_vartype "?18157"] t2);;
 - : bool = true

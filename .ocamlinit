@@ -1,6 +1,7 @@
-#install_printer Hol.Lib.pp_print_fpf;;
-#install_printer Hol.Printer.pp_print_qtype;;
-#install_printer Hol.Printer.pp_print_qterm;;
-#install_printer Hol.Printer.pp_print_thm;;
-#install_printer Hol.Tactics.pp_print_goal;;
-#install_printer Hol.Tactics.pp_print_goalstack;;
+open Hol.All;;
+#install_printer pp_print_fpf;;
+#install_printer pp_print_qtype;;
+#install_printer pp_print_qterm;;
+#install_printer pp_print_thm;;
+#install_printer pp_print_goal;;
+#install_printer pp_print_goalstack;;
