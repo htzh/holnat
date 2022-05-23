@@ -44,7 +44,8 @@ let possible_candidates =
   ; "Hol.Drule.vMATCH_MP"
   ; "Hol.Lib.end_itlist"
   ; "vINT_ARITH"
-  ; "vHAS_SIZE_DIMINDEX_RULE" ]
+  ; "vHAS_SIZE_DIMINDEX_RULE"
+  ; "vTAUT" ]
 
 let gen_sed loc typ f =
   if typ = "Hol.Fusion.thm" then

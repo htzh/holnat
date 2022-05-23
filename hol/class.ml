@@ -194,15 +194,15 @@ let vTAUT =
 (* A few useful classical tautologies.                                       *)
 (* ------------------------------------------------------------------------- *)
 
-let vDE_MORGAN_THM = vTAUT
+let vDE_MORGAN_THM = try Cache.lookup_thm "DE_MORGAN_THM" with _ ->  vTAUT
   (parse_term "!t1 t2. (~(t1 /\\ t2) <=> ~t1 \\/ ~t2) /\\ (~(t1 \\/ t2) <=> ~t1 /\\ ~t2)");;
 
-let vNOT_CLAUSES =
+let vNOT_CLAUSES = try Cache.lookup_thm "NOT_CLAUSES" with _ -> 
   vTAUT (parse_term "(!t. ~ ~t <=> t) /\\ (~T <=> F) /\\ (~F <=> T)");;
 
-let vNOT_IMP = vTAUT (parse_term "!t1 t2. ~(t1 ==> t2) <=> t1 /\\ ~t2");;
+let vNOT_IMP = try Cache.lookup_thm "NOT_IMP" with _ ->  vTAUT (parse_term "!t1 t2. ~(t1 ==> t2) <=> t1 /\\ ~t2");;
 
-let vCONTRAPOS_THM = vTAUT (parse_term "!t1 t2. (~t1 ==> ~t2) <=> (t2 ==> t1)");;
+let vCONTRAPOS_THM = try Cache.lookup_thm "CONTRAPOS_THM" with _ ->  vTAUT (parse_term "!t1 t2. (~t1 ==> ~t2) <=> (t2 ==> t1)");;
 
 extend_basic_rewrites [vCONJUNCT1 vNOT_CLAUSES];;
 
