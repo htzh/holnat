@@ -47,3 +47,5 @@ include Cart
 include Define
 include Help
 include Database
+
+let all_loaded = true
