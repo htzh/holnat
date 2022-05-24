@@ -25,3 +25,10 @@
  (libraries hol)
  (promote (until-clean))
 )
+(executable
+ (name export)
+ (modules export ppx_show_runtime)
+ (libraries hol)
+ (preprocess (pps ppx_show))
+ (promote (until-clean))
+)
