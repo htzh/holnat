@@ -1,0 +1,6 @@
+(library
+ (name mathlib)
+ (preprocess (pps hol_ppx))
+ (libraries hol)
+)
+(include_subdirs unqualified)

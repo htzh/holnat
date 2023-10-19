@@ -1,7 +1,6 @@
 _build/
 pre-cache/
 Library/
-mathlib/
 cache.sh
 simson.txt
 *.exe
